@@ -1,0 +1,106 @@
+# Proposed architecture
+
+Status: recommended boundaries for review, not an implemented system. Device, metric scale path, provider/model IDs, price sources and report conventions await answers in [decisions](10-decisions-risks.md).
+
+## Pipeline
+
+```mermaid
+flowchart TD
+    U[Claimant: voice and continuous camera sweep] --> C[Capture client: media, frame IDs, timestamps]
+    C --> L[Live conversation adapter]
+    C --> E[Immutable evidence store]
+    C --> Q[Quality and coverage monitor]
+    Q --> L
+    L --> U
+    L --> X[Validated correction commands]
+    E --> D[Book and item detection / physical tracks]
+    D --> I[Spine OCR and catalogue identification]
+    E --> G[Calibration and geometric measurement]
+    D --> G
+    I --> P[Local source retrieval and valuation]
+    D --> N[Non-book classification and comparables]
+    N --> P
+    X --> S[Revisioned sweep state / event log]
+    D --> S
+    I --> S
+    G --> S
+    P --> S
+    N --> S
+    Q --> S
+    S --> UI[Live inventory and coverage UI]
+    S --> R[Deterministic review and totals]
+    E --> R
+    R --> F[Frozen claim_packet.json]
+    F --> H[Readable report and evidence bundle]
+    F --> L
+```
+
+Live conversation guides capture; it does not own prices, dimensions, totals or the persisted truth. Recognition stages propose evidence-backed findings. Code validates them, resolves their revision and publishes state. The background "agents" are independent workers with typed inputs/outputs, not necessarily separate model sessions or an agent framework.
+
+## Runtime proposal
+
+Retain Python/FastAPI and browser JavaScript to maximize reference reuse. Use one server process, bounded asynchronous queues, provider adapters, a local file evidence directory and a small transactional database (SQLite proposed). Avoid distributed services for this timebox. Pydantic/schema validation is proposed at every boundary. Remove the ADK policy graph unless inspection of actual selected SDK needs establishes a reason to keep it; ordinary workers are enough for these deterministic dependencies.
+
+These are recommendations, not installed dependencies or selected versions. M00 verifies an available Windows runtime and provider access; M01 chooses explicit contract versions; M03 resolves geometry feasibility. A native capture companion would change the runtime only if the chosen depth path requires it.
+
+Two image paths originate from the same active camera track: a small, rate-limited stream for live conversation and independently saved higher-resolution keyframes/crops for inventory/measurement. Do not try to read every thin spine from the reference's 512-pixel live image. Neither path may substitute generated images for evidence. Depth, intrinsics and camera pose are additional synchronized evidence if actually available.
+
+Google's current Live API documents image input at ≤1 FPS and PCM audio transport. This constrains the conversational feed, not the rate at which the application may retain evidence locally. Model IDs and account availability still need a real preflight. [Google Live API capabilities](https://ai.google.dev/gemini-api/docs/live-api/capabilities).
+
+## Component ownership
+
+| Component | Owns | May not do |
+| --- | --- | --- |
+| Capture client | Permission UX, actual media settings, media time/frame IDs, playback cancellation, queue acknowledgements | Assert that requested resolution was achieved or that an unsaved frame is saved |
+| Evidence store | Original bytes, crop derivation, hashes, paths, timestamps, calibrations, source records | Overwrite original frames or silently evict referenced evidence |
+| Quality/coverage | Blur/glare/occlusion scores; observed shelf/wall coverage state | Claim unseen or fully hidden items were captured |
+| Detection/tracking | Physical books/items, shelf/row coordinates, observations and dedup | Merge books merely because titles match |
+| Identification | OCR, catalogue candidates, work/edition decision and field evidence | Fill unreadable title/ISBN from expectation |
+| Measurement | Scale anchors, geometry, dimensions, derived areas and uncertainty | Ask an LLM for numeric dimensions or transfer planar scale across depth without geometry |
+| Valuation | Retrieval adapters, comparable filtering, dated monetary components and FX | Price from model memory or auto-value appraisal items |
+| State coordinator | Revision checks, event application, correction invalidation, UI snapshots | Let delayed jobs overwrite newer corrections |
+| Packet builder | Referential validation, review generation, Decimal arithmetic, report consistency | Ask a model to write authoritative totals |
+| Evaluation | Frozen truth comparison, complete denominators, cost/latency/failure measurements | Tune using held-out results or hide misses |
+
+## State and sequence
+
+Proposed lifecycle: `created → preflight → sweeping → finalizing → complete` or `partial`; fatal failure can mark `failed`. `complete` means all scheduled work has reached a terminal result and packet checks passed, not that every item was identified or priced. `partial` records interrupted capture, unfinished stage deadlines or missing geometry. The report prominently distinguishes these.
+
+1. Preflight validates locale, secure context, media permissions, provider, storage and scale capability. Failure gives an actionable status before starting the sweep timer.
+2. A start event freezes the chosen locale/configuration/calibration policy and starts capture time. Camera frames and claimant turns carry sequence IDs and monotonically increasing media timestamps.
+3. Saved evidence triggers bounded processing jobs. Confirmed physical tracks enter inventory promptly with unknown identity/price fields. Recognition and valuation enrich them later.
+4. Corrections are typed events targeting stable track/shelf IDs. Ambiguous referents cause a short clarification; no arbitrary item is selected. Excluded ownership remains in the audit trail but is removed from in-scope inventory/totals.
+5. End sweep stops new capture intentionally and immediately records the end timestamp, starting the packet-latency clock. An upload barrier settles already captured, queued frames against the client's final sequence/expected-frame manifest; unacknowledged or rejected frames become explicit capture gaps at its bounded deadline. Only then seal the raw-capture manifest. Upload time is part of end-to-packet latency. Workers may still add versioned derived crops, calibration results and quote evidence linked to those raw frames. A processing drain barrier waits for outstanding jobs until a deadline earlier than 300 seconds, leaving time for validation/export.
+6. Outstanding items become explicit unresolved results at deadline. Freeze a consistent state revision and the combined raw/derived/quote export manifest, calculate totals, validate all references, export JSON, generate report from JSON and read only that packet's summary.
+
+Late work cannot mutate a frozen packet. A later user-authorized correction produces a new packet revision with its own manifest and supersedes the old revision explicitly.
+
+## Events and consistency
+
+Event envelope: sweep ID, event ID, sequence, producer, created time, schema version, input revision, payload and evidence references. Duplicate event IDs are idempotent. Each worker job pins its evidence IDs and relevant state revision. Results that conflict with a newer correction are discarded or rerun; unaffected results may be reused.
+
+Use a transactional state update followed by an ordered UI event. Persist events and evidence independently of WebSocket lifetime. Reconnect requests a snapshot and events after its last acknowledged sequence. The client ignores old connection generations. Session reset cancels tracked tasks and increments generation but must not delete already exported evidence without an explicit deletion action.
+
+Country changes invalidate valuation/FX/totals, not physical detections or geometry. Identity changes invalidate matching price components. Geometry changes invalidate derived dimensions/areas. Rare/signed corrections revoke automatic valuation immediately. Ownership corrections invalidate inclusion and evaluation scope without silently erasing evidence.
+
+## Scheduling, latency and failure containment
+
+Audio/control traffic takes priority over large evidence uploads. Bound byte queues and worker concurrency; supersede redundant conversational preview frames, never lose an already acknowledged evidence frame. Coalesce overlapping shelf jobs, batch OCR candidates and cache catalogue queries by normalized search and provider version. Price cache keys include edition/equivalence basis, country, currency, condition, source type and retrieval freshness.
+
+The end-of-sweep processing target is a measured budget, not a provider guarantee: detection/identification/valuation should already run during capture. Initial proposal: finish outstanding work by 240 seconds and target validation/report readiness within another 45 seconds, leaving 15 seconds of margin below the strict 300-second packet limit. A near-three-minute sweep needs a substantially tighter packet target to meet the separate six-minute demo limit; see the operation plan. Tune budgets only after measuring. Stage timing and wall-clock critical path are reported separately because parallel timings do not add to elapsed time.
+
+| Failure | Required behavior |
+| --- | --- |
+| Camera denied/ended | State camera unavailable; stop claiming new coverage; offer explicit resume |
+| Blurred/glared shelf | Brief in-pass guidance, saved quality event; unresolved region if not recovered |
+| Provider timeout/rate limit | Bounded retry within deadline; stage error visible; independent workers continue |
+| Catalogue ambiguity | Keep work candidate or unidentified; no edition/ISBN invention |
+| Local sources missing | Attempt configured foreign source with FX evidence or mark unavailable |
+| Calibration/depth invalid | Keep pixel observations; affected metric fields unknown and reviewed |
+| Network disconnect | Persist accepted evidence, show disconnect, reconnect with sequence and unfinished jobs |
+| Storage failure | No acknowledgement of unsaved frames; mark capture incomplete and stop unsafe accumulation |
+| End deadline | Export explicit partial packet and unfinished stages; count as latency success only if contract-valid packet exists in time |
+
+## Proposed repository layout
+
+Future structure only; no directories below have been implemented: `src/capture`, `src/live`, `src/evidence`, `src/detection`, `src/identification`, `src/measurement`, `src/valuation`, `src/packet`, `src/evaluation`, `web`, `tests`, and ignored `runs/<sweep_id>/`. Keep provider calls behind adapters and arithmetic in deterministic modules. Selected reused reference code receives attribution and a change notice.
