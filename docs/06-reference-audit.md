@@ -98,3 +98,15 @@ The parent reference repository contains an Apache-2.0 LICENSE. When adapting so
 ## M02b reuse update
 
 Read-only inspection of `live_demo/app.js` camera lifecycle and `sendFrame` informed the target's pending-start guard, generation checks, track cleanup and canvas-based frame extraction. The target implements these standard API patterns independently in `web/app.mjs`/`queue.mjs`, with dedicated regression checks. It replaces the reference's 640 × 480 preference/downscaled base64 WebSocket previews with native-stream-resolution JPEG evidence blobs, a bounded HTTP FIFO and an independent 320-pixel latest-preview slot. Preview data cannot replace acknowledged evidence. Policy intake, ADK agents, avatar, audio and sketch code/dependencies were not added to M02b; voice transport remains deferred to M06. Reference files/credentials are unchanged, and no reference tests ran in this part.
+
+## M03a reuse update
+
+The reference provides no validated metric planar adapter. M03a reuses this project's M02a immutable originals/store and M01 evidence/packet/export boundaries; the normalized homography calculation is independently implemented with standard-library math. No upstream source or dependency was copied, no API key was needed and no reference tests were run. Voice/provider reuse remains M06 work.
+
+## M03b1 reuse update
+
+No reference sparse reconstruction code exists to reuse. The target reuses its own immutable evidence, stage/room contracts and serializer, then invokes optional pinned PyCOLMAP/NumPy in an isolated CPU worker. No reference app source/credentials changed or tests ran. Provider/policy/avatar dependencies remain absent from this part; metric anchor/boundary recovery is deferred to M03b2.
+
+## M03b2 reuse update
+
+Reuses target M03b1 native models/poses, M02 originals and M01 dimension evidence/export. Adds fixed-intrinsic support and independently implemented ray/shape/scale calculations. No upstream reference implementation, API key or additional dependency was copied. No reference tests ran; actual-native synthetic room smoke runs only the target.

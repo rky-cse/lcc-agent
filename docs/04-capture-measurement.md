@@ -1,6 +1,6 @@
 # Capture and metric measurement design
 
-Status: user selected laptop browser on localhost for the first M02b camera smoke; Android remains a later option. No LiDAR; a reference object is allowed but its verified dimensions remain unresolved. Browser capture is implemented; real camera response stayed pending during the smoke and is not reported passed. Book-plane measurement and whole-room geometry remain unimplemented/unproven. See [M02b boundaries](16-m02b-review.md).
+Status: laptop localhost selected; Android remains a later check. No LiDAR; agent asks for reference-object dimensions during calibration. M03a planar spine, M03b1 sparse reconstruction and M03b2 calibrated annotated room dimensions are implemented with synthetic checks. Physical accuracy and actual camera calibration remain unproven. Earlier real camera smoke remained pending. See [M02b](16-m02b-review.md), [M03a](17-m03a-review.md), [M03b1](18-m03b1-review.md) and [M03b2](19-m03b2-review.md).
 
 ## One-sweep capture protocol
 
@@ -45,6 +45,8 @@ Fit a shelf plane robustly from valid depth samples and intersect high-resolutio
 
 ## Room geometry
 
+M03b1 provides optional CPU sparse reconstruction with selected-frame connectivity/quality gates; its coordinates remain in arbitrary units. M03b2 now uses verified fixed pinhole intrinsics, an observed metric reference plus independent check, and developer multiview floor/matching-ceiling corners to measure a confirmed rectangular constant-height room. Synthetic native smoke passed; actual room/device calibration and accuracy remain unverified. Estimated-intrinsic reconstruction cannot produce metric dimensions. How setup obtains actual camera calibration is pending user preference. Sparse connectivity alone cannot establish coverage/accuracy; full areas remain M09.
+
 Detect/fit floor and wall boundaries in the same saved capture. Maintain a closed footprint and measured ceiling heights. Occluded corners, textureless/glossy surfaces and missing ceiling views must remain unresolved rather than be filled from a "normal room" assumption.
 
 For a confirmed rectangle, `floor_area_m2 = length_m × width_m`. With constant height H, gross wall area is `2(length_m + width_m) × H`. For a closed polygon, floor area uses `abs(sum(x_i*y_(i+1) - x_(i+1)*y_i))/2`; gross wall area is perimeter × H only when constant height is supported. Irregular/sloped walls use measured polygons/segments and a height profile. Declare polygon vertex order, coordinate system, closure residual and room-shape interpretation.
@@ -60,6 +62,8 @@ Convert every supported m² value to ft² using `10.7639104167 ft²/m²`, comput
 Three different quantities must not be confused: sum of spine thicknesses, occupied horizontal shelf span and physical usable shelf length. Proposed required `shelf_run_m` is the sum of all physical-book spine thicknesses divided by 100, including horizontal books. Occupied horizontal run and physical shelf length are separate measurements when available. Missing thicknesses mean the full sum is unknown; expose measured subtotal and coverage. Confirm this interpretation before M01/M03.
 
 ## Uncertainty and failure gates
+
+M03a's implemented single-frame reference-object adapter is described in [its review record](17-m03a-review.md). It requires developer annotations, explicit physical dimensions/tolerances, same-plane/lens-validity declarations and independent check observations. The user specified agent-led reference-object intake during calibration; M06 will implement that interaction. Its explored perturbation envelope is sensitivity, not a confidence interval. M03b1/M03b2 are implemented with native synthetic smokes; physical room and spine acceptance remain unverified.
 
 Track reference tolerance, corner localization, reprojection error, depth noise, plane-fit residual, pose drift and boundary visibility. A uniform scale error e changes area by `(1+e)^2-1`; a 5% scale error gives 10.25% area error. Hence accurate room area needs tighter scale control than the 15% spine dimension bar.
 

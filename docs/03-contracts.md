@@ -95,6 +95,8 @@ Money uses Decimal or integer minor units and a documented currency rounding pol
 
 ## Interface proposal
 
+M03a now produces `MeasurementEvidence` for accepted annotated spine dimensions from a verified saved-frame reference. Full typed calibration inputs, diagnostics and structured unavailable errors remain in separate saved measurement JSON files. M01 continues to audit evidence/value agreement; physical geometry validity is the M03a boundary. Bibliographic/price/room unknowns are preserved. See [M03a contract and review](17-m03a-review.md).
+
 Keep backend endpoints small: create/read sweep, upload saved evidence, read state/events, finish capture, obtain packet/report/evidence bundle and explicitly delete local run data. A WebSocket carries audio, conversational preview, turns, validated tool requests and ordered UI events. Evidence bytes should use a separate bounded upload path so they cannot starve audio. These are interface intents; concrete routes and payload schemas are implemented only in their authorized module.
 
 Important planned contract cases: all-unknown packet, partially priced book, identified work with unknown edition, unreadable spine with valid dimensions, signed-book correction, art unanswered/print/original, ordinary unpriced item, mixed currency, missing FX, repeated shelf observation, duplicate callback, stale revision, missing frame, incomplete geometry and stage deadline. Fixtures are explicitly synthetic and never presented as ground-truth results.

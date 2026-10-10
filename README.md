@@ -1,10 +1,10 @@
 # Library Contents Claim Agent
 
-**Status: M02b browser capture implemented for review. Automated/HTTP smoke passed; real laptop camera smoke awaits permission/device response. M03 has not started.**
+**Status: M03b2 calibrated annotated room dimensions implemented for review. Native synthetic smoke passed; real camera calibration and physical accuracy remain unverified. M04 has not started.**
 
 This project will guide a policyholder through one continuous voice-and-camera sweep of a home library, build a live inventory, and produce an evidence-backed contents claim packet. The brief requires book counting and identification, metric measurements, local book and non-book valuations, room areas, and an honest evaluation against independently collected ground truth.
 
-The first module provides typed packet inputs, evidence checks, exact decimal totals and portable JSON/HTML exports. Live capture, identification, actual measurement and price-source adapters are planned in later modules.
+Implemented modules provide typed packets, evidence checks, decimal totals, portable JSON/HTML exports, durable frame storage, browser capture, annotated planar spine measurement and an optional CPU sparse reconstruction adapter. Live voice, automatic detection/identification, metric room geometry and price-source adapters remain planned.
 
 ## Read the design
 
@@ -27,6 +27,9 @@ The first module provides typed packet inputs, evidence checks, exact decimal to
 | [M01 review record](docs/14-m01-review.md) | Implemented boundaries, tests, synthetic smoke and review artifacts |
 | [M02a review record](docs/15-m02a-review.md) | Durable original-frame storage, restart checks and pending real-photo smoke |
 | [M02b review record](docs/16-m02b-review.md) | Browser capture, bounded queues, HTTP lifecycle/restart and camera smoke limitation |
+| [M03a review record](docs/17-m03a-review.md) | Annotated planar calibration, geometry gates, synthetic smoke and physical-test limitation |
+| [M03b1 review record](docs/18-m03b1-review.md) | CPU multiview reconstruction, full selected-view connectivity gates and metric-room limitation |
+| [M03b2 review record](docs/19-m03b2-review.md) | Fixed camera calibration, reference scaling, observed room corners/height and integrity/export checks |
 
 ## Current verification
 
@@ -36,7 +39,35 @@ The user confirmed they tested the reference and instructed us to proceed withou
 
 M01 verification: 29 unit/contract/export tests pass. The synthetic CLI produces a partial packet with saved evidence and an HTML report from the same serialized values. No real capture or price quote is claimed by that fixture.
 
-Current full suite: 61 Python tests plus 9 JavaScript tests pass. A synthetic HTTP smoke uploads two images, closes the sweep, restarts the server and reopens matching metadata/original bytes. Browser UI and pending-permission handling were inspected on localhost. A real camera sweep remains unverified because the in-app browser camera request did not resolve within 20 seconds. Earlier M02a real-photo smoke also remains pending.
+Current full Python suite: 125 tests pass. The unchanged browser module previously passed 9 JavaScript tests. M03b2's actual native calibrated synthetic smoke recovers a 3 × 4 × 2.6 m rectangular room from annotated views and a reference; physical accuracy remains unverified and full areas remain M09 work. M03b1's textured/textureless/timeout smokes passed. M03a's synthetic spine smoke passed. Earlier M02a real-photo/M02b real camera smoke remain pending; the in-app camera request did not resolve within 20 seconds.
+
+## Run M03b2
+
+```powershell
+.\.venv\Scripts\python.exe -B scripts/smoke_room.py --output runs/my-room-smoke
+.\.venv\Scripts\python.exe -B -m library_claim.room_measurement --store runs/my-capture --reconstruction runs/my-reconstruction --input room.json --output runs/my-room-packet --country IN --currency INR --currency-decimal-places 2 --exclusion-basis missing_any_component
+```
+
+Install the optional reconstruction requirements first. The second command needs your calibrated reconstruction, reference/check dimensions and observed corner JSON; see [the exact contract](docs/19-m03b2-review.md). IN/INR are explicit example inputs. An estimated-intrinsic M03b1 model cannot supply metric output. Camera calibration must be independently verified for the device/zoom/resolution; how the app obtains that profile is pending user preference. No model estimate, normal-room assumption or evaluation tape dimensions substitute for the runtime reference. The smoke's calibration/dimensions are synthetic only.
+
+## Run M03b1
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install --only-binary=:all: -r requirements-reconstruction.txt
+.\.venv\Scripts\python.exe -B scripts/smoke_reconstruction.py --output runs/my-reconstruction-smoke
+.\.venv\Scripts\python.exe -B -m library_claim.reconstruction --store runs/my-capture --input reconstruction.json --output runs/my-reconstruction
+```
+
+This optional CPU module requires pinned PyCOLMAP/NumPy; the base app does not. Supply 3–12 saved-frame IDs from one sweep, a fixed-camera/zoom assertion and explicit runtime/quality policy. See [the input and review record](docs/18-m03b1-review.md). The example smoke uses only synthetic images. A connected sparse result is in arbitrary units and cannot produce metric room dimensions yet. Choose fresh output directories.
+
+## Run M03a
+
+```powershell
+.\.venv\Scripts\python.exe -B scripts/smoke_planar.py --output runs/my-planar-smoke
+.\.venv\Scripts\python.exe -B -m library_claim.measurement --store runs/my-capture --input calibration.json --output runs/my-measurement --country IN --currency INR --currency-decimal-places 2 --exclusion-basis missing_any_component
+```
+
+The second command requires your saved-frame calibration/annotation JSON, described in [M03a's record](docs/17-m03a-review.md). Country/currency are explicit example inputs. Do not use synthetic reference dimensions for real evidence. The agent will ask for the actual reference object and independently measured dimensions during calibration; that conversational flow is planned for M06. This part supplies the deterministic calculator and review CLI, without an API key or additional dependencies. A saved, labeled example is in `runs/m03a-planar-smoke/input.json`.
 
 ## Run M01
 
@@ -85,6 +116,6 @@ The path and timestamp above are placeholders to replace, not a statement about 
 
 ## Review workflow
 
-The user controls implementation. The latest "next" authorized M02b after the M02a review stop. Work stops after each small part for review. M03 metric feasibility requires the user's next instruction and actual reference-object dimensions/evidence.
+The user controls implementation. The latest "next" authorized M03b2, now ready for review; work stops here. M04a detection/counting needs the next instruction. Actual reference dimensions are collected from the user during calibration, camera-profile acquisition remains to resolve, and physical acceptance requires independent ground truth.
 
 Start review with [the open decisions](docs/10-decisions-risks.md) and [the module plan](docs/07-implementation-plan.md). The largest unresolved technical choice is how the capture device supplies trustworthy metric scale and room geometry.

@@ -1,0 +1,3 @@
+# Optional CPU-only M03b1 environment. Base application does not import these.
+pycolmap==4.2.1
+numpy==2.5.3

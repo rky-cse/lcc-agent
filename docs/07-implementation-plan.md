@@ -1,6 +1,6 @@
 # Modular implementation and review plan
 
-**M02b is authorized by the user's "next" after M02a's review stop.** M01 contracts/export and M02a storage are implemented. M02b adds the local HTTP server, browser camera capture and bounded queues. Automated and synthetic HTTP/restart smoke passed; real laptop camera access remains unverified because the request stayed pending. M03 onward requires another instruction after review. The user-tested reference baseline is accepted; no further reference tests are required. Each part ends with its actual checks, limitations and a review stop.
+**M03b2 is authorized by the user's latest "next" and implemented for review.** Fixed-intrinsic reconstruction plus developer-annotated reference/corners recovers synthetic room dimensions. Full suite: 125 Python tests passed; native synthetic room smoke passed. Physical acceptance and real camera-calibration acquisition remain open. M04a onward requires another instruction after review. The user-tested reference baseline is accepted; no further reference tests are required.
 
 ## Working agreement
 
@@ -49,11 +49,13 @@ M02a: save one actual high-resolution frame with ID, metadata/hash and manifest;
 
 M02a implementation record: [durable store and CLI](15-m02a-review.md). Synthetic separate-process restart smoke passed; actual original-photo smoke remains pending. The file-import CLI is the current boundary; browser transport and a running HTTP backend are M02b work.
 
-M02b implementation record: [browser and HTTP capture](16-m02b-review.md). 61 Python/9 JavaScript tests and synthetic HTTP/server-restart smoke passed. Laptop localhost was selected by the user. Actual camera request timed out pending permission/device response; no real shelf capture pass is claimed. M03 measurement is not implemented.
+M02b implementation record: [browser and HTTP capture](16-m02b-review.md). At that review, 61 Python/9 JavaScript tests and synthetic HTTP/server-restart smoke passed. Laptop localhost was selected by the user. Actual camera request timed out pending permission/device response; no real shelf capture pass is claimed.
 
 Tests: decode/size rejection, stable IDs, duplicate upload idempotency, restart persistence, acknowledged frame durability, path safety, queue bounds, reset/reconnect generation. Smoke: a short continuous target-phone capture with a shelf and wall; open saved originals/crops and verify actual resolution/timestamps. Inventory recognition is not included yet.
 
 ### M03 — Metric feasibility and spine dimensions
+
+M03a: [planar spine measurement](17-m03a-review.md). Physical ≤15% accuracy is not measured; agent-led intake is M06. M03b1: [CPU sparse connectivity](18-m03b1-review.md). M03b2: [fixed calibration/reference scale/observed room dimensions](19-m03b2-review.md), implemented with synthetic native smoke. The previous estimated focal length was biased despite low residual, so verified fixed intrinsics are required for metric output. Camera-profile acquisition preference and actual-device validation remain pending. Full room areas stay M09; each subpart stops separately.
 
 M03a: implement one selected scale adapter and measure a few held-out spine polygons from evidence. Use explicitly developer-annotated polygons as labeled feasibility inputs at this stage, because automatic detection is not implemented until M04; these annotations are not production detections or an end-to-end accuracy claim. M03b: demonstrate connected room geometry/height from that same capture path. This proves feasibility; complete room report remains M09. Never implement all alternative scale paths speculatively.
 

@@ -1,6 +1,6 @@
 # Decision register and risks
 
-Status as of 10 October 2026: user-tested reference baseline accepted. The latest "next" authorized M02b after M02a. Browser capture is implemented for review; the user selected laptop browser on localhost. Automated/synthetic HTTP smoke passed, but the camera request stayed pending and actual shelf capture remains unverified. M03 onward awaits the user's next instruction. Recommendations are not assumptions about the room or locale.
+Status as of 10 October 2026: latest "next" authorized M03b2. Fixed-intrinsic annotated metric room feasibility passed synthetic native smoke; no physical camera/room accuracy is verified. Camera-profile acquisition preference was asked and remains pending. M04a awaits review/next instruction. M03a physical accuracy and earlier real laptop capture remain unverified. Agent-led reference intake and the user-tested reference baseline remain accepted.
 
 ## Confirmed constraints
 
@@ -13,7 +13,7 @@ Status as of 10 October 2026: user-tested reference baseline accepted. The lates
 | Current workspace has no tracked application files | Initial inspection/git listing |
 | Reference automated baseline now runs in isolated Windows environment | M00: 55 Python tests, pip check and startup/HTTP/session/empty-packet smoke passed; actual voice/camera/provider interaction remains pending |
 | Target capture is an Android phone or laptop browser; no LiDAR | User's device clarification; exact first-test device/browser still pending |
-| A reference object may establish metric scale | User explicitly allowed this; object and verified dimensions still pending |
+| A reference object may establish metric scale; agent asks during calibration | User explicitly allowed this and specified agent-led intake; actual object and verified dimensions are runtime inputs |
 | Use free-tier provider access only; Gemini or Groq available as options | User offers free-version keys; no paid-tier use authorized |
 | Country/currency must be asked at conversation start | Explicit user clarification; locale remains a per-sweep setting |
 | User will arrange the books / physical capture | Explicit user clarification; mandatory room/item counts and independent truth still to confirm when arranged |
@@ -23,7 +23,8 @@ Status as of 10 October 2026: user-tested reference baseline accepted. The lates
 | ID | Question | Blocks |
 | --- | --- | --- |
 | D01 | User selected laptop browser on localhost for M02b smoke. In-app browser UI tested; camera response timed out pending permission/device response. Physical camera make/model remains unknown; Android HTTPS remains a later check | Actual camera smoke; future Android route |
-| D02 | Answered path constraint: no LiDAR, reference object allowed. Exact object/verified dimensions and room-reconstruction feasibility remain pending | M03 planar calibration and same-sweep room geometry |
+| D02 | No LiDAR; reference object allowed. User says the agent asks for the object during calibration. M03a calculator requires explicit dimensions/uncertainties and provenance, same-plane annotations and an independent check point. No physical inputs supplied yet; conversational integration is M06 | Physical calibration smoke, M03b room feasibility and M06 intake |
+| D21 | M03b2 requires independently verified fixed camera intrinsics; estimated focal length was biased in the previous synthetic run. Asked whether setup should guide calibration or accept a supplied profile. Answer pending; no real profile/calibration workflow exists yet | Actual metric room smoke and calibration setup integration |
 | D03 | Answered behavior: agent asks country/currency at the start of each conversation; no country is hardcoded. Actual demo and second-country test inputs can be supplied when running | M00 locale source coverage smoke, M07 two-locale demonstration |
 | D04 | Free tier only. Latest user answer confirms the existing Gemini key is free tier and authorizes its use, superseding replacement instructions. Groq remains an allowed alternative, not an implemented fallback | M06 provider integration |
 | D05 | Partially answered: user will arrange books. Confirm mandatory room/shelf/non-book counts and independent ground truth when ready | M11 physical evaluation; not a blocker for synthetic contract work |
