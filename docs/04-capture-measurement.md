@@ -1,6 +1,6 @@
 # Capture and metric measurement design
 
-Status: user selected Android phone or laptop browser, no LiDAR, and allowed a reference object. The specific object/verified dimensions and first-test device/browser remain unresolved. Book-plane measurement and whole-room geometry are separate feasibility problems; their pass bars remain unproven.
+Status: user selected laptop browser on localhost for the first M02b camera smoke; Android remains a later option. No LiDAR; a reference object is allowed but its verified dimensions remain unresolved. Browser capture is implemented; real camera response stayed pending during the smoke and is not reported passed. Book-plane measurement and whole-room geometry remain unimplemented/unproven. See [M02b boundaries](16-m02b-review.md).
 
 ## One-sweep capture protocol
 
@@ -12,7 +12,7 @@ During the pass, capture a legible front view and overlapping translated views a
 
 Save high-resolution keyframes with original coordinates before recognition. Frame selection considers sharpness, glare, coverage novelty and overlap. Numerical thresholds and keyframe rate are configured only after the actual device test; no guessed blur score guarantees readability. A keyframe that will be cited must be acknowledged only after durable storage. Preserve video evidence if required by the selected reconstruction path and available storage.
 
-Ordinary mobile camera access requires a secure browser context; PC `localhost` does not make a phone's LAN HTTP address secure. M00 must resolve trusted HTTPS/local forwarding for the target phone without turning this into a deployment project. [MDN getUserMedia documentation](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia).
+Ordinary mobile camera access requires a secure browser context; PC `localhost` does not make a phone's LAN HTTP address secure. The first target is laptop localhost. Resolve trusted HTTPS/local forwarding when Android testing is requested, without making it a prerequisite for laptop implementation. [MDN getUserMedia documentation](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia).
 
 ## Scale alternatives and early gate
 

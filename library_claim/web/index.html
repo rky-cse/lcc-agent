@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Library capture</title><link rel="stylesheet" href="/assets/style.css"></head>
+<body><main>
+<h1>Library capture</h1><p id="mode" hidden>Synthetic test mode: these frames will not be labeled as real capture.</p><p>Move slowly across each shelf, then show the room corners, walls and floor. Saved frames will appear below.</p>
+<form id="settings">
+<label>Country code <input id="country" required maxlength="2" pattern="[A-Z]{2}" placeholder="Two letters" autocomplete="off"></label>
+<label>Currency code <input id="currency" required maxlength="3" pattern="[A-Z]{3}" placeholder="Three letters" autocomplete="off"></label>
+<label>Camera <select id="camera"><option value="">Default camera</option></select></label>
+</form>
+<div class="controls"><button id="start">Start camera</button><button id="stop" disabled>Pause camera</button>
+<button id="retry" disabled>Retry uploads</button><button id="end" disabled>End sweep</button>
+<button id="discard" hidden>Discard unsent frames and end</button></div>
+<p id="status" role="status" aria-live="polite">Enter country and currency to start.</p>
+<video id="video" autoplay muted playsinline></video>
+<div class="metrics"><p id="resolution">Camera off</p><p id="counts">0 saved · 0 queued · 0 capture gaps</p><p id="quality">Quality hints will appear after a frame is saved.</p></div>
+<p id="hint">Blur and glare hints are experimental. They do not prove that book text is readable.</p>
+<a id="manifest" hidden>Open capture manifest</a>
+<h2>Saved evidence</h2><ol id="frames"></ol>
+<p>This step saves camera evidence. Book identification, measurements, valuation and live voice guidance come later.</p>
+</main><script type="module" src="/assets/app.mjs"></script></body></html>

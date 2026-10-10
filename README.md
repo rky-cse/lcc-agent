@@ -1,6 +1,6 @@
 # Library Contents Claim Agent
 
-**Status: M01 implemented and awaiting review. M02 and later modules have not started.**
+**Status: M02b browser capture implemented for review. Automated/HTTP smoke passed; real laptop camera smoke awaits permission/device response. M03 has not started.**
 
 This project will guide a policyholder through one continuous voice-and-camera sweep of a home library, build a live inventory, and produce an evidence-backed contents claim packet. The brief requires book counting and identification, metric measurements, local book and non-book valuations, room areas, and an honest evaluation against independently collected ground truth.
 
@@ -25,6 +25,8 @@ The first module provides typed packet inputs, evidence checks, exact decimal to
 | [Failure log template](docs/12-failure-log.md) | Actual failures to record after implementation and real capture |
 | [M00 preflight results](docs/13-m00-preflight.md) | Isolated reference environment, 55 Python tests, startup/endpoint smoke and remaining live prerequisites |
 | [M01 review record](docs/14-m01-review.md) | Implemented boundaries, tests, synthetic smoke and review artifacts |
+| [M02a review record](docs/15-m02a-review.md) | Durable original-frame storage, restart checks and pending real-photo smoke |
+| [M02b review record](docs/16-m02b-review.md) | Browser capture, bounded queues, HTTP lifecycle/restart and camera smoke limitation |
 
 ## Current verification
 
@@ -33,6 +35,8 @@ Reference inspected at `E:\awesome_llm_apps\awesome-llm-apps\voice_ai_agents\ins
 The user confirmed they tested the reference and instructed us to proceed without further reference testing. That baseline is accepted. Historical checks are recorded in M00; target phone/camera behavior will be verified in the capture module.
 
 M01 verification: 29 unit/contract/export tests pass. The synthetic CLI produces a partial packet with saved evidence and an HTML report from the same serialized values. No real capture or price quote is claimed by that fixture.
+
+Current full suite: 61 Python tests plus 9 JavaScript tests pass. A synthetic HTTP smoke uploads two images, closes the sweep, restarts the server and reopens matching metadata/original bytes. Browser UI and pending-permission handling were inspected on localhost. A real camera sweep remains unverified because the in-app browser camera request did not resolve within 20 seconds. Earlier M02a real-photo smoke also remains pending.
 
 ## Run M01
 
@@ -45,10 +49,42 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -B -m library_claim --country IN --currency INR --currency-decimal-places 2 --exclusion-basis missing_any_component --shelf-run-basis sum_spine_thickness --output runs/my-m01-review
 ```
 
-IN/INR are explicit synthetic example inputs, not application defaults. Choose a fresh output directory each time. Open its `report.html`; JSON, frames and quotes remain usable after temporary fixture cleanup. The current workspace checks used `.local/reference-env/Scripts/python.exe`; only Pydantic is required by M01. No API key is needed for this module.
+IN/INR are explicit synthetic example inputs, not application defaults. Choose a fresh output directory each time. Open its `report.html`; JSON, frames and quotes remain usable after temporary fixture cleanup. Current workspace checks used `.local/reference-env/Scripts/python.exe`. M01 uses Pydantic; M02a adds pinned Pillow. No API key is needed for either module.
+
+## Run M02b
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+.\.venv\Scripts\python.exe -B -m unittest discover -s tests
+node --test tests/capture_queue.test.mjs
+.\.venv\Scripts\python.exe -B scripts/smoke_capture_http.py --output runs/my-http-smoke
+.\.venv\Scripts\python.exe -B -m library_claim.server --store runs/my-camera --port 4180
+```
+
+Open [the capture page](http://127.0.0.1:4180/), enter country/currency, allow camera access and show a shelf/room briefly. Use Pause to stop the camera while uploads continue; End sweep drains uploads before closing. Network failures retain queued frames and expose Retry uploads. A full queue omits new selections with an explicit gap count. Saved evidence links reopen exact uploaded bytes; the manifest remains available after restart with the same store directory. Restart the server with that directory to recover state.
+
+M02b requires FastAPI/Uvicorn; HTTPX is test/smoke-only. `--synthetic` labels incoming images for fixture tests. Leave it off for real camera use. The default server binds only localhost and runs one worker. Actual Android trusted-HTTPS access is a future device check; no phone access was tested. No Gemini/Groq key is needed in M02b.
+
+## Run M02a
+
+Install the updated `requirements.txt` in your environment. Run the synthetic restart check:
+
+```powershell
+.\.venv\Scripts\python.exe -B scripts/smoke_capture.py --output runs/my-m02a-smoke
+```
+
+For a real original JPEG/PNG, use the import CLI with your file, sweep/upload IDs, media sequence and known capture timestamp (ISO 8601 with timezone):
+
+```powershell
+.\.venv\Scripts\python.exe -B -m library_claim.capture --store runs/my-capture ingest --file "C:\path\original.jpg" --sweep-id my-sweep --upload-id original-1 --captured-at "2026-10-10T15:00:00+05:30" --media-sequence 0
+.\.venv\Scripts\python.exe -B -m library_claim.capture --store runs/my-capture reopen --frame-id FRAME_ID_FROM_IMPORT
+.\.venv\Scripts\python.exe -B -m library_claim.capture --store runs/my-capture manifest --sweep-id my-sweep
+```
+
+The path and timestamp above are placeholders to replace, not a statement about an actual photo. Reuse an upload ID only for an exact retry; a new physical capture gets a new upload ID. Original bytes remain under `frames/`; SQLite is the authoritative manifest, and per-sweep JSON snapshots are available for inspection. Default acceptance limits and crash boundaries are in the M02a record.
 
 ## Review workflow
 
-The user controls implementation. M01 was authorized by the instruction to begin implementation one part at a time. Work stops after this module's tests and smoke for review. Fixes or progression to M02a require the user's next instruction.
+The user controls implementation. The latest "next" authorized M02b after the M02a review stop. Work stops after each small part for review. M03 metric feasibility requires the user's next instruction and actual reference-object dimensions/evidence.
 
 Start review with [the open decisions](docs/10-decisions-risks.md) and [the module plan](docs/07-implementation-plan.md). The largest unresolved technical choice is how the capture device supplies trustworthy metric scale and room geometry.

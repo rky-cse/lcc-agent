@@ -1,6 +1,6 @@
 # Modular implementation and review plan
 
-**M01 is authorized by the user's instruction to begin implementation one part at a time.** The user has tested the reference and instructed us to stop testing it. That baseline is accepted; unresolved device, scale and physical-source details move to the affected future modules. M01 implements only contracts, evidence eligibility, deterministic totals and a synthetic JSON/HTML export. M02 onward requires another instruction after review. Each authorized module ends with relevant tests, a smoke demonstration and a stop for review.
+**M02b is authorized by the user's "next" after M02a's review stop.** M01 contracts/export and M02a storage are implemented. M02b adds the local HTTP server, browser camera capture and bounded queues. Automated and synthetic HTTP/restart smoke passed; real laptop camera access remains unverified because the request stayed pending. M03 onward requires another instruction after review. The user-tested reference baseline is accepted; no further reference tests are required. Each part ends with its actual checks, limitations and a review stop.
 
 ## Working agreement
 
@@ -46,6 +46,10 @@ Meaningful tests: unknown values preserve keys; true zero remains zero; duplicat
 ### M02 — Capture and evidence
 
 M02a: save one actual high-resolution frame with ID, metadata/hash and manifest; reopen it after backend restart. M02b: continuous camera keyframes, separate preview/upload queues, basic blur/glare signals, ordered UI state and capture start/end. Each subpart is separately reviewable.
+
+M02a implementation record: [durable store and CLI](15-m02a-review.md). Synthetic separate-process restart smoke passed; actual original-photo smoke remains pending. The file-import CLI is the current boundary; browser transport and a running HTTP backend are M02b work.
+
+M02b implementation record: [browser and HTTP capture](16-m02b-review.md). 61 Python/9 JavaScript tests and synthetic HTTP/server-restart smoke passed. Laptop localhost was selected by the user. Actual camera request timed out pending permission/device response; no real shelf capture pass is claimed. M03 measurement is not implemented.
 
 Tests: decode/size rejection, stable IDs, duplicate upload idempotency, restart persistence, acknowledged frame durability, path safety, queue bounds, reset/reconnect generation. Smoke: a short continuous target-phone capture with a shelf and wall; open saved originals/crops and verify actual resolution/timestamps. Inventory recognition is not included yet.
 

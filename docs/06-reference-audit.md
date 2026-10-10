@@ -94,3 +94,7 @@ Add cases for abrupt disconnect during correction, revision arriving during stat
 | `schemas.py` | `B5D0ADE6B0118083026EFBA5A0B6746B5F2F2377AF5E51CB5A94D8BBE9C7D609` |
 
 The parent reference repository contains an Apache-2.0 LICENSE. When adapting source, preserve its license/attribution and modification notices, check any applicable NOTICE and third-party component terms, and disclose used models/libraries. This step did not copy application source or reference credentials.
+
+## M02b reuse update
+
+Read-only inspection of `live_demo/app.js` camera lifecycle and `sendFrame` informed the target's pending-start guard, generation checks, track cleanup and canvas-based frame extraction. The target implements these standard API patterns independently in `web/app.mjs`/`queue.mjs`, with dedicated regression checks. It replaces the reference's 640 × 480 preference/downscaled base64 WebSocket previews with native-stream-resolution JPEG evidence blobs, a bounded HTTP FIFO and an independent 320-pixel latest-preview slot. Preview data cannot replace acknowledged evidence. Policy intake, ADK agents, avatar, audio and sketch code/dependencies were not added to M02b; voice transport remains deferred to M06. Reference files/credentials are unchanged, and no reference tests ran in this part.

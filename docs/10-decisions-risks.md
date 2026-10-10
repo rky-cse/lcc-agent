@@ -1,6 +1,6 @@
 # Decision register and risks
 
-Status as of 10 October 2026: user-tested reference baseline accepted. The user instructed us to stop testing it and begin implementation one part at a time. M01 is implemented for review. M02 onward remains pending the user's next instruction. Recommendations are not assumptions about the physical room, device or locale.
+Status as of 10 October 2026: user-tested reference baseline accepted. The latest "next" authorized M02b after M02a. Browser capture is implemented for review; the user selected laptop browser on localhost. Automated/synthetic HTTP smoke passed, but the camera request stayed pending and actual shelf capture remains unverified. M03 onward awaits the user's next instruction. Recommendations are not assumptions about the room or locale.
 
 ## Confirmed constraints
 
@@ -22,7 +22,7 @@ Status as of 10 October 2026: user-tested reference baseline accepted. The user 
 
 | ID | Question | Blocks |
 | --- | --- | --- |
-| D01 | Partially answered: Android phone or laptop browser. Exact first-test device/model/browser remains pending; browser is the target, not native LiDAR capture | M00/M02 actual-device smoke |
+| D01 | User selected laptop browser on localhost for M02b smoke. In-app browser UI tested; camera response timed out pending permission/device response. Physical camera make/model remains unknown; Android HTTPS remains a later check | Actual camera smoke; future Android route |
 | D02 | Answered path constraint: no LiDAR, reference object allowed. Exact object/verified dimensions and room-reconstruction feasibility remain pending | M03 planar calibration and same-sweep room geometry |
 | D03 | Answered behavior: agent asks country/currency at the start of each conversation; no country is hardcoded. Actual demo and second-country test inputs can be supplied when running | M00 locale source coverage smoke, M07 two-locale demonstration |
 | D04 | Free tier only. Latest user answer confirms the existing Gemini key is free tier and authorizes its use, superseding replacement instructions. Groq remains an allowed alternative, not an implemented fallback | M06 provider integration |
