@@ -1,32 +1,37 @@
 # Decision register and risks
 
-Status as of 10 October 2026: documentation exists; implementation is unauthorized. A recommendation below is not an assumption about the user's environment or an approved decision. User answers update this register before affected work starts.
+Status as of 10 October 2026: user-tested reference baseline accepted. The user instructed us to stop testing it and begin implementation one part at a time. M01 is implemented for review. M02 onward remains pending the user's next instruction. Recommendations are not assumptions about the physical room, device or locale.
 
 ## Confirmed constraints
 
 | Decision | Evidence |
 | --- | --- |
-| Documentation only now | Explicit user instruction |
+| Initial step was documentation only; M01 implementation now authorized | Initial instruction followed by explicit request to implement one part at a time |
 | Implement one small part, test/smoke test, stop for review | Explicit user instruction; next part needs next instruction |
 | Reference source path | Explicit user-provided local path |
 | Assignment requirements/pass bars | Attached brief preserved in docs |
 | Current workspace has no tracked application files | Initial inspection/git listing |
-| Current reference backend is not successfully run by this session | Startup failed: missing uvicorn; JS tests pass separately |
+| Reference automated baseline now runs in isolated Windows environment | M00: 55 Python tests, pip check and startup/HTTP/session/empty-packet smoke passed; actual voice/camera/provider interaction remains pending |
+| Target capture is an Android phone or laptop browser; no LiDAR | User's device clarification; exact first-test device/browser still pending |
+| A reference object may establish metric scale | User explicitly allowed this; object and verified dimensions still pending |
+| Use free-tier provider access only; Gemini or Groq available as options | User offers free-version keys; no paid-tier use authorized |
+| Country/currency must be asked at conversation start | Explicit user clarification; locale remains a per-sweep setting |
+| User will arrange the books / physical capture | Explicit user clarification; mandatory room/item counts and independent truth still to confirm when arranged |
 
 ## Blocking questions already sent to user
 
 | ID | Question | Blocks |
 | --- | --- | --- |
-| D01 | Exact capture phone/device, OS/browser; expected unseen-room device; is native capture acceptable? | M00/M02/M03 runtime/geometry choice |
-| D02 | Available LiDAR/depth, visible measured reference object or verified shelf dimensions; may references be placed before pass? | M03 metric path; truthful room measurement promise |
-| D03 | Main country/currency and second country/currency | M00 source coverage, M07 pricing |
-| D04 | Provider/API access and permitted spend limit | M00 live baseline, model choice, source adapters |
-| D05 | Available ≥60-book/2-shelf/8-item enclosed room and person collecting independent truth | M00/M11 full evaluation |
-| D06 | Brief received time/deadline and successful prior reference run, if any | Schedule and reference prerequisite |
+| D01 | Partially answered: Android phone or laptop browser. Exact first-test device/model/browser remains pending; browser is the target, not native LiDAR capture | M00/M02 actual-device smoke |
+| D02 | Answered path constraint: no LiDAR, reference object allowed. Exact object/verified dimensions and room-reconstruction feasibility remain pending | M03 planar calibration and same-sweep room geometry |
+| D03 | Answered behavior: agent asks country/currency at the start of each conversation; no country is hardcoded. Actual demo and second-country test inputs can be supplied when running | M00 locale source coverage smoke, M07 two-locale demonstration |
+| D04 | Free tier only. Latest user answer confirms the existing Gemini key is free tier and authorizes its use, superseding replacement instructions. Groq remains an allowed alternative, not an implemented fallback | M06 provider integration |
+| D05 | Partially answered: user will arrange books. Confirm mandatory room/shelf/non-book counts and independent ground truth when ready | M11 physical evaluation; not a blocker for synthetic contract work |
+| D06 | Latest user says the reference is already tested and no further reference testing is needed. Baseline accepted. Actual submission deadline remains unknown | Calendar schedule; target device checks in future modules |
 | D07 | Gross or net wall area; shelving union interpretation; meaning of shelf run | M01/M03/M09 totals/geometry contracts |
 | D08 | Appraisal value threshold; tax/delivery policy | M07 published valuation |
 
-These questions are pending, not answered by elapsed time. Work on independent documentation can finish while they remain open. No dependent implementation may silently assume answers.
+Answered constraints above supersede the original unanswered questions. Remaining details are pending, not answered by elapsed time. Work on independent tasks can continue; no dependent implementation may silently assume missing facts. A dynamic locale requirement does not remove the need for actual locale inputs during source/evaluation tests.
 
 ## Further choices to settle before their module
 

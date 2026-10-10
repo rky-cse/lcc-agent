@@ -1,0 +1,15 @@
+# Local reference preflight environment and diagnostics.
+.local/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Credentials and real capture artifacts must stay out of Git.
+.env
+.env.*
+!.env.example
+runs/
+build/
+dist/
+*.egg-info/

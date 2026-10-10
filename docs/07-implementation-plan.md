@@ -1,6 +1,6 @@
 # Modular implementation and review plan
 
-**No module is currently authorized for implementation.** This is the proposed sequence. The user may reorder or split modules after reviewing the design. Each authorized module ends with relevant tests, a smoke demonstration and a stop for review. Passing a module does not authorize the next one.
+**M01 is authorized by the user's instruction to begin implementation one part at a time.** The user has tested the reference and instructed us to stop testing it. That baseline is accepted; unresolved device, scale and physical-source details move to the affected future modules. M01 implements only contracts, evidence eligibility, deterministic totals and a synthetic JSON/HTML export. M02 onward requires another instruction after review. Each authorized module ends with relevant tests, a smoke demonstration and a stop for review.
 
 ## Working agreement
 
@@ -30,6 +30,8 @@ Baseline total: 19.5 engineering hours. It is a budget allocation, not a guarant
 ## Module acceptance cards
 
 ### M00 — Existing app and prerequisites
+
+Current disposition: user-tested reference baseline accepted. The original preflight checklist below is historical planning, not a prerequisite blocking M01. Actual target capture and measurement validation remain in M02/M03; real source coverage remains in M07.
 
 Outcome: run the existing reference end to end before new app code. Select/verify an appropriate existing or newly authorized dependency environment without touching reference credentials/source. Confirm phone/OS/browser, secure camera access, provider model access, permitted cost, primary/second locale, candidate physical new/used sources and metric hardware/anchor path. Arrange independently collected truth before tuning.
 

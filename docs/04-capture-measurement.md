@@ -1,6 +1,6 @@
 # Capture and metric measurement design
 
-Status: scale and device decisions unresolved. Book-plane measurement and whole-room geometry are separate feasibility problems. We cannot promise the pass bars from an unspecified phone's ordinary camera.
+Status: user selected Android phone or laptop browser, no LiDAR, and allowed a reference object. The specific object/verified dimensions and first-test device/browser remain unresolved. Book-plane measurement and whole-room geometry are separate feasibility problems; their pass bars remain unproven.
 
 ## One-sweep capture protocol
 
@@ -15,6 +15,8 @@ Save high-resolution keyframes with original coordinates before recognition. Fra
 Ordinary mobile camera access requires a secure browser context; PC `localhost` does not make a phone's LAN HTTP address secure. M00 must resolve trusted HTTPS/local forwarding for the target phone without turning this into a deployment project. [MDN getUserMedia documentation](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia).
 
 ## Scale alternatives and early gate
+
+For the selected browser/no-LiDAR path, use a known reference on the shelf plane for spine calibration. Whole-room metrics require a connected multiview reconstruction from translated, overlapping views in that same sweep, scaled by an evidenced reference. This is the high-risk M03 experiment, not a promise of successful room measurement. Depth alternatives below remain recorded for design history but are not the implementation path. A reference object must have verified physical dimensions; do not assume the dimensions of an arbitrary object, paper size or unverified printout.
 
 | Path | Evidence required | What it can support | Feasibility decision |
 | --- | --- | --- | --- |

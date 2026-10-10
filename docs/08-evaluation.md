@@ -78,6 +78,7 @@ Rank actual errors by impact on count/value/area and claim trust. Select three w
 | Count, title, dimensions, prices, non-books, floor/wall areas, time to packet | Not measured: implementation/capture not authorized yet |
 | Reference JavaScript regressions | 18 passed |
 | Reference avatar-player tests | 7 passed; avatar omitted from target core |
-| Reference Python/live smoke | Not verified: backend startup blocked by missing dependencies |
+| Reference Python/server smoke | 55 Python tests passed; startup/HTTP/session/empty-packet smoke passed in M00 |
+| Reference real voice/camera/provider smoke | Not verified: actual device/provider test still pending |
 
 Reference test passes must never be entered as assignment accuracy results.

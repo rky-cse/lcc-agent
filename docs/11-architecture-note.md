@@ -1,6 +1,6 @@
 # One-page architecture note — proposed design
 
-**Planning version, 10 October 2026.** No application is implemented; exact providers, metric path and locale sources await confirmation. Final submission replaces proposals with actually used components and measured limitations.
+**Planning version, 10 October 2026.** No target application is implemented. User constraints: Android/laptop browser, reference-object scale without LiDAR, free-tier Gemini/Groq and locale asked at conversation start. Exact geometry, provider access and source adapters await proof. Final submission names actually used components and measured limitations.
 
 ```mermaid
 flowchart LR
@@ -26,7 +26,7 @@ flowchart LR
 | Live coach | Reuse reference voice/camera WebSocket and interruption logic; Gemini Live candidate pending actual account/device test. Gives capture guidance and extracts explicit corrections; never authors prices/totals/dimensions. |
 | Detection / OCR | Selected pretrained detector/OCR/vision adapter after shelf test. Stable physical tracks first, visible text second; unreadable books stay counted/unidentified. Duplicate copies remain distinct. |
 | Bibliographic match | Open Library / Google Books candidate metadata. Accept supported work; edition/ISBN only with matching evidence. |
-| Metric scale | Choose supported synchronized depth/pose or known planar reference plus valid geometry. Shelf homography supports that shelf plane; room needs connected metric footprint and height. Exact device/path unresolved. |
+| Metric scale | Known reference-object shelf homography for spines; browser multiview reconstruction is the early room-feasibility experiment. No LiDAR. Room needs connected metric footprint and height from the same sweep; result unproven. |
 | Valuation | Local physical new/used sources selected after countries/access confirmed; foreign quote only with dated FX and converted label. No model-memory prices; rare/signed/art gates stop auto-pricing. |
 | Packet | Typed results, saved frame/quote/calibration manifest, deterministic Decimal totals, review queue and report rendered from frozen JSON. |
 

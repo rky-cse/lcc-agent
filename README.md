@@ -1,10 +1,10 @@
 # Library Contents Claim Agent
 
-**Status: design and planning only. No application implementation has been authorized or added.**
+**Status: M01 implemented and awaiting review. M02 and later modules have not started.**
 
 This project will guide a policyholder through one continuous voice-and-camera sweep of a home library, build a live inventory, and produce an evidence-backed contents claim packet. The brief requires book counting and identification, metric measurements, local book and non-book valuations, room areas, and an honest evaluation against independently collected ground truth.
 
-The current deliverable is the documentation below. Recommendations are proposals for review; unresolved choices are explicit. A feature description is not a claim that it already works.
+The first module provides typed packet inputs, evidence checks, exact decimal totals and portable JSON/HTML exports. Live capture, identification, actual measurement and price-source adapters are planned in later modules.
 
 ## Read the design
 
@@ -23,17 +23,32 @@ The current deliverable is the documentation below. Recommendations are proposal
 | [Decisions and risks](docs/10-decisions-risks.md) | Questions awaiting answers, proposed decisions and feasibility risks |
 | [One-page architecture note](docs/11-architecture-note.md) | Concise proposed design for the eventual submission |
 | [Failure log template](docs/12-failure-log.md) | Actual failures to record after implementation and real capture |
+| [M00 preflight results](docs/13-m00-preflight.md) | Isolated reference environment, 55 Python tests, startup/endpoint smoke and remaining live prerequisites |
+| [M01 review record](docs/14-m01-review.md) | Implemented boundaries, tests, synthetic smoke and review artifacts |
 
 ## Current verification
 
 Reference inspected at `E:\awesome_llm_apps\awesome-llm-apps\voice_ai_agents\insurance_claim_live_agent_team`, repository revision `4bf51ab704fb2c5b3803cd5191b30d7dcdb51dc2`. On 10 October 2026, its existing JavaScript tests passed: 18 client regressions and 7 avatar-player tests. They use mocks and do not validate real camera, microphone, model access or measurement accuracy.
 
-Reference backend startup was attempted and failed before startup: `C:\Python313\python.exe: No module named uvicorn`. The current Python environment also lacks FastAPI, Pydantic, Google SDK packages and HTTPX. The reference's supplied `venv/pyvenv.cfg` points to Linux Python 3.12.3 and cannot be treated as a Windows environment. No dependencies were installed and no provider requests were sent. A successful reference live run remains a mandatory preflight before new application code, as required by the brief.
+The user confirmed they tested the reference and instructed us to proceed without further reference testing. That baseline is accepted. Historical checks are recorded in M00; target phone/camera behavior will be verified in the capture module.
 
-Documentation validation passed: 14 Markdown files, 18 local links, all 59 distinct required packet keys and 12 module acceptance cards checked. The original brief body is preserved, including its original whitespace. Independent read-only reviews checked reference reuse, measurement feasibility and pricing/contracts; identified consistency gaps were corrected. The workspace contains documentation only.
+M01 verification: 29 unit/contract/export tests pass. The synthetic CLI produces a partial packet with saved evidence and an HTML report from the same serialized values. No real capture or price quote is claimed by that fixture.
+
+## Run M01
+
+Requires Python 3.12+ and the pinned Pydantic dependency. From the repository root:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -B -m unittest discover -s tests -v
+.\.venv\Scripts\python.exe -B -m library_claim --country IN --currency INR --currency-decimal-places 2 --exclusion-basis missing_any_component --shelf-run-basis sum_spine_thickness --output runs/my-m01-review
+```
+
+IN/INR are explicit synthetic example inputs, not application defaults. Choose a fresh output directory each time. Open its `report.html`; JSON, frames and quotes remain usable after temporary fixture cleanup. The current workspace checks used `.local/reference-env/Scripts/python.exe`; only Pydantic is required by M01. No API key is needed for this module.
 
 ## Review workflow
 
-The user controls implementation. After documentation review and answers to the blocking questions, the user must explicitly authorize a named module. Work will then implement only that module, run its relevant checks, show its concrete result and stop for review. Fixes and progression to another module require the user's next instruction. Documentation approval alone does not authorize implementation.
+The user controls implementation. M01 was authorized by the instruction to begin implementation one part at a time. Work stops after this module's tests and smoke for review. Fixes or progression to M02a require the user's next instruction.
 
 Start review with [the open decisions](docs/10-decisions-risks.md) and [the module plan](docs/07-implementation-plan.md). The largest unresolved technical choice is how the capture device supplies trustworthy metric scale and room geometry.

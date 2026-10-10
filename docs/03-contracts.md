@@ -1,6 +1,6 @@
 # Contracts, evidence and claim packet
 
-Status: proposed semantics for review. This document is a contract specification, not executable schemas or application code. The original required keys are preserved below; nullable types and unresolved status handling need confirmation before M01.
+Status: M01 implements the packet input models, stage envelope, deterministic totals and minimal export in `library_claim/`. The richer producer contracts below remain the architecture for later modules. See [M01 review](14-m01-review.md) for exact implemented boundaries. Reporting conventions are explicit packet policy inputs; the synthetic example does not select the user's country or production geometry policy.
 
 ## Common rules
 

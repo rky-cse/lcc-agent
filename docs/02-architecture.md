@@ -1,6 +1,6 @@
 # Proposed architecture
 
-Status: recommended boundaries for review, not an implemented system. Device, metric scale path, provider/model IDs, price sources and report conventions await answers in [decisions](10-decisions-risks.md).
+Status: recommended boundaries for review, not an implemented system. User constraints now specify Android/laptop browser capture without LiDAR, a reference object for scale, free-tier Gemini/Groq access, and country/currency asked at session start. Exact device, reference geometry, provider/model access, price sources and report conventions remain in [decisions](10-decisions-risks.md).
 
 ## Pipeline
 
@@ -41,7 +41,7 @@ Live conversation guides capture; it does not own prices, dimensions, totals or 
 
 Retain Python/FastAPI and browser JavaScript to maximize reference reuse. Use one server process, bounded asynchronous queues, provider adapters, a local file evidence directory and a small transactional database (SQLite proposed). Avoid distributed services for this timebox. Pydantic/schema validation is proposed at every boundary. Remove the ADK policy graph unless inspection of actual selected SDK needs establishes a reason to keep it; ordinary workers are enough for these deterministic dependencies.
 
-These are recommendations, not installed dependencies or selected versions. M00 verifies an available Windows runtime and provider access; M01 chooses explicit contract versions; M03 resolves geometry feasibility. A native capture companion would change the runtime only if the chosen depth path requires it.
+These are recommendations, not the selected target dependency set. M00 has verified a separate reference environment on Windows; provider access remains untested. M01 chooses explicit contract versions; M03 resolves reference-object/monocular geometry feasibility. Native depth/LiDAR is outside the selected capture path.
 
 Two image paths originate from the same active camera track: a small, rate-limited stream for live conversation and independently saved higher-resolution keyframes/crops for inventory/measurement. Do not try to read every thin spine from the reference's 512-pixel live image. Neither path may substitute generated images for evidence. Depth, intrinsics and camera pose are additional synchronized evidence if actually available.
 

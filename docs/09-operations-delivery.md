@@ -1,6 +1,6 @@
 # Operation, observability and delivery plan
 
-Status: future operational specification. No environment, app, credentials, deployment or submission has been created.
+Status: future target operational specification. M00 has created a separate local reference environment and started the existing app; the target application, deployment and submission have not been created.
 
 ## Setup and dependency policy
 
@@ -11,6 +11,8 @@ Proposed runtime: Python, FastAPI, typed schemas, an available image/geometry li
 Future `.env.example` contains placeholders only. Suggested settings: live/vision/OCR provider model IDs, provider key placeholders, source adapter keys where needed, default locale only if explicitly chosen, source rate/freshness policy, data directory, queue limits, calibration mode, appraisal thresholds, stage/end deadline and fees/condition policy. Validate configuration at startup and show actionable missing capability messages. Never commit `.env`, model keys, provider session tokens or real private capture by accident.
 
 A phone demo needs trusted camera/microphone access to the local backend. Select a minimal secure development access method on the actual device during M00; document exact steps and limitations. Also test HTTP and WebSocket host/client/origin handling: the reference's loopback-only guard rejects a direct PC LAN connection. Deliberately configure/adapt that guard for the authorized development route rather than removing access checks broadly. This does not justify building authentication/deployment infrastructure. Keep API keys server-side and session ownership lightweight. Browser permission prompts remain required by the platform.
+
+The user permits free-tier Gemini or Groq access only. Confirm the intended key/account before real provider requests; a configured key does not prove a free account or available quota. Do not enable billing, paid-tier fallback, subscriptions or quota workarounds. On quota exhaustion, show a typed unavailable/rate-limit result and respect the provider's retry window. Free-tier rate limits must be measured on the actual account rather than hardcoded from a plan name. Google currently lists the reference's Gemini Live model as free-tier eligible; Groq publishes model-specific free-plan limits. These are eligibility references, not proof of this account's access. [Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing?hl=en), [Groq rate limits](https://console.groq.com/docs/rate-limits).
 
 ## Evidence layout proposal
 

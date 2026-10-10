@@ -8,7 +8,9 @@ FastAPI backend, browser camera/microphone transport, Gemini live conversation, 
 
 The audit distinguishes observed source behavior from executed results. Source analysis below identifies design limitations; it is not a claim that every race was reproduced at runtime.
 
-## Execution record
+## Initial documentation-stage execution record
+
+The following table preserves the initial results. After the user's "next" instruction, M00 installed an isolated environment, passed 55 Python tests and dependency checks, and passed startup/HTTP/session/empty-packet smoke checks. Real voice/camera/provider behavior remains pending. [Current M00 verification](13-m00-preflight.md).
 
 | Check | Actual outcome |
 | --- | --- |
