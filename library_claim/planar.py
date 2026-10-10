@@ -125,9 +125,15 @@ def normalize(points):
 
 
 def fit_homography(source, width_cm, height_cm):
+    return fit_quad_transform(source, [(0,0),(width_cm,0),(width_cm,height_cm),(0,height_cm)])
+
+
+def fit_quad_transform(source, destination):
+    """Map four ordered convex correspondences; caller validates the domain."""
+    if len(source) != 4 or len(destination) != 4 or not convex(destination):
+        raise ValueError("destination must be a convex ordered quadrilateral")
     if not convex(source):
         raise ValueError("reference corners must be a convex ordered quadrilateral")
-    destination = [(0,0),(width_cm,0),(width_cm,height_cm),(0,height_cm)]
     src, ts, _ = normalize(source)
     dst, _, inverse_td = normalize(destination)
     matrix = []

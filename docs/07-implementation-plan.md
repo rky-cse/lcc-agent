@@ -1,6 +1,6 @@
 # Modular implementation and review plan
 
-**M03b2 is authorized by the user's latest "next" and implemented for review.** Fixed-intrinsic reconstruction plus developer-annotated reference/corners recovers synthetic room dimensions. Full suite: 125 Python tests passed; native synthetic room smoke passed. Physical acceptance and real camera-calibration acquisition remain open. M04a onward requires another instruction after review. The user-tested reference baseline is accepted; no further reference tests are required.
+**Current review boundary: M05b3 owned-copy edition review**, implemented under the user's latest "next". Full suite: 257 Python tests passed; actual synthetic CLI/local HTTP acceptance, exact retry, restart and edition clearing passed. One public edition lookup matched work/ISBN but omitted physical format, so acceptance stayed blocked; cached replay made zero calls. Earlier work review/capture clearing regression also passed. Automatic landmark acquisition, recognition scheduling and real physical acceptance remain open. M06 onward requires another instruction after review. The user-tested reference baseline is accepted; no further reference tests are required.
 
 ## Working agreement
 
@@ -63,17 +63,33 @@ Tests: known synthetic geometry/transforms, cm/m conversion, reference uncertain
 
 ### M04 — Detection, count and physical tracking
 
+M04a: [one-shelf proposals and count](20-m04a-review.md), implemented with Gemini 3.1 Flash-Lite and local geometry/overlap validation. One live synthetic image passed; no actual-shelf accuracy claim. Counts/coverage remain provisional; per-frame observations are not physical tracks. M04b1: [reviewed association ledger](21-m04b1-review.md), implemented with offline CLI/restart smoke. M04b2 automatic registration/matching and M04b3 capture inventory UI remain separate review steps. Per-frame counts must never be summed into sweep inventory.
+
 M04a: detected polygons and counts on one shelf, including flat/stacked cases. M04b: merge overlapping/revisited views and preserve distinct duplicate copies; publish provisional unknown inventory during capture.
+
+M04b3: [capture inventory viewer](23-m04b3-review.md), implemented with read-only paginated HTTP projection, independent revision polling, saved-sweep reopening and provisional full-ledger export. Synthetic HTTP/restart and actual browser update/disconnect/recovery checks passed. Camera recognition scheduling, automatic landmark acquisition and real physical-sweep acceptance remain outstanding.
+
+M04b2 proposal core: [assisted registration and conservative matching](22-m04b2-review.md), implemented with a perspective-warped synthetic smoke. It validates annotated correspondences and proposes one-to-one spatial/appearance links without mutation or automatic new tracks. Automatic landmark acquisition remains a separate follow-up; M04b3 viewer is implemented above. This does not meet the real continuous-sweep acceptance bar yet.
 
 Tests: revisits do not double-count, duplicate titles do not merge, bookend false positives, split/merge ambiguity, ownership exclusion, horizontal orientation and deterministic track IDs. Smoke: two shelves in a continuous pass with a revisit; annotate every physical detection and miss. Compare full counts, precision/recall and merges/splits; report unresolved regions. Do not tune on held-out evaluation truth.
 
 ### M05 — OCR and catalogue resolution
 
-M05a: saved-crop visible text extraction; M05b: catalogue candidate/match logic with work/edition distinction and calibrated acceptance policy.
+M05a: saved-crop visible text extraction; M05b1: catalogue candidate retrieval/evaluation; M05b2: explicit reviewed work acceptance/rejection/clear and separately sourced edition metadata; M05b3: catalogue edition-record matching and acceptance against owned-copy evidence. The edition portion is split for a separate review boundary. Calibrated acceptance policy requires real evaluation data and is not claimed by literal candidate comparisons or human review.
+
+M05a: [traceable crop and literal visible text](24-m05a-review.md), implemented with unverified regions/role labels and explicit unknown identity. Two live synthetic calls passed; original/ledger integrity and shared provider regressions passed. No catalogue or identity/price mutation; actual shelf reading accuracy remains unmeasured.
+
+M05b1: [evidence-bound work candidates](25-m05b1-review.md), implemented with pinned reading/crop integrity, exact-literal contradiction gates, ambiguity/completeness reporting and persistent bounded lookup/cache. One public lookup retained two matching works and rejected three different titles; cache restart made no HTTP request. This candidate-export stage does not accept work/edition/ISBN, calibrated confidence or ledger mutation. Explicit work acceptance follows in M05b2 below.
+
+M05b2: [reviewed work identity](26-m05b2-review.md), implemented with physical-track/source guards, explicit literal confirmation, visible/asserted metadata provenance, durable artifacts and atomic corrections. Actual synthetic CLI/HTTP restart/correction smoke passed. This work-review stage does not choose a catalogue edition, calibrated confidence or pricing; explicit edition review follows below.
+
+M05b3: [owned-copy edition review](27-m05b3-review.md), implemented with bounded record retrieval, shared cache/gate, archived visible ISBN, work/title/binding/metadata gates and explicit acceptance/rejection/clear. Synthetic CLI/HTTP restart/clear passed; a live missing-format record remained unaccepted. No price, printing/signature authentication or unseen metadata inferred. Full M05 real-shelf acceptance and held-out identity precision remain unverified.
 
 Tests: unreadable/no-title result, ambiguous editions, wrong author/publisher, volume number, unsupported ISBN, multiple languages as applicable, correction invalidation, source provenance. Smoke: mixed legible/unreadable real spines; open crop→observed text→candidate→accepted fields. No pricing in this module.
 
 ### M06 — Live sweep agent
+
+Next small parts: M06a guided conversation/session state (country/currency, reference-object calibration, readable ISBN/binding acquisition and targeted corrections); M06b provider voice/media transport and interruption/reconnect integration. Each is separately authorized, tested, smoke-tested and reviewed. Subsequent recognition scheduling can be split further if needed; no automatic progression is authorized.
 
 Adapt reference transport/playback and replace policy tools with validated sweep commands. Guide quality/coverage, ask the art question, update rows, accept ownership/edition corrections, persist unfinished turns and keep jobs off the audio loop. Provider extension/resumption must support >3-minute audio/video interaction; test explicit end-sweep versus disconnect.
 

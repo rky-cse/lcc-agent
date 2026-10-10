@@ -15,6 +15,7 @@ from starlette.concurrency import run_in_threadpool
 from .capture_session import CaptureSessions
 from .capture_store import CaptureInput, FrameStore
 from .models import Contract
+from .tracking import TrackStore
 
 
 class StartInput(Contract):
@@ -34,6 +35,7 @@ def create_app(root: Path, origins: set[str], *, synthetic: bool = False) -> Fas
         raise ValueError("configure exact HTTP(S) origins without trailing slash")
     hosts = {urlsplit(x).netloc for x in origins}
     sessions = CaptureSessions(FrameStore(root))
+    inventory = TrackStore(sessions.store)
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     app.state.sessions = sessions
     slots = asyncio.Semaphore(2)
@@ -84,7 +86,7 @@ def create_app(root: Path, origins: set[str], *, synthetic: bool = False) -> Fas
 
     @app.get("/assets/{name}")
     def asset(name: str):
-        if name not in {"app.mjs", "queue.mjs", "style.css"}:
+        if name not in {"app.mjs", "queue.mjs", "inventory.mjs", "style.css"}:
             raise HTTPException(404)
         return FileResponse(web / name, media_type="text/javascript" if name.endswith(".mjs") else "text/css")
 
@@ -142,6 +144,37 @@ def create_app(root: Path, origins: set[str], *, synthetic: bool = False) -> Fas
         record = sessions.store.get(frame_id)
         data = sessions.store.read(frame_id)
         return Response(data, media_type=record.mime_type, headers={"ETag": f'"{record.sha256}"'})
+
+    @app.get("/api/sweeps/{sweep_id}/inventory")
+    def inventory_view(sweep_id: str, offset: int = 0, limit: int = 50):
+        if offset < 0 or not 1 <= limit <= 100:
+            raise HTTPException(422, "Invalid inventory page")
+        capture = sessions.snapshot(sweep_id)
+        snapshot = inventory.snapshot(sweep_id)
+        tracks = {t["id"]: t for t in snapshot["tracks"]}
+        observations = {o["id"]: o for o in snapshot["observations"]}
+        rows = []
+        for book in snapshot["books"]:
+            track = tracks[book["id"]]
+            rows.append(dict(kind="book", id=book["id"], shelf=book["shelf"], owned=book["owned"],
+                title=book["title"], status=book["status"], frame_ref=book["frame_ref"],
+                observation_count=len(track["observations"]), reason=("Reviewed edition record; binding claimant-declared" if (track.get("bibliography") or {}).get("accepted_edition_id")
+                    else "Reviewed work; owned-copy edition unresolved" if track.get("bibliography") else "Physical track; identification pending")))
+        for index, review in enumerate(snapshot["review_queue"]):
+            obs = observations.get(review.get("observation_id"))
+            rows.append(dict(kind="review", id=review.get("observation_id", f"review-{index}"),
+                shelf=obs["shelf_id"] if obs else "", owned=None, title="", status="unresolved",
+                frame_ref=review["frame_ref"], observation_count=None, reason=review["reason"]))
+        return dict(schema_version="1.0", sweep_id=sweep_id, revision=snapshot["revision"],
+            capture_status=capture["status"], provisional=True, coverage_verified=False, total_book_count=None,
+            assigned_track_count=snapshot["assigned_track_count"], owned_assigned_track_count=snapshot["owned_assigned_track_count"],
+            review_count=len(snapshot["review_queue"]), detection_import_count=len(snapshot["detection_sources"]),
+            page_offset=offset, page_limit=limit, total_rows=len(rows), rows=rows[offset:offset+limit])
+
+    @app.get("/api/sweeps/{sweep_id}/inventory/export")
+    def inventory_export(sweep_id: str):
+        sessions.snapshot(sweep_id)
+        return JSONResponse(inventory.snapshot(sweep_id), headers={"Content-Disposition": 'attachment; filename="provisional-inventory.json"'})
 
     return app
 

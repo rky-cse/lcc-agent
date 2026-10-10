@@ -110,3 +110,23 @@ No reference sparse reconstruction code exists to reuse. The target reuses its o
 ## M03b2 reuse update
 
 Reuses target M03b1 native models/poses, M02 originals and M01 dimension evidence/export. Adds fixed-intrinsic support and independently implemented ray/shape/scale calculations. No upstream reference implementation, API key or additional dependency was copied. No reference tests ran; actual-native synthetic room smoke runs only the target.
+
+## M04a reuse update
+
+Reuses target immutable originals, M01 unidentified rows/stages/serializer and M03 polygon helpers. The reference has no validated single-spine detector; a small independent Gemini REST adapter replaces reliance on its aggregate count. No reference code/SDK dependencies were copied or tests run. The reference `.env` key was read privately for target synthetic smoke under the user's earlier authorization, without modifying/copying credentials. All polygons/counts remain provisional pending actual-shelf evaluation.
+
+## M05a reuse update
+
+Reuses target FrameStore, reviewed observations, projective geometry, stage contracts and Gemini transport. Shared structured-image requests preserve M04a behavior. No new reference source/SDK/catalogue dependency copied. Two target synthetic crop calls used the earlier authorized key read locally; reference files/credentials unchanged and no reference tests ran. Visible text remains unverified and cannot establish identity or prices in this module.
+
+## M05b1 reuse update
+
+Reuses target original/observation integrity, M05a crop/span projection, M01 stage contracts and serializer, and the no-redirect HTTP handler. Adds a narrow independent work-search/cache/comparison adapter against official Open Library documentation; no validated reference catalogue implementation was available to reuse. No reference source, credentials or SDK dependencies copied or modified; no reference tests ran. One successful public lookup plus a cache-only process restart used no Gemini key. Work/edition acceptance remains a later review boundary.
+
+## M05b2 reuse update
+
+Reuses target physical inventory transactions/command fingerprints, M05a evidence validation, M05b1 candidate recomputation, Book/StageResult contracts and read-only inventory HTTP projection. Adds explicit bibliographic review and separate visible/asserted metadata rather than adopting reference model-generated identity. No reference code, credentials, network call, SDK or dependency added. Actual synthetic CLI/HTTP/restart/correction smoke runs only the target. Catalogue edition validation remains M05b3.
+
+## M05b3 reuse update
+
+Reuses target work review/visible ISBN archive, physical inventory transactions, stage contracts, provenance/export and bounded catalogue transport/cache. Search/edition adapters share the existing persistent request gate rather than adding a separate rate limiter. Adds narrowly validated edition records, comparison and explicit review; no reference edition logic was available to reuse. One successful public edition lookup used no key/image; no reference tests, credential reads, SDK/dependency installs or reference source changes ran. Missing live physical-format data remained unresolved rather than inferred.

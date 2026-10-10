@@ -2,6 +2,10 @@
 
 Status: M01 implements the packet input models, stage envelope, deterministic totals and minimal export in `library_claim/`. The richer producer contracts below remain the architecture for later modules. See [M01 review](14-m01-review.md) for exact implemented boundaries. Reporting conventions are explicit packet policy inputs; the synthetic example does not select the user's country or production geometry policy.
 
+[M05b2](26-m05b2-review.md) now implements `IdentityCommand`/`MetadataDecision`, reviewed work projection and separate track-level `bibliography.field_provenance`. Work review events carry a typed StageResult and artifact hashes. Book `identified` can have unknown edition/ISBN; assertions remain distinct from visible evidence. Catalogue edition IDs stay null. M01 final-packet assertion provenance integration remains M10; it currently removes text fields lacking saved-frame references.
+
+[M05b3](27-m05b3-review.md) adds `EditionRequest`/`EditionCommand`, bounded edition records and explicit edition acceptance/rejection/clear. Supported edition acceptance can set the track's `accepted_edition_id`; it leaves Book metadata/price fields unchanged and retains binding as a separate claimant declaration. Typed lookup/review stages, source hashes, revision guards and dependency invalidation accompany mutations. Unaccepted/missing/conflicting editions remain unknown.
+
 ## Common rules
 
 Every stage returns a typed result with `schema_version`, `sweep_id`, `job_id`, `input_revision`, `stage`, `status`, `started_at`, `finished_at`, `evidence_refs`, `warnings` and `errors`. Terminal stage states are success, partial, unavailable or failed. Each error has a machine-readable code, human reason, retryability and affected entity/field. A failed stage is not an empty success.

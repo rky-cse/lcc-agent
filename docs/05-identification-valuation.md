@@ -1,6 +1,8 @@
 # Identification and source-backed valuation
 
-Status: processing boundaries proposed; actual OCR/detector models, locale providers, catalogue adapters and price policies remain unselected.
+Implemented boundaries: [M05a crop/literal text](24-m05a-review.md), [M05b1 work candidates](25-m05b1-review.md), [M05b2 reviewed work](26-m05b2-review.md) and [M05b3 edition review](27-m05b3-review.md). Crops/regions trace to exact originals. Only explicit reviewer commands accept supported work/edition records on physical tracks. Edition acceptance requires a confirmed visible ISBN and consistent work/title/catalogue physical format plus a declared binding. Visible metadata and claimant assertions retain separate provenance; confidence/prices remain unknown. Synthetic reading/review smoke and public retrieval checks passed their narrow boundaries; the real edition record's missing format correctly blocked acceptance. Production language coverage and actual shelf/edition precision remain unverified.
+
+Status: M04a uses Gemini 3.1 Flash-Lite to propose individual spine polygons from one saved shelf image, with local validation and provisional count/review. Live synthetic smoke passed, actual-shelf accuracy unverified. Physical tracking, assisted matching, saved-crop reading, work/edition candidates and explicit review are implemented. Automatic landmark acquisition, integrated recognition, real edition-format coverage, locale sources and price policies remain pending. See [M04a](20-m04a-review.md) and subsequent review records.
 
 ## Physical detection before identity
 

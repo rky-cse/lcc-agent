@@ -1,4 +1,5 @@
 import {EvidenceQueue, LatestPreview, acquireCamera} from './queue.mjs';
+import {InventoryPoller, renderInventory} from './inventory.mjs';
 
 const $ = id => document.getElementById(id);
 const video = $('video'), nativeCanvas = document.createElement('canvas'), previewCanvas = document.createElement('canvas');
@@ -7,6 +8,16 @@ let stream = null, timer = null, generation = 0, starting = false, encoding = nu
 let sweep = null, nextSequence = 0, gaps = 0, saved = new Map(), recovery = [], endId = null;
 let recovering=true, recoveryFailed=false, encodingRef=null, startIntent=null;
 const storageKey = 'library-capture-v1';
+const inventory = new InventoryPoller({
+  fetchSnapshot: async (id,offset,signal) => {
+    const response=await fetch(`/api/sweeps/${encodeURIComponent(id)}/inventory?offset=${offset}`,{signal});
+    if(!response.ok) throw new Error(`Inventory request failed (${response.status})`);
+    return response.json();
+  },
+  changed: data => {renderInventory(document,data); $('inventory-error').hidden=true;},
+  failed: error => { $('inventory-error').textContent=`Inventory updates unavailable: ${error.message}. Displayed rows may be stale; retrying automatically.`; $('inventory-error').hidden=false; }
+});
+function watchInventory() { if(!document.hidden) inventory.watch(sweep?.id || null); }
 let preferencesError = false;
 try {
   const prior = JSON.parse(localStorage.getItem(storageKey) || 'null');
@@ -32,6 +43,8 @@ function refresh() {
   $('country').disabled = !!sweep && sweep.status !== 'closed';
   $('currency').disabled = !!sweep && sweep.status !== 'closed';
   $('camera').disabled = !!stream || starting;
+  $('open-sweep').disabled = !!stream || starting || finishing || recovering || !!encoding || !!queue.items.length;
+  $('inventory-retry').disabled = !sweep;
   persist();
 }
 async function api(path, options = {}) {
@@ -66,6 +79,7 @@ async function restore() {
   if (!sweep) return;
   try {
     sweep = await api(`/api/sweeps/${sweep.id}`);
+    watchInventory();
     $('country').value = sweep.country; $('currency').value = sweep.currency;
     for (const frame of sweep.frames) recordFrame(frame, sweep.quality?.[frame.id]);
     const acknowledged = new Set(sweep.frames.map(x=>x.upload_id));
@@ -132,6 +146,7 @@ async function startCamera() {
       startIntent=null;
       try { localStorage.removeItem('library-capture-start-intent'); } catch { preferencesError=true; }
       saved = new Map(); $('frames').replaceChildren(); nextSequence=0; gaps=0; endId=null;
+      watchInventory();
     }
     persist();
     if(epoch !== generation) { acquired.getTracks().forEach(t=>t.stop()); return; }
@@ -171,6 +186,27 @@ async function endSweep(discard=false) {
 }
 $('start').onclick=()=>void startCamera(); $('stop').onclick=()=>{stopCamera();status('Camera paused; saved and queued frames are retained.');};
 $('retry').onclick=()=>queue.resume(); $('end').onclick=()=>void endSweep(); $('discard').onclick=()=>void endSweep(true);
+$('inventory-prev').onclick=()=>inventory.select(sweep?.id,Math.max(0,inventory.offset-50));
+$('inventory-next').onclick=()=>inventory.select(sweep?.id,inventory.offset+50);
+$('inventory-retry').onclick=()=>inventory.select(sweep?.id,inventory.offset);
+$('saved-sweep-form').onsubmit=async event=>{
+  event.preventDefault();
+  if($('open-sweep').disabled || !$('saved-sweep-form').reportValidity()) return;
+  recovering=true; refresh();
+  try {
+    const restored=await api(`/api/sweeps/${encodeURIComponent($('saved-sweep-id').value)}`);
+    sweep=restored; recoveryFailed=false; recovery=[]; endId=restored.end_id;
+    nextSequence=Math.max(-1,...restored.frames.map(f=>f.media_sequence))+1;
+    gaps=restored.capture_gaps; saved=new Map(); $('frames').replaceChildren();
+    restored.frames.forEach(frame=>recordFrame(frame,restored.quality?.[frame.id]));
+    $('country').value=restored.country; $('currency').value=restored.currency;
+    $('manifest').href=`/api/sweeps/${encodeURIComponent(restored.id)}/manifest`; $('manifest').hidden=false;
+    watchInventory(); status(restored.status==='closed' ? 'Saved sweep opened for review.' : 'Saved sweep opened. Resume capture or review its evidence.');
+  } catch(error) { status(`Cannot open saved sweep: ${error.message}`); }
+  finally { recovering=false; refresh(); }
+};
+document.addEventListener('visibilitychange',()=>{if(document.hidden) inventory.stop(); else watchInventory();});
+window.addEventListener('pagehide',()=>inventory.stop());
 for(const name of ['country','currency']) $(name).oninput=()=>{$(name).value=$(name).value.toUpperCase();};
 window.addEventListener('beforeunload',event=>{if(stream||starting||encoding||queue.items.length){event.preventDefault();event.returnValue='';}});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&stream){++gaps;stopCamera();status('Camera paused while the page was hidden. Resume to continue.');}});

@@ -1,10 +1,10 @@
 # Library Contents Claim Agent
 
-**Status: M03b2 calibrated annotated room dimensions implemented for review. Native synthetic smoke passed; real camera calibration and physical accuracy remain unverified. M04 has not started.**
+**Status: M04a one-shelf spine proposals/count implemented for review. Live Gemini synthetic smoke passed; real-shelf accuracy remains unverified. M04b has not started.**
 
 This project will guide a policyholder through one continuous voice-and-camera sweep of a home library, build a live inventory, and produce an evidence-backed contents claim packet. The brief requires book counting and identification, metric measurements, local book and non-book valuations, room areas, and an honest evaluation against independently collected ground truth.
 
-Implemented modules provide typed packets, evidence checks, decimal totals, portable JSON/HTML exports, durable frame storage, browser capture, annotated planar spine measurement and an optional CPU sparse reconstruction adapter. Live voice, automatic detection/identification, metric room geometry and price-source adapters remain planned.
+Implemented modules provide packet/evidence/export, durable browser capture, annotated planar and calibrated room geometry, plus single-shelf model spine proposals with local validation/review. Live voice, cross-view physical tracking, title/edition identification, full room areas and price adapters remain planned. Physical accuracy is not yet validated.
 
 ## Read the design
 
@@ -30,6 +30,7 @@ Implemented modules provide typed packets, evidence checks, decimal totals, port
 | [M03a review record](docs/17-m03a-review.md) | Annotated planar calibration, geometry gates, synthetic smoke and physical-test limitation |
 | [M03b1 review record](docs/18-m03b1-review.md) | CPU multiview reconstruction, full selected-view connectivity gates and metric-room limitation |
 | [M03b2 review record](docs/19-m03b2-review.md) | Fixed camera calibration, reference scaling, observed room corners/height and integrity/export checks |
+| [M04a review record](docs/20-m04a-review.md) | Single-shelf polygons/count, live-provider smoke, unknown/review semantics and actual-shelf limitation |
 
 ## Current verification
 
@@ -39,7 +40,16 @@ The user confirmed they tested the reference and instructed us to proceed withou
 
 M01 verification: 29 unit/contract/export tests pass. The synthetic CLI produces a partial packet with saved evidence and an HTML report from the same serialized values. No real capture or price quote is claimed by that fixture.
 
-Current full Python suite: 125 tests pass. The unchanged browser module previously passed 9 JavaScript tests. M03b2's actual native calibrated synthetic smoke recovers a 3 × 4 × 2.6 m rectangular room from annotated views and a reference; physical accuracy remains unverified and full areas remain M09 work. M03b1's textured/textureless/timeout smokes passed. M03a's synthetic spine smoke passed. Earlier M02a real-photo/M02b real camera smoke remain pending; the in-app camera request did not resolve within 20 seconds.
+Current full Python suite: 147 tests pass. M04a's live Gemini 3.1 Flash-Lite synthetic smoke detects six spine proposals (four upright/two horizontal), excludes a bookend and matches all six truth polygons at IoU ≥ 0.5. Actual shelves remain untested. Earlier synthetic geometry/backend/capture smokes passed. Real photo/camera/calibration and physical accuracy gates remain open; complete areas are M09 work. The unchanged browser module previously passed nine Node tests.
+
+## Run M04a
+
+```powershell
+.\.venv\Scripts\python.exe -B scripts/smoke_detection.py --output runs/my-detection-replay
+.\.venv\Scripts\python.exe -B -m library_claim.spine_detection --store runs/my-capture --input shelf.json --output runs/my-shelf-review --gemini --free-tier-confirmed
+```
+
+The first command is an offline boundary replay, not model inference. The second sends the saved original to Gemini and requires your explicit shelf/frame/hash/region/policy JSON plus a local `GEMINI_API_KEY`/`GOOGLE_API_KEY` (or `--key-file`). The default model is Gemini 3.1 Flash-Lite; no paid fallback or automatic retry occurs. See [the exact contract and limits](docs/20-m04a-review.md). Counts stay provisional; failures are unknown, and overlaps/unresolved coverage remain reviewable. Keys never enter the browser or review artifacts. Open the output's `report.html` for polygons/reasons. Choose fresh output directories.
 
 ## Run M03b2
 
@@ -116,6 +126,18 @@ The path and timestamp above are placeholders to replace, not a statement about 
 
 ## Review workflow
 
-The user controls implementation. The latest "next" authorized M03b2, now ready for review; work stops here. M04a detection/counting needs the next instruction. Actual reference dimensions are collected from the user during calibration, camera-profile acquisition remains to resolve, and physical acceptance requires independent ground truth.
+Current step ready for review: [M05b3 owned-copy edition review](docs/27-m05b3-review.md). Bounded edition lookup checks reviewed visible ISBN, work/title, explicit binding and supplied metadata; acceptance/rejection/clear commands persist with provenance. Full suite: 257 Python tests passed. Synthetic CLI/HTTP restart/clear smoke passed. One live record lacked physical format and remained unaccepted; cached replay made zero requests. Run `python -m scripts.smoke_edition --output runs/my-edition-smoke`. Review `runs/m05b3-review-final/accepted-evidence/report.html` and `runs/m05b3-review/edition-final-cache/report.html`. Guided session setup is next; real shelf accuracy and live recognition remain pending. Implementation stops here for review.
+
+Previous review step: [M05b2 work identity](docs/26-m05b2-review.md). Explicit work acceptance/rejection/clearing and visible/asserted metadata provenance persist on physical tracks. Its smoke command is `python -m scripts.smoke_identity --output runs/my-identity-smoke`.
+
+Previous catalogue step: [M05b1 work candidates](docs/25-m05b1-review.md). One public lookup preserved ambiguity; persisted cache replay made zero calls. Offline smoke: `python -m scripts.smoke_catalogue --output runs/my-catalogue-smoke`.
+
+Previous reading step: [M05a saved spine reading](docs/24-m05a-review.md). Literal unverified text comes from a traceable crop; inventory identities stay unknown. Offline fixture/replay: `python -m scripts.smoke_reading --output runs/my-reading-smoke`.
+
+Previous step: [M04b3 capture inventory viewer](docs/23-m04b3-review.md). The capture page displays imported tracks/review rows, original evidence and unknown totals, polls revisions independently, and reopens saved sweeps without camera access. Review server used [local synthetic inventory](http://127.0.0.1:4183/), saved sweep ID `cccccccccccccccccccccccccccccccc`. Real camera recognition and automatic landmark acquisition remain pending.
+
+Earlier matching step: [M04b2 assisted registration/matching](docs/22-m04b2-review.md). Run `python -m scripts.smoke_matching --output runs/my-matching-smoke` in the project environment. It proposes conservative revisit links using annotated correspondences; unmatched observations remain unresolved. Automatic landmark detection remains pending; the capture inventory viewer is now implemented in M04b3.
+
+The user controls implementation. [M04b1's physical identity ledger](docs/21-m04b1-review.md) persists reviewed revisits, distinct copies, unresolved identity and ownership corrections. Its offline CLI/restart check is `python -m scripts.smoke_tracking --output runs/my-tracking-smoke`. M04b2's assisted matching core is now implemented as described above; automatic landmark acquisition and capture inventory UI still need further implementation. Actual reference dimensions are collected during calibration, camera-profile acquisition remains to resolve, and physical acceptance requires independent ground truth.
 
 Start review with [the open decisions](docs/10-decisions-risks.md) and [the module plan](docs/07-implementation-plan.md). The largest unresolved technical choice is how the capture device supplies trustworthy metric scale and room geometry.

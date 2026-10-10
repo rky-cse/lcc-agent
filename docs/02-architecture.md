@@ -1,5 +1,13 @@
 # Proposed architecture
 
+M05a provides [traceable crops and literal visible text](24-m05a-review.md) from saved ledger observations. Shared bounded Gemini transport serves detection/reading with separate strict schemas. [M05b1 work candidates](25-m05b1-review.md) and [M05b3 edition candidates](27-m05b3-review.md) share bounded retrieval/cache/cooldown. [M05b2 work review](26-m05b2-review.md) and M05b3 edition review persist explicit physical-track decisions with revision guards, archived evidence, separate assertion provenance and corrections. Edition acceptance requires a confirmed visible ISBN, matching work/title/physical record and declared binding; no metadata or price is borrowed. Actual shelf accuracy remains unverified; guided capture/voice scheduling remains M06.
+
+M04b3 now exposes [provisional inventory in capture UI](23-m04b3-review.md): read-only paginated HTTP projection of the ledger, independent generation/revision-guarded polling, saved-sweep reopening and full ledger download. No provider jobs run on the camera loop in this step. Automatic recognition/registration acquisition and real-sweep acceptance remain pending.
+
+M04b2 now provides [assisted planar association proposals](22-m04b2-review.md) over a pinned M04b1 revision. Annotated correspondences and independent checks support spatial/appearance matching; proposed commands require review before the existing ledger imports them. Automatic feature registration and capture inventory UI remain pending.
+
+Implemented M04b1 boundary: [reviewed physical association ledger](21-m04b1-review.md). It consumes validated M04a bundles and explicit revision-checked identity decisions, persists observations/tracks/source evidence/audit events in FrameStore SQLite, and emits provisional unknown Book rows. Automatic matching and capture inventory UI remain M04b2/M04b3. Track counts do not establish full shelf/sweep coverage.
+
 Status: recommended boundaries for review, not an implemented system. User constraints now specify Android/laptop browser capture without LiDAR, a reference object for scale, free-tier Gemini/Groq access, and country/currency asked at session start. Exact device, reference geometry, provider/model access, price sources and report conventions remain in [decisions](10-decisions-risks.md).
 
 ## Pipeline
@@ -114,3 +122,5 @@ M03b1 adds `reconstruction.py` and an isolated optional `reconstruction_worker.p
 M03b2 adds `room_geometry.py` and `room_measurement.py`, plus optional fixed-intrinsic input to the worker. It verifies the saved model/evidence, triangulates developer observations, scales by a measured reference/check, validates rectangular floor/constant matching-ceiling geometry, and emits M01-compatible dimension evidence/export. It rejects estimated intrinsics. The complete native reconstruction stays beside the packet; calculation camera views/calibration/diagnostics are saved with it. No detector/voice/HTTP integration or full areas are added. See [M03b2](19-m03b2-review.md).
 
 Later modules add live voice, detection, identification, connected room measurement, valuation and evaluation when authorized. Keep provider calls behind adapters and arithmetic deterministic. Selected reused reference code receives attribution and a change notice. See [M02a](15-m02a-review.md) for file/transaction ordering and recovery boundaries.
+
+M04a adds `spine_detection.py` and `vision_provider.py`: one saved shelf region → bounded Gemini structured proposals → local convex/area/ROI/overlap checks → unidentified observation rows/provisional counts and HTML/SVG review. It uses a fixed-domain REST adapter with a local key, explicit free-tier assertion and no retries/paid fallback. Same-frame observations have stable geometry-based IDs; physical tracks/live publication are M04b. Real detector quality is unmeasured; see [M04a](20-m04a-review.md).

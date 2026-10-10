@@ -1,6 +1,6 @@
 # Decision register and risks
 
-Status as of 10 October 2026: latest "next" authorized M03b2. Fixed-intrinsic annotated metric room feasibility passed synthetic native smoke; no physical camera/room accuracy is verified. Camera-profile acquisition preference was asked and remains pending. M04a awaits review/next instruction. M03a physical accuracy and earlier real laptop capture remain unverified. Agent-led reference intake and the user-tested reference baseline remain accepted.
+Status as of 10 October 2026: latest "next" authorized M04a. Gemini 3.1 Flash-Lite proposal adapter passed a live synthetic shelf smoke and local tests, but actual-shelf accuracy remains unverified. M04b awaits review/next instruction. Physical capture/geometry and camera-profile acquisition preference remain pending. Agent-led reference intake and the user-tested baseline remain accepted. The initial Gemini 2.5 Flash smoke returned HTTP 404; no automatic provider fallback was added.
 
 ## Confirmed constraints
 
