@@ -39,6 +39,11 @@ test('inventory evidence joins a reading result to its detected spine',()=>{
   assert.doesNotThrow(()=>renderReadings(document,{...data,observations:[observation],jobs:[reading],inventory_projection:{revision:1,observation_count:1,detection_import_count:1,assigned_track_count:0,unresolved_physical_count:1,review_count:1,coverage_verified:false}},{enqueue:()=>{},cancel:()=>{}}));
   assert.match(document.getElementById('inventory-evidence').children[0].children.at(-1).children[0].textContent,/Visible title/);
 });
+test('unresolved and accepted spines expose distinct next-action buttons without duplicate readings',()=>{
+  const document=documentFixture(),unresolved={...obs,track_id:null,orientation:'upright'},accepted={...obs,id:'o2',track_id:'book-1',orientation:'upright'};
+  renderReadings(document,{...data,observations:[unresolved,accepted],jobs:[{input:{job_id:'read-1',kind:'reading',request:{observation_id:'o'}},status:'completed',result_status:'success',eligible_for_review:true,artifacts:{},result_summary:{kind:'reading',observation_id:'o',crop_available:false}}]},{enqueue:()=>assert.fail(),cancel:()=>{}});
+  const actions=document.getElementById('next-actions').children;assert.equal(actions[0].children[1].textContent,'Resolve spine #1');assert.equal(actions[1].children[1].textContent,'Open book identification');assert.equal(document.getElementById('observations').children[0].children.at(-1).disabled,true);
+});
 test('stale evidence stays visibly ineligible and terminal work cannot cancel',()=>{
   const document=documentFixture();renderReadings(document,{...data,jobs:[{input:{job_id:'job/a'},status:'stale',result_status:'partial',eligible_for_review:false,artifacts:{'reading_result.json':'sha'}}]},{enqueue:()=>assert.fail(),cancel:()=>assert.fail()});
   const row=document.getElementById('jobs').children[0];assert.match(row.textContent,/Not eligible/);assert.equal(row.children[0].href,'/api/guidance/s/recognition/job%2Fa/reading_result.json');assert.equal(row.children.some(c=>c.textContent==='Cancel reading'),false);

@@ -33,6 +33,7 @@ export function renderReadings(document,data,{enqueue,cancel,dispatch}) {
   const $=id=>document.getElementById(id);
   $('observations').replaceChildren();$('jobs').replaceChildren();
   const link=(label,url)=>{const a=document.createElement('a');a.textContent=label;a.href=url;a.target='_blank';a.rel='noopener';return a;};
+  const line=(parent,text)=>{const p=document.createElement('p');p.textContent=text;parent.append(p);return p;};
   const workflow=data.workflow;
   if($('workflow-status'))$('workflow-status').textContent=workflow?`Saved images: ${workflow.saved_frame_count} → provisional observations: ${workflow.provisional_observation_count} → readable spines: ${workflow.readable_spine_count}; partial/unreadable: ${workflow.partial_or_unreadable_spine_count}; physical decisions still needed: ${workflow.unresolved_physical_count}. Next: ${workflow.next_action}`:'Workflow summary unavailable for this saved session.';
   function renderInventoryProjection(){
@@ -51,10 +52,21 @@ export function renderReadings(document,data,{enqueue,cancel,dispatch}) {
     }
   }
   renderInventoryProjection();
+  function actionLink(label,url){const a=link(label,url);a.className='action-button';return a;}
+  function renderNextActions(){
+    const host=$('next-actions');if(!host)return;host.replaceChildren();const readingByObservation=new Map(data.jobs.filter(job=>(job.input.kind||'reading')==='reading'&&job.input.request?.observation_id).map(job=>[job.input.request.observation_id,job]));
+    for(const [index,observation] of data.observations.entries()){
+      const card=document.createElement('section');card.className='recognition-action-card';const reading=readingByObservation.get(observation.id);
+      if(observation.track_id===null){line(card,`Spine #${index+1}: physical copy unresolved. Check the saved crop and original, then decide whether it is a new physical book, the same book as an existing track, or should remain unresolved.`);card.append(actionLink(`Resolve spine #${index+1}`,`/resolution?session=${encodeURIComponent(data.session_id)}&observation=${encodeURIComponent(observation.id)}`));}
+      else {line(card,`Spine #${index+1}: physical copy ${observation.track_id} is accepted. Next, review its literal title/author evidence and catalogue match before requesting a price.`);card.append(actionLink(`Open book identification`, `/?session=${encodeURIComponent(data.session_id)}`));}
+      if(reading?.result_summary?.crop_available){const base=`/api/guidance/${encodeURIComponent(data.session_id)}/recognition/${encodeURIComponent(reading.input.job_id)}`;card.append(actionLink('View reading crop',`${base}/crop.png`));}
+      card.append(actionLink('View original image',`/api/frames/${encodeURIComponent(observation.frame_ref)}`));host.append(card);
+    }
+  }
+  renderNextActions();
   $('pins').textContent=`Inventory revision ${data.inventory_revision} · reference revision ${data.reference_revision} · observations ${data.observations.length ? data.offset+1 : 0}–${data.offset+data.observations.length} of ${data.total_observations}`;
   $('prev').disabled=data.offset===0;$('next').disabled=data.offset+data.limit>=data.total_observations;
   $('dispatch-status').textContent=dispatchSummary(data);
-  const line=(parent,text)=>{const p=document.createElement('p');p.textContent=text;parent.append(p);return p;};
   function resultCard(job,base){
     const summary=job.result_summary;if(!summary)return null;
     const card=document.createElement('article');card.className='recognition-result-card';
@@ -76,7 +88,8 @@ export function renderReadings(document,data,{enqueue,cancel,dispatch}) {
     const row=document.createElement('p');row.textContent=`Physical track ${obs.track_id} · observation ${obs.id} · shelf ${obs.shelf_id || 'unknown'} `;
     if(obs.track_id===null)row.append(link('Resolve physical observation',`/resolution?session=${encodeURIComponent(data.session_id)}&observation=${encodeURIComponent(obs.id)}`));
     row.append(link('Saved original',`/api/frames/${encodeURIComponent(obs.frame_ref)}`));
-    const button=document.createElement('button');button.textContent='Queue reading';button.onclick=()=>enqueue(obs,button);row.append(button);$('observations').append(row);
+    const previous=data.jobs.find(job=>(job.input.kind||'reading')==='reading'&&job.input.request?.observation_id===obs.id);const button=document.createElement('button');
+    if(previous){button.textContent=previous.status==='completed'?'Reading complete':previous.status==='queued'?'Reading queued':'Reading in progress';button.disabled=true;}else{button.textContent='Queue reading';button.onclick=()=>enqueue(obs,button);}row.append(button);$('observations').append(row);
   }
   for(const job of data.jobs) {
     const row=document.createElement('p');const review=job.review_state==='already_imported_as_provisional_observations'?'Already imported as provisional observations; continue with physical review':job.review_state==='stale_inputs_or_inventory_changed'?'Outdated after inventory/reference changed; evidence remains visible but cannot be applied':job.eligible_for_review?'Unverified proposal available for review':'Not eligible for current review';row.textContent=`${job.input.job_id} · ${job.input.kind || 'reading'} · ${job.status} · ${job.result_status || 'no stage result'} · ${review} `;
