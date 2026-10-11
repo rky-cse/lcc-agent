@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Book valuation review</title><link rel="stylesheet" href="/assets/style.css"></head><body class="valuation-review"><main>
+<h1>Book valuation review</h1><p><a href="/sweep">Return to shelf sweep</a></p>
+<p>Choose reviewed physical books and retailer offers. Amounts are asking prices with condition and evidence disclosed. Missing offers remain unavailable. Separate tax and shipping adjustments are not calculated. A completed-sales policy requires a separate supported source.</p>
+<label>Sweep ID <input id="sweep-id" required></label><button id="load">Load inventory and country</button>
+<p id="status" role="status"></p><div id="inventory"></div>
+<p>The request below exposes all valuation choices for review. Fill in the policy and source rows; no policy is submitted by loading inventory. Use two different countries and exactly ten selected track IDs for the country comparison. Each market needs its own source rows.</p>
+<label>Valuation request <textarea id="request" rows="24" spellcheck="false"></textarea></label>
+<label><input id="consent" type="checkbox">Fetch these retailer pages and, if needed, the specified dated exchange rate.</label>
+<button id="run">Run valuation</button><button id="download" disabled>Download valuation evidence index</button>
+<label>Existing run ID <input id="run-id"></label><button id="restore">Load saved run</button>
+<div id="result"></div><details><summary>Source row example (replace every placeholder)</summary><pre>{
+  "track_id": "reviewed physical track ID", "target_country": "XX",
+  "market_country": "XX", "market_statement": "Why this seller serves this market",
+  "reviewer": "Your name", "url": "https://retailer.example/book",
+  "product_id": "Exact JSON-LD @id, url or sku", "offer_index": 0,
+  "component": "replacement", "match_basis": "exact_isbn",
+  "physical_format": "hardcover", "equivalence_statement": ""
+}</pre></details>
+</main><script type="module" src="/assets/valuation.mjs"></script></body></html>

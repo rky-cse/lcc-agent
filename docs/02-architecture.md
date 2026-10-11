@@ -1,6 +1,40 @@
 # Proposed architecture
 
-Status: recommended boundaries for review, not an implemented system. Device, metric scale path, provider/model IDs, price sources and report conventions await answers in [decisions](10-decisions-risks.md).
+Latest implementation: M08 adds a separate versioned non-book ledger, provisional saved-frame detection, reviewed grouping/ownership/art/geometry and sourced exact/comparable-range prices. It reuses M03/M06/M07 evidence paths; final joint freeze is M10. See [M08 group review](42-m08-group-review.md).
+
+Latest implementation: M07 completes retailer quote evidence, explicit valuation policy, dated FX and independent ten-track two-country results. Valuation runs freeze the inventory revision, remain separate from live audio/capture and expose stale/expiry guards. M10 final packet integration remains pending. See [M07 group review](41-m07-group-review.md).
+
+**Latest review: M06 group.** Combined camera/voice, authoritative saved progress, budgeted exact-job coordination and unresolved registration/reading integrate the existing pipeline. Image alignment proposes links for physical review. Reviewed shelf ownership and appraisal flags remain audited ledger commands. See [group review](40-m06-group-review.md).
+
+**Latest review: M06c2g1.** Exact-job run_job reuses the atomic recognition worker. Selection infers stored kind without FIFO fallback. Durable worker_active retains the global slot after cancellation until worker exit or explicit stopped-worker recovery. Server/browser dispatch is a later part. See [review record](37-m06c2g1-review.md).
+
+**Latest review: M06c2f.** M06c2f adds ResolutionReviewer: archived observation evidence → explicit single new/same decision → existing TrackStore resolve transaction → verified historical event. Current inventory/reference pins are guarded under the ledger writer lock. Queue eligibility is not a dependency after registration. See [review record](36-m06c2f-review.md).
+
+[M06c2e](35-m06c2e-review.md) adds explicit queued-detection registration review. TrackStore import remains the atomic mutation/archive boundary; an optional caller guard validates queue/reference dependencies under its writer lock. Exact event retries bypass new-input staleness without duplicate revision; verified ledger events supply historical receipts. No automatic copy association.
+
+[M06c2d browser selector](34-m06c2d-review.md) adds independent saved-frame paging and an original-image shelf rectangle overlay. Coordinate mapping and image-generation guards freeze reviewed regions/hashes/revisions into DetectionJob; no image modification, automatic dispatch or physical registration.
+
+[M06c2c](33-m06c2c-review.md) adds explicit saved-frame DetectionJob inputs to the same bounded queue. A kind-selected independent worker reuses detection transport/export and checks inventory/reference pins around dispatch/publication. A separate queue-stage envelope preserves the existing tracking-compatible detector bundle format. No automatic physical registration or camera enrollment.
+
+[M06c2b](32-m06c2b-review.md) exposes explicit session-scoped reading enrollment, cancellation and hash-verified artifact review in `/recognition`. Paginated saved observations supply immutable pins to the queue. Workers stay outside the server; model/audio/camera loops cannot enroll or accept readings automatically. Voice cancellation now drains outstanding local storage work before session release.
+
+[M06c2a reading queue](31-m06c2a-review.md) adds explicit durable enqueue and an independent single-job CLI worker. SQLite claims/publication surround the reused reader; no provider call holds a writer lock. One running job, bounded capacity, pinned original/observation/inventory/reference revisions and hash-verified artifacts prevent silent rebasing or stale publication. No server/audio startup scheduling is added.
+
+[M06c1 correction execution](30-m06c1-review.md) adds a durable prepared request around the existing TrackStore/IdentityStore mutation, followed by an atomic receipt/guidance acknowledgment. Exact command/request retries recover interruptions without duplicate inventory revision. Browser review pins physical targets and both revision domains. Model tools cannot execute corrections. Recognition scheduling/reference-job dependency consumers remain M06c2 or later.
+
+[M06b voice transport](29-m06b-review.md) connects optional Gemini Live to M06a. VoiceHub enforces WebSocket boundaries, serializes sends, bounds media and persists a transcript/proposal journal. AudioWorklet capture, bounded PCM playback and connection/microphone generation guards live in separate browser modules. Provider resumption stays in memory; authoritative guidance plus bounded unverified conversation restore context after restart. Model tools read state or propose claimant answers; explicit browser confirmation invokes the existing guidance API. Continuous recognition/correction execution is still M06c.
+
+[M06a guided sessions](28-m06a-review.md) now persist typed locale/reference intake, evidence questions and targeted correction proposals in FrameStore SQLite. Guidance, reference and inventory revisions are separate. The voice adapter will consume `next_prompt` and submit role-checked turns; geometry workers must validate declarations and honor reference invalidation markers. A later dispatcher must execute and acknowledge proposals through existing audited command stores. M06a performs no speech, recognition scheduling or inventory mutation.
+
+M05a provides [traceable crops and literal visible text](24-m05a-review.md) from saved ledger observations. Shared bounded Gemini transport serves detection/reading with separate strict schemas. [M05b1 work candidates](25-m05b1-review.md) and [M05b3 edition candidates](27-m05b3-review.md) share bounded retrieval/cache/cooldown. [M05b2 work review](26-m05b2-review.md) and M05b3 edition review persist explicit physical-track decisions with revision guards, archived evidence, separate assertion provenance and corrections. Edition acceptance requires a confirmed visible ISBN, matching work/title/physical record and declared binding; no metadata or price is borrowed. Actual shelf accuracy remains unverified; guided capture/voice scheduling remains M06.
+
+M04b3 now exposes [provisional inventory in capture UI](23-m04b3-review.md): read-only paginated HTTP projection of the ledger, independent generation/revision-guarded polling, saved-sweep reopening and full ledger download. No provider jobs run on the camera loop in this step. Automatic recognition/registration acquisition and real-sweep acceptance remain pending.
+
+M04b2 now provides [assisted planar association proposals](22-m04b2-review.md) over a pinned M04b1 revision. Annotated correspondences and independent checks support spatial/appearance matching; proposed commands require review before the existing ledger imports them. Automatic feature registration and capture inventory UI remain pending.
+
+Implemented M04b1 boundary: [reviewed physical association ledger](21-m04b1-review.md). It consumes validated M04a bundles and explicit revision-checked identity decisions, persists observations/tracks/source evidence/audit events in FrameStore SQLite, and emits provisional unknown Book rows. Automatic matching and capture inventory UI remain M04b2/M04b3. Track counts do not establish full shelf/sweep coverage.
+
+Status: recommended boundaries for review, not an implemented system. User constraints now specify Android/laptop browser capture without LiDAR, a reference object for scale, free-tier Gemini/Groq access, and country/currency asked at session start. Exact device, reference geometry, provider/model access, price sources and report conventions remain in [decisions](10-decisions-risks.md).
 
 ## Pipeline
 
@@ -41,7 +75,7 @@ Live conversation guides capture; it does not own prices, dimensions, totals or 
 
 Retain Python/FastAPI and browser JavaScript to maximize reference reuse. Use one server process, bounded asynchronous queues, provider adapters, a local file evidence directory and a small transactional database (SQLite proposed). Avoid distributed services for this timebox. Pydantic/schema validation is proposed at every boundary. Remove the ADK policy graph unless inspection of actual selected SDK needs establishes a reason to keep it; ordinary workers are enough for these deterministic dependencies.
 
-These are recommendations, not installed dependencies or selected versions. M00 verifies an available Windows runtime and provider access; M01 chooses explicit contract versions; M03 resolves geometry feasibility. A native capture companion would change the runtime only if the chosen depth path requires it.
+These are recommendations, not the selected target dependency set. M00 has verified a separate reference environment on Windows; provider access remains untested. M01 chooses explicit contract versions; M03 resolves reference-object/monocular geometry feasibility. Native depth/LiDAR is outside the selected capture path.
 
 Two image paths originate from the same active camera track: a small, rate-limited stream for live conversation and independently saved higher-resolution keyframes/crops for inventory/measurement. Do not try to read every thin spine from the reference's 512-pixel live image. Neither path may substitute generated images for evidence. Depth, intrinsics and camera pose are additional synchronized evidence if actually available.
 
@@ -103,4 +137,28 @@ The end-of-sweep processing target is a measured budget, not a provider guarante
 
 ## Proposed repository layout
 
-Future structure only; no directories below have been implemented: `src/capture`, `src/live`, `src/evidence`, `src/detection`, `src/identification`, `src/measurement`, `src/valuation`, `src/packet`, `src/evaluation`, `web`, `tests`, and ignored `runs/<sweep_id>/`. Keep provider calls behind adapters and arithmetic in deterministic modules. Selected reused reference code receives attribution and a change notice.
+Current implementation uses a flat `library_claim/` Python package plus `tests/` and ignored `runs/`. M01 owns models/packet/report. M02a adds `capture_store.py` and `capture.py`, with immutable originals, authoritative SQLite metadata and derived JSON snapshots. M02b adds `server.py`, `capture_session.py` and `web/`: one-worker FastAPI server, durable sweep lifecycle and quality hints, browser-native-resolution JPEG selections, a bounded FIFO upload queue and an independent latest-preview slot. Start/end/frame replay and original reopening survive server restart. Scripts check CLI and actual HTTP restart separately with synthetic evidence.
+
+Browser camera capture currently has a 1.5-second sample interval, FIFO cap of 4 frames / 24 MiB including the in-flight frame, and one client upload at a time. The server admits at most two concurrent body reads/uploads, caps each at 32 MiB and runs image/storage work off the event loop. These are documented engineering defaults to tune on an actual device, not accuracy/latency guarantees. No live voice or recognition workers are connected yet.
+
+M03a adds `planar.py` for typed single-frame calibration and deterministic geometry, and `measurement.py` for saved-evidence checks, per-spine outcomes, M01 export and annotated SVGs. A CLI consumes explicit developer polygons/calibration JSON. No camera/voice workflow calls this adapter yet. See [M03a](17-m03a-review.md) for the exact boundary and physical-validation gate.
+
+M03b1 adds `reconstruction.py` and an isolated optional `reconstruction_worker.py`. The CLI verifies/copies immutable selected originals, invokes pinned CPU PyCOLMAP under a deadline, and retains models/logs/provenance. Connectivity requires all selected images in one component; sparse coordinates have arbitrary scale, and room metrics remain null. It is not wired into the HTTP/audio path. M03b2 must supply evidenced scale and observed room boundaries/height; see [M03b1](18-m03b1-review.md).
+
+M03b2 adds `room_geometry.py` and `room_measurement.py`, plus optional fixed-intrinsic input to the worker. It verifies the saved model/evidence, triangulates developer observations, scales by a measured reference/check, validates rectangular floor/constant matching-ceiling geometry, and emits M01-compatible dimension evidence/export. It rejects estimated intrinsics. The complete native reconstruction stays beside the packet; calculation camera views/calibration/diagnostics are saved with it. No detector/voice/HTTP integration or full areas are added. See [M03b2](19-m03b2-review.md).
+
+Later modules add live voice, detection, identification, connected room measurement, valuation and evaluation when authorized. Keep provider calls behind adapters and arithmetic deterministic. Selected reused reference code receives attribution and a change notice. See [M02a](15-m02a-review.md) for file/transaction ordering and recovery boundaries.
+
+M04a adds `spine_detection.py` and `vision_provider.py`: one saved shelf region → bounded Gemini structured proposals → local convex/area/ROI/overlap checks → unidentified observation rows/provisional counts and HTML/SVG review. It uses a fixed-domain REST adapter with a local key, explicit free-tier assertion and no retries/paid fallback. Same-frame observations have stable geometry-based IDs; physical tracks/live publication are M04b. Real detector quality is unmeasured; see [M04a](20-m04a-review.md).
+
+## M09 implementation update
+
+M09 adds a reviewed geometry path from M03's verified native model and fixed camera views through observed surface polygons, reference scaling, clipped unions and sensitivity to immutable SQLite area runs. M08 physical shelving IDs and the complete contents hash pin each run. The /areas review page schedules computation only on explicit request; model directories must resolve inside the frame store. See [M09 group review](43-m09-group-review.md).
+
+## M10 implementation update
+
+M10 adds a closed-capture drain/deadline barrier, SQLite writer-reserved snapshot, immutable archived content and resumable atomic publication. The unpriced M01 structural packet is enriched only by reparsed saved M07/M08 quotes and independently computed Decimal totals/FX; M09 and M08 geometry proofs remain bound to frozen physical identities. JSON, HTML and spoken text share one serialization, and a hash manifest covers portable originals/sources/model proofs. See [M10 review](44-m10-group-review.md).
+
+## M11 implementation update
+
+Independent truth/config freeze and full-denominator evaluation are offline consumers of M10 archives, isolated from capture, recognition and pricing imports. Saved quotes and FX are independently reparsed; output consists of exact JSON, comparison CSVs, readable HTML and manifests. Local delivery checks preserve explicit unmeasured states for missing physical/demo/setup/repair evidence. [Implemented one-page architecture](11-architecture-note.md) and [M11 review](45-m11-group-review.md) supersede historical proposed sections.

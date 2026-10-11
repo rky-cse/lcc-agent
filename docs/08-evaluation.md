@@ -1,6 +1,6 @@
 # Ground truth, tests and honest evaluation
 
-Status: evaluation protocol and blank templates only. No capture, measured accuracy, ground-truth sheet or real claim packet has been produced.
+Status: M11 offline evaluation/delivery tooling and blank typed inputs are implemented. No independently measured full-room accuracy, real demo packet or completed ground-truth sheet is claimed. [Commands, scoring conventions and limits](45-m11-group-review.md) · [Blank templates](evaluation-templates/).
 
 ## Independent truth before tuning
 
@@ -38,7 +38,7 @@ Use one-to-one physical matching: shelf/row and evidence position identify truth
 
 ## Blank ground-truth sheet specification
 
-The eventual deliverable can be a workbook or documented tabular files. This step only specifies its tables; it does not create synthetic completed truth.
+M11 supplies blank JSON inputs/Schemas and exports documented CSV tables alongside exact JSON results after actual truth and matching are supplied. It does not create synthetic completed truth.
 
 | Table | Columns |
 | --- | --- |
@@ -75,9 +75,10 @@ Rank actual errors by impact on count/value/area and claim trust. Select three w
 
 | Required measure | Current result |
 | --- | --- |
-| Count, title, dimensions, prices, non-books, floor/wall areas, time to packet | Not measured: implementation/capture not authorized yet |
+| Count, title, dimensions, prices, non-books, floor/wall areas, time to packet | Not measured: independent real-room truth/capture/timing not supplied; M01–M11 software implemented |
 | Reference JavaScript regressions | 18 passed |
 | Reference avatar-player tests | 7 passed; avatar omitted from target core |
-| Reference Python/live smoke | Not verified: backend startup blocked by missing dependencies |
+| Reference Python/server smoke | 55 Python tests passed; startup/HTTP/session/empty-packet smoke passed in M00 |
+| Reference real voice/camera/provider smoke | Not verified: actual device/provider test still pending |
 
 Reference test passes must never be entered as assignment accuracy results.

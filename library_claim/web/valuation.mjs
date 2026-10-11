@@ -1,0 +1,25 @@
+export async function mount(document=globalThis.document, environment={}) {
+const window=environment.window||globalThis.window, location=environment.location||globalThis.location, history=environment.history||globalThis.history;
+const $=id=>document.getElementById(id);
+let saved=null,busy=false;
+function status(message){$('status').textContent=message;}
+async function json(url,body){const r=await fetch(url,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{});const data=await r.json();if(!r.ok)throw new Error(data.detail||'Request failed');return data;}
+function sweep(){const id=$('sweep-id').value.trim();if(!/^[A-Za-z0-9_-]{1,128}$/.test(id))throw new Error('Enter a valid sweep ID');return id;}
+function line(parent,text){const p=document.createElement('p');p.textContent=text;parent.append(p);return p;}
+function render(result){saved=result;$('result').replaceChildren();$('download').disabled=result.status!=='complete';$('run-id').value=result.run_id;
+  line($('result'),`${result.status}; ${result.stale?'inventory changed — historical result only':'inventory revision current'}${result.quotes_expired?'; quotes expired — historical result only':''}. Complete market search and claim packet are unverified.`);
+  for(const market of result.markets||[]){line($('result'),`${market.market.country} / ${market.market.currency}: replacement ${market.totals.replacement} (${market.priced_counts.replacement} priced); used ${market.totals.used} (${market.priced_counts.used} priced). Item prices only.`);
+    for(const row of market.rows){line($('result'),`${row.track_id}: ${row.identity.title||'Unknown title'}; ${row.status}`);for(const c of ['replacement','used']){const q=row[c];line($('result'),q?`${c}: ${q.target_amount} ${q.target_currency}; ${q.condition}; ${q.match_basis}; ${q.foreign_market?'foreign market':'reviewed local market'}${q.converted?'; dated FX '+q.fx.date:''}`:`${c}: unavailable`);}for(const finding of row.findings)line($('result'),finding);
+      for(const attempt of row.attempts)line($('result'),`${attempt.component}: ${attempt.outcome}${attempt.reason?'; '+attempt.reason:''}`);}}
+  for(const digest of result.evidence_sha256||[]){const a=document.createElement('a');a.href=`/api/sweeps/${encodeURIComponent(result.sweep_id)}/valuations/${encodeURIComponent(result.run_id)}/evidence/${digest}`;a.textContent=`Download source evidence ${digest.slice(0,12)}`;a.download='source-evidence.txt';line($('result'),'').append(a);}}
+async function act(fn){if(busy)return;busy=true;try{await fn();}catch(e){status(e.message);}finally{busy=false;}}
+$('load').onclick=()=>act(async()=>{const id=sweep();const [capture,inventory]=await Promise.all([json(`/api/sweeps/${id}`),json(`/api/sweeps/${id}/inventory/export`)]);$('inventory').replaceChildren();for(const b of inventory.books)line($('inventory'),`${b.id}: ${b.title||'Unknown title'}; ${b.status}; ${b.owned?'owned':'excluded'}`);
+  const locale=capture.sweep||capture;const req={run_id:crypto.randomUUID().replaceAll('-',''),sweep_id:id,expected_revision:inventory.revision,track_ids:inventory.books.filter(b=>b.owned&&b.status==='identified').map(b=>b.id).slice(0,100),markets:[{country:locale.country||'',currency:locale.currency||'',decimal_places:null,appraisal_threshold:null}],policy:{used_basis:null,used_condition:'',fees:'item_price_only',rounding:null,max_quote_age_hours:null,allow_equivalent_replacement:null,allow_foreign_fallback:null,fx_date:null,max_fx_age_days:null},candidates:[],consent_fetch:true};$('request').value=JSON.stringify(req,null,2);status('Inventory loaded. Fill every required policy choice and retailer source.');});
+$('run').onclick=()=>act(async()=>{if(!$('consent').checked)throw new Error('Confirm source fetching first');const req=JSON.parse($('request').value);if(req.sweep_id!==sweep())throw new Error('Sweep ID differs from request');status('Valuation running; source responses are bounded and have no automatic retries.');render(await json(`/api/sweeps/${encodeURIComponent(req.sweep_id)}/valuations`,req));status('Saved valuation ready for review.');});
+$('restore').onclick=()=>act(async()=>{const id=sweep(),run=$('run-id').value.trim();render(await json(`/api/sweeps/${id}/valuations/${encodeURIComponent(run)}`));status('Saved result and evidence hashes checked.');});
+$('download').onclick=()=>{if(!saved)return;const url=URL.createObjectURL(new Blob([JSON.stringify(saved,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='valuation.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+$('sweep-id').value=new URLSearchParams(location.search).get('sweep_id')||'';
+
+
+}
+if(globalThis.document?.querySelector('script[src="/assets/valuation.mjs"]')) await mount();

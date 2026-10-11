@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {reviewed,status,scope} from '../library_claim/web/packet_core.mjs';
+test('finalization request pins both revisions and explicit deadline',()=>{const r={run_id:'r',sweep_id:'s',expected_book_revision:1,expected_contents_revision:2,deadline_at:'2026-10-11T00:00:00Z',aggregation:{},max_archive_bytes:1000000};assert.deepEqual(reviewed(JSON.stringify(r),'s',1,2),r);assert.throws(()=>reviewed(JSON.stringify(r),'s',2,2));r.deadline_at=null;assert.throws(()=>reviewed(JSON.stringify(r),'s',1,2));});
+test('published partial differs from waiting for drain',()=>{assert.match(status({packet_ready:false,status:'waiting_for_drain'}),/retry/);assert.match(status({packet_ready:true,packet:{packet_status:'partial'}}),/Immutable partial/);assert.throws(()=>scope('../a'));});

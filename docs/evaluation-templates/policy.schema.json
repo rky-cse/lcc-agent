@@ -1,0 +1,44 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "confidence_threshold": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "title": "Confidence Threshold"
+    },
+    "confident_wrong_denominator": {
+      "enum": [
+        "high_confidence",
+        "human_legible"
+      ],
+      "title": "Confident Wrong Denominator",
+      "type": "string"
+    },
+    "dimension_aggregation": {
+      "const": "all_comparisons",
+      "title": "Dimension Aggregation",
+      "type": "string"
+    },
+    "price_aggregation": {
+      "const": "all_available_comparisons",
+      "title": "Price Aggregation",
+      "type": "string"
+    }
+  },
+  "required": [
+    "confidence_threshold",
+    "confident_wrong_denominator",
+    "dimension_aggregation",
+    "price_aggregation"
+  ],
+  "title": "EvaluationPolicy",
+  "type": "object"
+}

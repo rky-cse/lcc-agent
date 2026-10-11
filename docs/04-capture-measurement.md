@@ -1,6 +1,10 @@
 # Capture and metric measurement design
 
-Status: scale and device decisions unresolved. Book-plane measurement and whole-room geometry are separate feasibility problems. We cannot promise the pass bars from an unspecified phone's ordinary camera.
+[M06b](29-m06b-review.md) connects spoken/typed reference proposals to explicit browser review of M06a declarations. A guidance-ID camera link uses the confirmed locale and same session ID; the existing camera page still requests permission explicitly. Manually sending a resized saved-frame preview preserves the verified original. No automatic camera scheduling, geometric validation or metric readiness follows from conversation.
+
+[M06a](28-m06a-review.md) implements the typed reference-intake question and explicit measured/unknown/skip declarations. It asks actual centimetre dimensions, tolerances and provenance without assuming standard object sizes. A ready capture declaration is not geometric calibration; metric readiness stays false. Same-plane reference evidence and verified camera intrinsics remain separate geometry requirements. Spoken intake is pending M06b.
+
+Status: laptop localhost selected; Android remains a later check. No LiDAR; agent asks for reference-object dimensions during calibration. M03a planar spine, M03b1 sparse reconstruction and M03b2 calibrated annotated room dimensions are implemented with synthetic checks. Physical accuracy and actual camera calibration remain unproven. Earlier real camera smoke remained pending. See [M02b](16-m02b-review.md), [M03a](17-m03a-review.md), [M03b1](18-m03b1-review.md) and [M03b2](19-m03b2-review.md).
 
 ## One-sweep capture protocol
 
@@ -12,9 +16,11 @@ During the pass, capture a legible front view and overlapping translated views a
 
 Save high-resolution keyframes with original coordinates before recognition. Frame selection considers sharpness, glare, coverage novelty and overlap. Numerical thresholds and keyframe rate are configured only after the actual device test; no guessed blur score guarantees readability. A keyframe that will be cited must be acknowledged only after durable storage. Preserve video evidence if required by the selected reconstruction path and available storage.
 
-Ordinary mobile camera access requires a secure browser context; PC `localhost` does not make a phone's LAN HTTP address secure. M00 must resolve trusted HTTPS/local forwarding for the target phone without turning this into a deployment project. [MDN getUserMedia documentation](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia).
+Ordinary mobile camera access requires a secure browser context; PC `localhost` does not make a phone's LAN HTTP address secure. The first target is laptop localhost. Resolve trusted HTTPS/local forwarding when Android testing is requested, without making it a prerequisite for laptop implementation. [MDN getUserMedia documentation](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia).
 
 ## Scale alternatives and early gate
+
+For the selected browser/no-LiDAR path, use a known reference on the shelf plane for spine calibration. Whole-room metrics require a connected multiview reconstruction from translated, overlapping views in that same sweep, scaled by an evidenced reference. This is the high-risk M03 experiment, not a promise of successful room measurement. Depth alternatives below remain recorded for design history but are not the implementation path. A reference object must have verified physical dimensions; do not assume the dimensions of an arbitrary object, paper size or unverified printout.
 
 | Path | Evidence required | What it can support | Feasibility decision |
 | --- | --- | --- | --- |
@@ -43,6 +49,8 @@ Fit a shelf plane robustly from valid depth samples and intersect high-resolutio
 
 ## Room geometry
 
+M03b1 provides optional CPU sparse reconstruction with selected-frame connectivity/quality gates; its coordinates remain in arbitrary units. M03b2 now uses verified fixed pinhole intrinsics, an observed metric reference plus independent check, and developer multiview floor/matching-ceiling corners to measure a confirmed rectangular constant-height room. Synthetic native smoke passed; actual room/device calibration and accuracy remain unverified. Estimated-intrinsic reconstruction cannot produce metric dimensions. How setup obtains actual camera calibration is pending user preference. Sparse connectivity alone cannot establish coverage/accuracy; full areas remain M09.
+
 Detect/fit floor and wall boundaries in the same saved capture. Maintain a closed footprint and measured ceiling heights. Occluded corners, textureless/glossy surfaces and missing ceiling views must remain unresolved rather than be filled from a "normal room" assumption.
 
 For a confirmed rectangle, `floor_area_m2 = length_m × width_m`. With constant height H, gross wall area is `2(length_m + width_m) × H`. For a closed polygon, floor area uses `abs(sum(x_i*y_(i+1) - x_(i+1)*y_i))/2`; gross wall area is perimeter × H only when constant height is supported. Irregular/sloped walls use measured polygons/segments and a height profile. Declare polygon vertex order, coordinate system, closure residual and room-shape interpretation.
@@ -59,6 +67,8 @@ Three different quantities must not be confused: sum of spine thicknesses, occup
 
 ## Uncertainty and failure gates
 
+M03a's implemented single-frame reference-object adapter is described in [its review record](17-m03a-review.md). It requires developer annotations, explicit physical dimensions/tolerances, same-plane/lens-validity declarations and independent check observations. The user specified agent-led reference-object intake during calibration; M06 will implement that interaction. Its explored perturbation envelope is sensitivity, not a confidence interval. M03b1/M03b2 are implemented with native synthetic smokes; physical room and spine acceptance remain unverified.
+
 Track reference tolerance, corner localization, reprojection error, depth noise, plane-fit residual, pose drift and boundary visibility. A uniform scale error e changes area by `(1+e)^2-1`; a 5% scale error gives 10.25% area error. Hence accurate room area needs tighter scale control than the 15% spine dimension bar.
 
 Publish numerical uncertainty only when it has a defensible computation or empirical calibration. A model's `0.95` statement cannot imply a 95% measurement guarantee. Keep heuristic quality scores labeled as such. Propagate scale/endpoints through dimension and area calculations, and expose completeness independently of confidence.
@@ -70,3 +80,7 @@ Multiview reconstruction needs overlap, translation and texture. A stationary pa
 ## M03 feasibility acceptance
 
 Before investing in broader recognition, demonstrate on the actual device: reopen saved readable shelf evidence; recover a scale anchor with provenance; measure held-out spine height/thickness against independent tape/caliper values; obtain a connected room footprint and height from the same sweep; quantify errors and latency. Test another shelf/room configuration rather than calibrating output to one space. If room geometry is not feasible, present that measured limitation and a concrete device/path change for user review. Do not quietly replace measured area with a model estimate.
+
+## M09 implementation update
+
+M09 now implements observed simple planar footprints, floor-normal wall profiles, per-wall projected shelving union, opening union subtraction, m²/ft² and explored pixel/reference sensitivity. Explicit per-run choices handle gross/net area, first-edge-aligned extents versus unknown dimensions, and constant-only versus unknown height. Unobserved boundaries stay unknown; physical coverage and camera/pose uncertainty remain unverified. This path requires reviewer annotations rather than automatic room corners. See [M09 geometry and limitations](43-m09-group-review.md).

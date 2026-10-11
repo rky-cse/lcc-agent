@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Library capture</title><link rel="stylesheet" href="/assets/style.css"></head>
+<body><main>
+<h1>Library capture</h1><p><a href="/sweep">Open combined camera and voice sweep</a> · <a href="/voice">Open guided voice setup</a></p><p id="mode" hidden>Synthetic test mode: these frames will not be labeled as real capture.</p><p>Move slowly across each shelf, then show the room corners, walls and floor. Saved frames will appear below.</p>
+<form id="settings">
+<label>Country code <input id="country" required maxlength="2" pattern="[A-Z]{2}" placeholder="Two letters" autocomplete="off"></label>
+<label>Currency code <input id="currency" required maxlength="3" pattern="[A-Z]{3}" placeholder="Three letters" autocomplete="off"></label>
+<label>Camera <select id="camera"><option value="">Default camera</option></select></label>
+</form>
+<form id="saved-sweep-form"><label>Saved sweep ID <input id="saved-sweep-id" required maxlength="128" pattern="[A-Za-z0-9_-]+" placeholder="ID from capture manifest" autocomplete="off"></label><button id="open-sweep" type="submit">Open saved sweep</button></form>
+<div class="controls"><button id="start">Start camera</button><button id="stop" disabled>Pause camera</button>
+<button id="retry" disabled>Retry uploads</button><button id="end" disabled>End sweep</button>
+<button id="discard" hidden>Discard unsent frames and end</button></div>
+<p id="status" role="status" aria-live="polite">Enter country and currency to start.</p>
+<video id="video" autoplay muted playsinline></video>
+<div class="metrics"><p id="resolution">Camera off</p><p id="counts">0 saved · 0 queued · 0 capture gaps</p><p id="quality">Quality hints will appear after a frame is saved.</p></div>
+<p id="hint">Blur and glare hints are experimental. They do not prove that book text is readable.</p>
+<a id="manifest" hidden>Open capture manifest</a>
+<section aria-labelledby="inventory-heading">
+<h2 id="inventory-heading">Provisional inventory</h2>
+<p id="inventory-summary" role="status" aria-live="polite">Start a sweep to view inventory.</p>
+<p id="inventory-state">Reviewed detection results appear here when imported into this sweep.</p>
+<p id="inventory-error" role="status" aria-live="polite" hidden></p>
+<div class="inventory-table"><table><thead><tr><th>Book or review</th><th>Shelf</th><th>Ownership</th><th>Details</th><th>Evidence</th></tr></thead><tbody id="inventory-rows"></tbody></table></div>
+<div class="controls"><button id="inventory-prev" disabled>Previous rows</button><button id="inventory-next" disabled>Next rows</button><button id="inventory-retry">Refresh inventory</button></div>
+<p id="inventory-page"></p><a id="inventory-export" hidden>Download provisional inventory JSON</a>
+</section>
+<p><a href="/recognition">Review and queue saved spine readings</a></p>
+<h2>Saved evidence</h2><ol id="frames"></ol>
+<p>Book identification, measurements, valuation and live voice guidance are not connected to this capture page yet.</p>
+</main><script type="module" src="/assets/app.mjs"></script></body></html>

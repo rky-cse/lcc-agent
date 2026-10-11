@@ -1,6 +1,36 @@
 # Contracts, evidence and claim packet
 
-Status: proposed semantics for review. This document is a contract specification, not executable schemas or application code. The original required keys are preserved below; nullable types and unresolved status handling need confirmation before M01.
+Latest M08 contracts require reviewed physical commands, exact originals/revisions, explicit set/component counting and art assertions, checked per-axis geometry, and explicit unknown-price/range policy. Item valuation results retain original sources/FX and deterministic min/max; M01 packet gates are unchanged. See [M08 contracts](42-m08-group-review.md).
+
+Latest contract extension: M07 ValuationRequest requires explicit market precision/appraisal thresholds, used basis/condition, fees, rounding/freshness/FX policy and consent. Results preserve literal original prices, source hashes, dated FX and independent market totals. These exports do not change M01 PacketInput; packet integration belongs to M10. See [M07 contracts and review](41-m07-group-review.md).
+
+**Latest review: M06 group.** Sweep GET is read-only; explicit start requires a complete bounded shelf plan and pause retains frozen inputs. Voice watch requires an explicit boolean. New art/shelf-correction actions preserve literal statements and same-sweep evidence. Recognition drain never implies packet readiness. See [group review](40-m06-group-review.md).
+
+**Latest review: M06c2g1.** --run-one --job-id ID selects only that queued job; optional --kind must match its stored kind. Terminal selections return verified status/evidence without retries. worker_active is an optional backward-compatible durable activity marker. --interrupt can close running or active-cancelled records after the old worker stops. See [review record](37-m06c2g1-review.md).
+
+**Latest review: M06c2f.** M06c2f ResolutionReview requires session/review IDs, current inventory/reference revisions, reviewer, overall reason and exactly one conclusive Decision with provenance. GET/POST /api/guidance/{session}/resolution/{observation} preserve explicit physical targets, exact idempotent replay and URL/body scope; POST body is bounded at 16 KiB. See [review record](36-m06c2f-review.md).
+
+[M06c2e RegistrationReview](35-m06c2e-review.md) pins review/session/job IDs, inventory/reference revisions, reviewer/reason and a decision for each candidate. The service produces an existing TrackingCommand with canonical provenance and detector SHA. Applied receipts require matching ledger command hashes/revisions; current inventory is supplied separately from historical outcomes. Registration POST alone has a bounded 600 KiB body for 256 decisions; other controls remain 4 KiB.
+
+[M06c2d](34-m06c2d-review.md) extends recognition GET with frames/total_frames/frame_offset/frame_limit. Public saved-frame metadata contains ID/SHA/dimensions/EXIF/synthetic only. Explicit browser rectangles are original encoded pixel edges and must fit the saved image; existing DetectionJob pins and stale rejection remain authoritative.
+
+[M06c2c DetectionJob](33-m06c2c-review.md) requires kind=detection, global job ID, guided session, expected inventory/reference revisions and DetectionRequest with explicit saved-frame hash, shelf region/ID and policy. queue_stage.json pins the actual ledger revision; the original detector stage retains independent-frame revision zero. Typed unavailable/partial results never imply registered counts.
+
+[M06c2b HTTP contracts](32-m06c2b-review.md) wrap ReadingJob with matching URL/body session and bounded control bodies. GET supplies revision-pinned observation pages and session-filtered jobs. Cancellation accepts only a bounded job token. Only published reading JSON/crop artifacts are served after integrity/session guards; partial/stale status never means accepted identity.
+
+[M06c2a](31-m06c2a-review.md) adds ReadingJob: global job ID, bound session, expected reference revision and ReadingRequest. Queue lifecycle and reader stage status are separate; completed partial/unavailable evidence remains unverified. Exact enqueue retries preserve inputs. Cancel/interrupted attempts never requeue; later revision changes make completed results ineligible for review.
+
+[M06c1](30-m06c1-review.md) adds `CorrectionExecution`: request/session/intent IDs, guidance/inventory revision guards, explicit apply/dismiss decision and reviewer/reason. Prepared and final receipts carry command/hash, original refs, actual event revision and typed stages. Execution stages live in guidance `execution_events`, separately from claimant turns. `dispatching` is unresolved: a mutation may already have committed; the exact prepared request must be resumed. Only a verified physical ledger event supports `applied=true`. Applied receipts are historical; current ownership is projected separately in `correction_targets`.
+
+[M06b](29-m06b-review.md) adds bounded voice envelopes for PCM, typed text, same-sweep original preview, state refresh, audio-end and disconnect. Server events include epoch, readiness/state, audio/transcript, interruptions, cancellation, proposals and reconnect requests. `propose_guidance` returns a validated claimant command with `applied=false` and `requires_claimant_review=true`; it does not mutate guidance. The voice journal persists unverified transcript chunks, proposals and dismissals separately from field evidence. Resumption handles/raw audio never appear in it. Confirmation uses M06a's revision guard; inventory correction execution remains separate.
+
+[M06a](28-m06a-review.md) adds `GuidanceCommand` with session/command ID, guidance revision, speaker and a strict action payload. Locale/reference declarations, capture binding, evidence requests/receipt/decline, binding assertions and correction/target selection have separate roles and validation. Guidance revision guards turns; inventory revision guards targets/proposals; reference revision marks scale dependencies. Received evidence remains analysis-pending, binding remains asserted, and prepared corrections remain unapplied. `metric_ready=false` prevents declarations from becoming measurements. Exact retries are durable and idempotent.
+
+Status: M01 implements the packet input models, stage envelope, deterministic totals and minimal export in `library_claim/`. The richer producer contracts below remain the architecture for later modules. See [M01 review](14-m01-review.md) for exact implemented boundaries. Reporting conventions are explicit packet policy inputs; the synthetic example does not select the user's country or production geometry policy.
+
+[M05b2](26-m05b2-review.md) now implements `IdentityCommand`/`MetadataDecision`, reviewed work projection and separate track-level `bibliography.field_provenance`. Work review events carry a typed StageResult and artifact hashes. Book `identified` can have unknown edition/ISBN; assertions remain distinct from visible evidence. Catalogue edition IDs stay null. M01 final-packet assertion provenance integration remains M10; it currently removes text fields lacking saved-frame references.
+
+[M05b3](27-m05b3-review.md) adds `EditionRequest`/`EditionCommand`, bounded edition records and explicit edition acceptance/rejection/clear. Supported edition acceptance can set the track's `accepted_edition_id`; it leaves Book metadata/price fields unchanged and retains binding as a separate claimant declaration. Typed lookup/review stages, source hashes, revision guards and dependency invalidation accompany mutations. Unaccepted/missing/conflicting editions remain unknown.
 
 ## Common rules
 
@@ -95,6 +125,22 @@ Money uses Decimal or integer minor units and a documented currency rounding pol
 
 ## Interface proposal
 
+M03a now produces `MeasurementEvidence` for accepted annotated spine dimensions from a verified saved-frame reference. Full typed calibration inputs, diagnostics and structured unavailable errors remain in separate saved measurement JSON files. M01 continues to audit evidence/value agreement; physical geometry validity is the M03a boundary. Bibliographic/price/room unknowns are preserved. See [M03a contract and review](17-m03a-review.md).
+
 Keep backend endpoints small: create/read sweep, upload saved evidence, read state/events, finish capture, obtain packet/report/evidence bundle and explicitly delete local run data. A WebSocket carries audio, conversational preview, turns, validated tool requests and ordered UI events. Evidence bytes should use a separate bounded upload path so they cannot starve audio. These are interface intents; concrete routes and payload schemas are implemented only in their authorized module.
 
 Important planned contract cases: all-unknown packet, partially priced book, identified work with unknown edition, unreadable spine with valid dimensions, signed-book correction, art unanswered/print/original, ordinary unpriced item, mixed currency, missing FX, repeated shelf observation, duplicate callback, stale revision, missing frame, incomplete geometry and stage deadline. Fixtures are explicitly synthetic and never presented as ground-truth results.
+
+## M09 implementation update
+
+M09's AreaRequest makes floor/wall/opening/shelf observations, completeness and gross/net/dimension/height interpretations explicit. GET /api/areas/schema exposes its generated input schema. Results retain the M01 Room and MeasurementEvidence contracts and add area_units, partial subtotals, sensitivity, reconstruction provenance, contents hash, stale flags and packet_ready=false. Exact run retries are immutable; changed inputs require a fresh run ID. See [M09 contract and review](43-m09-group-review.md).
+
+## M10 implementation update
+
+FinalizationRequest pins both inventory revisions, absolute timezone-aware deadline, saved valuation/area run selections, optional M03 book measurements, explicit aggregation and an uncompressed byte budget. GET /api/finalization/schema exposes the full contract. waiting_for_drain -> frozen -> published is resumable/idempotent; a changed payload needs a new run ID. packet_ready means an archived artifact exists, while packet_status remains partial and physical coverage/accuracy remain unverified. Quote manifests retain source literal amounts and separate dated FX. See [M10 contracts](44-m10-group-review.md).
+
+## M11 implementation update
+
+Offline evaluation uses strict Truth, FrozenTruth, EvaluationPolicy, Assessment and telemetry contracts. Truth/config must predate capture; explicit one-to-one physical matching and independent title/price-basis judgments preserve full denominators. Confidence threshold and primary denominator have no default. Only conservative all-comparison spine/price aggregation is supported. ZIP files are read without extraction, with size/path/manifest checks and independent saved-source/FX/totals audits. Truth is never a runtime catalogue.
+
+Delivery specifications bind local assets, demo/setup assertions and observed error IDs. Measured-repair evidence must include before/after/held-out result directories and after/held-out packet archives; metrics and eligibility are recomputed. File hashes cannot attest human truth, video content, root causes or private repository permissions. No external submission occurs. See [M11 contracts and operations](45-m11-group-review.md).

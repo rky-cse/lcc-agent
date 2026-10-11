@@ -1,0 +1,20 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reading review</title><link rel="stylesheet" href="/assets/style.css"></head>
+<body><main><h1>Saved spine reading</h1><p><a href="/">Capture</a> · <a href="/voice">Guided setup</a></p>
+<p>Select a saved physical observation to queue a reading. Results need review before identity can be accepted. Reading does not change inventory.</p>
+<form id="session-form"><label>Guided session ID <input id="session-id" required pattern="[a-f0-9]{32}" maxlength="32" autocomplete="off"></label><button>Open session</button></form>
+<button id="refresh" disabled>Refresh evidence and job status</button><p>Refreshing clears an unsaved shelf selection. It never starts a worker.</p><p id="status" role="status" aria-live="polite">Open a bound guided session.</p>
+<section class="recognition-workflow" aria-labelledby="workflow-heading"><h2 id="workflow-heading">Where this sweep is in the workflow</h2><p id="workflow-status" role="status">Open a bound guided session to see saved images, extraction, and the next action.</p></section>
+<section aria-labelledby="provisional-inventory-heading"><h2 id="provisional-inventory-heading">Provisional inventory from detected images</h2><p id="inventory-projection" role="status">Open a bound guided session to see detected spine regions and their current review state.</p><a id="inventory-json" target="_blank" rel="noopener" hidden>Open provisional inventory JSON</a><div id="inventory-evidence"></div></section>
+<h2>Saved observations</h2><p id="pins"></p><div id="observations"></div><button id="prev" disabled>Previous observations</button><button id="next" disabled>Next observations</button>
+<h2>Saved-frame shelf detection</h2><p>Select a saved original and mark the shelf. Detection proposes book outlines; importing physical copies requires separate review.</p>
+<div id="saved-frames"></div><p id="frame-page"></p><button id="frame-prev" disabled>Previous frames</button><button id="frame-next" disabled>Next frames</button>
+<p id="region-status" role="status" aria-live="polite">Select a saved frame to mark its shelf.</p>
+<div id="region-editor" hidden><div id="region-stage"><div id="region-image"></div><div id="region-box" hidden></div></div>
+<form id="region-form"><label>Shelf ID <input id="shelf-id" required maxlength="128"></label>
+<label>Left pixel edge <input id="x0" type="number" required min="0" step="1"></label><label>Top pixel edge <input id="y0" type="number" required min="0" step="1"></label>
+<label>Right pixel edge <input id="x1" type="number" required min="1" step="1"></label><label>Bottom pixel edge <input id="y1" type="number" required min="1" step="1"></label>
+<label>Smallest proposed spine area (original pixels²) <input id="min-area" type="number" required min="0.01" step="any"></label>
+<label>Maximum candidate overlap fraction (between 0 and 1) <input id="max-overlap" type="number" required min="0.000001" max="0.999999" step="any"></label>
+<button id="queue-detection" disabled>Queue shelf detection</button></form></div>
+<h2>Recognition jobs and extracted evidence</h2><p>Each completed job now shows its result beside the original/crop: proposed book and non-book counts for detection, or literal visible text for a spine reading. These are proposals, not accepted identities or final counts. Run selects only the displayed saved job when server dispatch is enabled.</p><p id="dispatch-status" role="status" aria-live="polite">Open a bound guided session.</p><div id="jobs"></div>
+</main><script type="module" src="/assets/recognition_page.mjs"></script></body></html>

@@ -1,6 +1,16 @@
 # Identification and source-backed valuation
 
-Status: processing boundaries proposed; actual OCR/detector models, locale providers, catalogue adapters and price policies remain unselected.
+M08 non-book valuation is implemented for review: exact visible brand/model or multiple material/function/verified-size comparables, explicit min/max policy, original/unanswered art appraisal, literal print assertions, local-first sources/dated FX and missing-price exclusions. No source/physical accuracy was smoke tested. See [M08 review](42-m08-group-review.md).
+
+M07 implementation update: strict selected-retailer JSON-LD offers now support literal physical new/used asking prices; dated Frankfurter ECB FX and independent two-country ten-track valuation are implemented. Market suitability is explicitly reviewer-declared, source search is not exhaustive, completed-sales offers remain unsupported, and every policy remains a required per-run choice. Source coverage/accuracy have not been smoke tested. See [M07 group review](41-m07-group-review.md).
+
+[M06c1](30-m06c1-review.md) executes explicit guided include/exclude or clear-identity reviews through existing command stores. Clear preserves physical evidence/ownership and archived bibliographic artifacts, revokes current work/edition projection and carries existing dependency invalidations. Ownership changes one physical copy without deduplicating titles. Signed/first-edition assertions remain separate review; no pricing job or authentication follows. Downstream workers must honor these revisions and invalidations.
+
+[M06a](28-m06a-review.md) now supplies typed ISBN/binding evidence questions and physical-target correction intents. ISBN requests permit only shelf views without moving books; invisible ISBNs remain unknown. Binding is a claimant assertion, received frames await analysis, and ownership/identity corrections are pending proposals. No recognition job, edition acceptance, pricing or correction execution is triggered by this module.
+
+Implemented boundaries: [M05a crop/literal text](24-m05a-review.md), [M05b1 work candidates](25-m05b1-review.md), [M05b2 reviewed work](26-m05b2-review.md) and [M05b3 edition review](27-m05b3-review.md). Crops/regions trace to exact originals. Only explicit reviewer commands accept supported work/edition records on physical tracks. Edition acceptance requires a confirmed visible ISBN and consistent work/title/catalogue physical format plus a declared binding. Visible metadata and claimant assertions retain separate provenance; confidence/prices remain unknown. Synthetic reading/review smoke and public retrieval checks passed their narrow boundaries; the real edition record's missing format correctly blocked acceptance. Production language coverage and actual shelf/edition precision remain unverified.
+
+Status: M04a uses Gemini 3.1 Flash-Lite to propose individual spine polygons from one saved shelf image, with local validation and provisional count/review. Live synthetic smoke passed, actual-shelf accuracy unverified. Physical tracking, assisted matching, saved-crop reading, work/edition candidates and explicit review are implemented. Automatic landmark acquisition, integrated recognition, real edition-format coverage, locale sources and price policies remain pending. See [M04a](20-m04a-review.md) and subsequent review records.
 
 ## Physical detection before identity
 

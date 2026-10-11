@@ -1,5 +1,29 @@
 # Reference app audit and reuse ledger
 
+**Latest review: M11.** Reuses target Decimal serialization, typed boundaries, saved retailer/FX audit, immutable packet and report/summary logic. Adds offline comparison/delivery tools; no reference code, dependency or provider transport was copied and the reference was not retested. M07–M10 valuation/geometry/finalization are target-specific. [M11 review](45-m11-group-review.md).
+
+**Latest review: M06 group.** Reused capture/quality, voice transport/journal, exact-ID workers, recognition/registration guards, crop reading and ledger receipts. New glue adds bounded coordination, image correspondence proposals and combined UI. NumPy already installed is now declared; no dependency installation or reference retest. See [group review](40-m06-group-review.md).
+
+**Latest review: M06c2g1.** Reused target queue, reading/detection exports, existing Gemini adapter and credential/free-tier guards. No reference changes, reference retest, dependency addition or new provider transport. This part adds exact selection and closes cancellation slot overlap. See [review record](37-m06c2g1-review.md).
+
+**Latest review: M06c2f.** M06c2f reuses target TrackStore resolve, GuidanceStore binding/revisions, archived validated detection evidence, immutable originals and the registration physical-review renderer. No reference/provider code or dependency is added. The user-tested reference is not retested. See [review record](36-m06c2f-review.md).
+
+M06c2e reuses the target TrackStore import/rollback/archive and detector bundle validator, adding a dependency guard and explicit browser review. No reference retest or provider call; no new dependency. See [review](35-m06c2e-review.md).
+
+M06c2d reuses target saved evidence/manifest/HTTP and DetectionJob validation. A small browser rectangle selector supplies explicit original-pixel regions; no reference code retest or new dependency. See [review](34-m06c2d-review.md).
+
+M06c2c reuses target M04a frame validation, detection provider/export and the existing M06c2 queue. No reference app retest, copied avatar code or dependency installation. The old detector bundle schema stays compatible with reviewed tracking imports. See [review](33-m06c2c-review.md).
+
+M06c2b reuses the target queue, capture/ledger observations and HTTP control boundaries. Small browser controls are target-specific; no additional reference test or dependency installation. Voice storage cancellation was repaired after regression exposed a SQLite cleanup race. See [review](32-m06c2b-review.md).
+
+M06c2a reuses target FrameStore/GuidanceStore revision guards and M05a crop/reader/provider/export logic. No additional reference execution or dependency was needed; no new reference UI/avatar code was copied. See [review](31-m06c2a-review.md).
+
+M06c1 reuse update: [correction execution review](30-m06c1-review.md). Reused M06a intent generation, FrameStore integrity, TrackStore/IdentityStore mutation and exact retry, StageResult, target HTTP controls and portable identity evidence export. Added an explicit-review prepared request/receipt protocol and browser target/outcome panel. No new reference code, provider request, policy/ADK execution or recognition scheduler was introduced.
+
+M06b reuse update: [live voice review](29-m06b-review.md). Adapted the reference's PCM resampling/media envelopes/playback and interruption-first handling into optional target modules. Added AudioWorklet, queue/generation bounds, exact WS access checks, durable proposal/transcript journal and provider resumption/context compression. Target questions and reviewed commands replaced insurance/policy/ADK tools; avatar/sketch remain omitted. The target Gemini smoke used the confirmed local key without testing or changing the reference application.
+
+M06a reuse update: [guided session review](28-m06a-review.md). Reused target FrameStore integrity, CaptureSessions lifecycle, TrackStore projection, existing correction schemas, StageResult and HTTP controls. Added a library-specific typed state machine and questions rather than copying reference policy/intake logic. Reference voice transport/playback remains the M06b candidate; no avatar/sketch dependency or provider request was introduced. The user-tested reference baseline remains accepted without further tests.
+
 Inspected on 10 October 2026. Reference root: `E:\awesome_llm_apps\awesome-llm-apps\voice_ai_agents\insurance_claim_live_agent_team`. Parent repository revision: `4bf51ab704fb2c5b3803cd5191b30d7dcdb51dc2`. No reference files were modified or copied into application code. `.env` credentials were not inspected.
 
 ## What the reference actually supplies
@@ -8,7 +32,9 @@ FastAPI backend, browser camera/microphone transport, Gemini live conversation, 
 
 The audit distinguishes observed source behavior from executed results. Source analysis below identifies design limitations; it is not a claim that every race was reproduced at runtime.
 
-## Execution record
+## Initial documentation-stage execution record
+
+The following table preserves the initial results. After the user's "next" instruction, M00 installed an isolated environment, passed 55 Python tests and dependency checks, and passed startup/HTTP/session/empty-packet smoke checks. Real voice/camera/provider behavior remains pending. [Current M00 verification](13-m00-preflight.md).
 
 | Check | Actual outcome |
 | --- | --- |
@@ -92,3 +118,39 @@ Add cases for abrupt disconnect during correction, revision arriving during stat
 | `schemas.py` | `B5D0ADE6B0118083026EFBA5A0B6746B5F2F2377AF5E51CB5A94D8BBE9C7D609` |
 
 The parent reference repository contains an Apache-2.0 LICENSE. When adapting source, preserve its license/attribution and modification notices, check any applicable NOTICE and third-party component terms, and disclose used models/libraries. This step did not copy application source or reference credentials.
+
+## M02b reuse update
+
+Read-only inspection of `live_demo/app.js` camera lifecycle and `sendFrame` informed the target's pending-start guard, generation checks, track cleanup and canvas-based frame extraction. The target implements these standard API patterns independently in `web/app.mjs`/`queue.mjs`, with dedicated regression checks. It replaces the reference's 640 × 480 preference/downscaled base64 WebSocket previews with native-stream-resolution JPEG evidence blobs, a bounded HTTP FIFO and an independent 320-pixel latest-preview slot. Preview data cannot replace acknowledged evidence. Policy intake, ADK agents, avatar, audio and sketch code/dependencies were not added to M02b; voice transport remains deferred to M06. Reference files/credentials are unchanged, and no reference tests ran in this part.
+
+## M03a reuse update
+
+The reference provides no validated metric planar adapter. M03a reuses this project's M02a immutable originals/store and M01 evidence/packet/export boundaries; the normalized homography calculation is independently implemented with standard-library math. No upstream source or dependency was copied, no API key was needed and no reference tests were run. Voice/provider reuse remains M06 work.
+
+## M03b1 reuse update
+
+No reference sparse reconstruction code exists to reuse. The target reuses its own immutable evidence, stage/room contracts and serializer, then invokes optional pinned PyCOLMAP/NumPy in an isolated CPU worker. No reference app source/credentials changed or tests ran. Provider/policy/avatar dependencies remain absent from this part; metric anchor/boundary recovery is deferred to M03b2.
+
+## M03b2 reuse update
+
+Reuses target M03b1 native models/poses, M02 originals and M01 dimension evidence/export. Adds fixed-intrinsic support and independently implemented ray/shape/scale calculations. No upstream reference implementation, API key or additional dependency was copied. No reference tests ran; actual-native synthetic room smoke runs only the target.
+
+## M04a reuse update
+
+Reuses target immutable originals, M01 unidentified rows/stages/serializer and M03 polygon helpers. The reference has no validated single-spine detector; a small independent Gemini REST adapter replaces reliance on its aggregate count. No reference code/SDK dependencies were copied or tests run. The reference `.env` key was read privately for target synthetic smoke under the user's earlier authorization, without modifying/copying credentials. All polygons/counts remain provisional pending actual-shelf evaluation.
+
+## M05a reuse update
+
+Reuses target FrameStore, reviewed observations, projective geometry, stage contracts and Gemini transport. Shared structured-image requests preserve M04a behavior. No new reference source/SDK/catalogue dependency copied. Two target synthetic crop calls used the earlier authorized key read locally; reference files/credentials unchanged and no reference tests ran. Visible text remains unverified and cannot establish identity or prices in this module.
+
+## M05b1 reuse update
+
+Reuses target original/observation integrity, M05a crop/span projection, M01 stage contracts and serializer, and the no-redirect HTTP handler. Adds a narrow independent work-search/cache/comparison adapter against official Open Library documentation; no validated reference catalogue implementation was available to reuse. No reference source, credentials or SDK dependencies copied or modified; no reference tests ran. One successful public lookup plus a cache-only process restart used no Gemini key. Work/edition acceptance remains a later review boundary.
+
+## M05b2 reuse update
+
+Reuses target physical inventory transactions/command fingerprints, M05a evidence validation, M05b1 candidate recomputation, Book/StageResult contracts and read-only inventory HTTP projection. Adds explicit bibliographic review and separate visible/asserted metadata rather than adopting reference model-generated identity. No reference code, credentials, network call, SDK or dependency added. Actual synthetic CLI/HTTP/restart/correction smoke runs only the target. Catalogue edition validation remains M05b3.
+
+## M05b3 reuse update
+
+Reuses target work review/visible ISBN archive, physical inventory transactions, stage contracts, provenance/export and bounded catalogue transport/cache. Search/edition adapters share the existing persistent request gate rather than adding a separate rate limiter. Adds narrowly validated edition records, comparison and explicit review; no reference edition logic was available to reuse. One successful public edition lookup used no key/image; no reference tests, credential reads, SDK/dependency installs or reference source changes ran. Missing live physical-format data remained unresolved rather than inferred.

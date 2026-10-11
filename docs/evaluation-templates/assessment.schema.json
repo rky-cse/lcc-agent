@@ -1,0 +1,406 @@
+{
+  "$defs": {
+    "Cost": {
+      "additionalProperties": false,
+      "properties": {
+        "job_id": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Job Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "actual",
+            "estimated",
+            "unknown"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "amount": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Amount"
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "usage_basis": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Usage Basis",
+          "type": "string"
+        },
+        "rate_date": {
+          "title": "Rate Date",
+          "type": "string"
+        },
+        "evidence": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "job_id",
+        "kind",
+        "amount",
+        "currency",
+        "usage_basis",
+        "rate_date",
+        "evidence"
+      ],
+      "title": "Cost",
+      "type": "object"
+    },
+    "Match": {
+      "additionalProperties": false,
+      "properties": {
+        "truth_id": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Truth Id",
+          "type": "string"
+        },
+        "predicted_id": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Predicted Id",
+          "type": "string"
+        },
+        "physical_evidence": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Physical Evidence",
+          "type": "string"
+        },
+        "title_correct": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Title Correct"
+        },
+        "title_evidence": {
+          "title": "Title Evidence",
+          "type": "string"
+        },
+        "price_basis_confirmed": {
+          "items": {
+            "enum": [
+              "replacement_cost",
+              "used_value"
+            ],
+            "type": "string"
+          },
+          "title": "Price Basis Confirmed",
+          "type": "array"
+        }
+      },
+      "required": [
+        "truth_id",
+        "predicted_id",
+        "physical_evidence",
+        "title_correct",
+        "title_evidence",
+        "price_basis_confirmed"
+      ],
+      "title": "Match",
+      "type": "object"
+    },
+    "Stage": {
+      "additionalProperties": false,
+      "properties": {
+        "stage": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Stage",
+          "type": "string"
+        },
+        "job_id": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Job Id",
+          "type": "string"
+        },
+        "clock_id": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Clock Id",
+          "type": "string"
+        },
+        "queued": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Queued"
+        },
+        "started": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Started"
+        },
+        "ended": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Ended"
+        },
+        "retries": {
+          "minimum": 0,
+          "title": "Retries",
+          "type": "integer"
+        },
+        "usage": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "title": "Usage",
+          "type": "object"
+        },
+        "evidence": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stage",
+        "job_id",
+        "clock_id",
+        "queued",
+        "started",
+        "ended",
+        "retries",
+        "usage",
+        "evidence"
+      ],
+      "title": "Stage",
+      "type": "object"
+    },
+    "Timing": {
+      "additionalProperties": false,
+      "properties": {
+        "clock_id": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Clock Id",
+          "type": "string"
+        },
+        "sweep_started": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Sweep Started"
+        },
+        "sweep_ended": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Sweep Ended"
+        },
+        "packet_ready": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Packet Ready"
+        },
+        "packet_sha256": {
+          "title": "Packet Sha256",
+          "type": "string"
+        },
+        "evidence": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "clock_id",
+        "sweep_started",
+        "sweep_ended",
+        "packet_ready",
+        "packet_sha256",
+        "evidence"
+      ],
+      "title": "Timing",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "reviewer": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Reviewer",
+      "type": "string"
+    },
+    "reviewed_at": {
+      "format": "date-time",
+      "title": "Reviewed At",
+      "type": "string"
+    },
+    "truth_sha256": {
+      "title": "Truth Sha256",
+      "type": "string"
+    },
+    "packet_sha256": {
+      "title": "Packet Sha256",
+      "type": "string"
+    },
+    "matches": {
+      "items": {
+        "$ref": "#/$defs/Match"
+      },
+      "title": "Matches",
+      "type": "array"
+    },
+    "false_merges": {
+      "items": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "False Merges",
+      "type": "array"
+    },
+    "false_splits": {
+      "items": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "False Splits",
+      "type": "array"
+    },
+    "timing": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Timing"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "stages": {
+      "items": {
+        "$ref": "#/$defs/Stage"
+      },
+      "title": "Stages",
+      "type": "array"
+    },
+    "costs": {
+      "items": {
+        "$ref": "#/$defs/Cost"
+      },
+      "title": "Costs",
+      "type": "array"
+    },
+    "cost_coverage_complete": {
+      "title": "Cost Coverage Complete",
+      "type": "boolean"
+    },
+    "second_locale_book_ids": {
+      "items": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Second Locale Book Ids",
+      "type": "array"
+    },
+    "second_locale_country": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Second Locale Country"
+    }
+  },
+  "required": [
+    "reviewer",
+    "reviewed_at",
+    "truth_sha256",
+    "packet_sha256",
+    "matches",
+    "false_merges",
+    "false_splits",
+    "timing",
+    "stages",
+    "costs",
+    "cost_coverage_complete",
+    "second_locale_book_ids"
+  ],
+  "title": "Assessment",
+  "type": "object"
+}

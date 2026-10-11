@@ -1,0 +1,354 @@
+{
+  "$defs": {
+    "Asset": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "title": "Asset",
+      "type": "object"
+    },
+    "Demo": {
+      "additionalProperties": false,
+      "properties": {
+        "asset": {
+          "$ref": "#/$defs/Asset"
+        },
+        "duration_s": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Duration S"
+        },
+        "sweep_id": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Sweep Id",
+          "type": "string"
+        },
+        "packet_sha256": {
+          "title": "Packet Sha256",
+          "type": "string"
+        },
+        "reviewer": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Reviewer",
+          "type": "string"
+        },
+        "unedited_single_take": {
+          "title": "Unedited Single Take",
+          "type": "boolean"
+        },
+        "voice_audible": {
+          "title": "Voice Audible",
+          "type": "boolean"
+        },
+        "continuous_sweep": {
+          "title": "Continuous Sweep",
+          "type": "boolean"
+        },
+        "inventory_live": {
+          "title": "Inventory Live",
+          "type": "boolean"
+        },
+        "final_packet_visible": {
+          "title": "Final Packet Visible",
+          "type": "boolean"
+        },
+        "evidence": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset",
+        "duration_s",
+        "sweep_id",
+        "packet_sha256",
+        "reviewer",
+        "unedited_single_take",
+        "voice_audible",
+        "continuous_sweep",
+        "inventory_live",
+        "final_packet_visible",
+        "evidence"
+      ],
+      "title": "Demo",
+      "type": "object"
+    },
+    "Failure": {
+      "additionalProperties": false,
+      "properties": {
+        "error_id": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Error Id",
+          "type": "string"
+        },
+        "impact": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Impact",
+          "type": "string"
+        },
+        "root_cause": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Root Cause",
+          "type": "string"
+        },
+        "evidence": {
+          "$ref": "#/$defs/Asset"
+        },
+        "tried": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Tried",
+          "type": "string"
+        },
+        "next_two_weeks": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Next Two Weeks",
+          "type": "string"
+        }
+      },
+      "required": [
+        "error_id",
+        "impact",
+        "root_cause",
+        "evidence",
+        "tried",
+        "next_two_weeks"
+      ],
+      "title": "Failure",
+      "type": "object"
+    },
+    "Repair": {
+      "additionalProperties": false,
+      "properties": {
+        "metric": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Metric",
+          "type": "string"
+        },
+        "before_results": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Before Results",
+          "type": "string"
+        },
+        "after_results": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "After Results",
+          "type": "string"
+        },
+        "after_archive": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "After Archive",
+          "type": "string"
+        },
+        "heldout_results": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Heldout Results",
+          "type": "string"
+        },
+        "heldout_archive": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Heldout Archive",
+          "type": "string"
+        },
+        "changed": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Changed",
+          "type": "string"
+        },
+        "reviewer": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Reviewer",
+          "type": "string"
+        },
+        "evidence": {
+          "$ref": "#/$defs/Asset"
+        }
+      },
+      "required": [
+        "metric",
+        "before_results",
+        "after_results",
+        "after_archive",
+        "heldout_results",
+        "heldout_archive",
+        "changed",
+        "reviewer",
+        "evidence"
+      ],
+      "title": "Repair",
+      "type": "object"
+    },
+    "Setup": {
+      "additionalProperties": false,
+      "properties": {
+        "duration_s": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Duration S"
+        },
+        "clean_environment": {
+          "title": "Clean Environment",
+          "type": "boolean"
+        },
+        "success": {
+          "title": "Success",
+          "type": "boolean"
+        },
+        "reviewer": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Reviewer",
+          "type": "string"
+        },
+        "evidence": {
+          "$ref": "#/$defs/Asset"
+        }
+      },
+      "required": [
+        "duration_s",
+        "clean_environment",
+        "success",
+        "reviewer",
+        "evidence"
+      ],
+      "title": "Setup",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "archive": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Archive",
+      "type": "string"
+    },
+    "second_archive": {
+      "anyOf": [
+        {
+          "maxLength": 4000,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Second Archive"
+    },
+    "results": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Results",
+      "type": "string"
+    },
+    "architecture": {
+      "$ref": "#/$defs/Asset"
+    },
+    "demo": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Demo"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "setup": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Setup"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "failures": {
+      "items": {
+        "$ref": "#/$defs/Failure"
+      },
+      "maxItems": 3,
+      "title": "Failures",
+      "type": "array"
+    },
+    "repair": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Repair"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "repo_url": {
+      "title": "Repo Url",
+      "type": "string"
+    },
+    "private_repo_asserted": {
+      "title": "Private Repo Asserted",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "archive",
+    "results",
+    "architecture",
+    "demo",
+    "setup",
+    "failures",
+    "repair",
+    "repo_url",
+    "private_repo_asserted"
+  ],
+  "title": "Delivery",
+  "type": "object"
+}

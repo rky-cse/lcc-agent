@@ -1,6 +1,6 @@
 # One-page failure log — blank run template
 
-**Not a completed evaluation.** No library sweep or target implementation exists yet. Fill this page only from observed run evidence. The reference startup dependency failure is documented separately in the reference audit and is not presented as one of the target's three worst real-run errors.
+**Not a completed physical evaluation.** M01–M10 implementation and M11 tooling exist. No independently measured full-room evaluation, demo, three worst room errors or measured held-out repair has been supplied. Fill this page only from observed run evidence. Automated fixture regressions and the reference startup dependency failure are not target accuracy results.
 
 Run/sweep ID: pending. Packet revision: pending. Device/model/configuration: pending. Capture/date: pending. Ground-truth version: pending. End-to-packet time: not measured. Sweep cost: not measured; mark actual versus estimated and name rate/usage source.
 
@@ -21,3 +21,5 @@ Run/sweep ID: pending. Packet revision: pending. Device/model/configuration: pen
 | Critical path / end-to-packet | Not measured | Not measured | Not measured |
 
 Report why each error occurred, not only that a model failed. Include missing outputs and unrecovered shelves in the results. A successful targeted repair must show an actual measured difference and any regression. Explain how two additional weeks would address observed causes; do not replace root-cause analysis with an unspecific request for a better model.
+
+M11's delivery CLI checks observed error IDs, hashes analysis evidence, records before/after/held-out comparisons and generates an actual-run failure log. Root-cause conclusions remain attributed to the reviewer. [Operation and remaining evidence](45-m11-group-review.md).
