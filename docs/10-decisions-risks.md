@@ -1,6 +1,26 @@
 # Decision register and risks
 
-Status as of 10 October 2026: latest "next" authorized M04a. Gemini 3.1 Flash-Lite proposal adapter passed a live synthetic shelf smoke and local tests, but actual-shelf accuracy remains unverified. M04b awaits review/next instruction. Physical capture/geometry and camera-profile acquisition preference remain pending. Agent-led reference intake and the user-tested baseline remain accepted. The initial Gemini 2.5 Flash smoke returned HTTP 404; no automatic provider fallback was added.
+Latest review: M08 whole implementation group. Unknown ordinary price status, comparable-count/host/size policy, set/component counting, ownership and art assertions remain explicit reviewed inputs. No consumer/source coverage or real physical acceptance is assumed. M09 areas and M10 final packet remain pending. See [M08 group review](42-m08-group-review.md).
+
+Latest review: M07 implementation group. Whole-module delivery and no-smoke workflow supersede the earlier per-subpart/smoke instructions below. Required per-run inputs resolve locale, used-price basis/condition, source review, appraisal thresholds, precision, rounding, fees and FX freshness without global assumptions. Strict metadata/source coverage and real valuation acceptance remain unverified. See [M07 group review](41-m07-group-review.md).
+
+**Latest review: M06 group.** User authorized all remaining M06 subparts together and disabled further smoke tests. Automatic registration suggestions remain unaccepted; shelf ownership is reviewed, special-copy claims require appraisal. Combined Android, microphone and live latency behavior remains unverified. M07–M10 still supply valuation, areas and final packet closure. See [group review](40-m06-group-review.md).
+
+**Latest review: M06c2g1.** Cancellation cannot undo a submitted provider request. Active cancelled records retain the dispatch slot across restarts. Recovery requires operator confirmation that the old process has exited; no automatic lease expiry, retry or process-liveness detector is added. Cross-store quota scheduling and live latency remain unverified. See [review record](37-m06c2g1-review.md).
+
+**Latest review: M06c2f.** M06c2f resolves exactly one explicit unresolved observation per review. New copies use the existing included ownership default; same-copy links preserve existing ownership/identity. Anonymous reviewer declarations and real physical association accuracy remain limitations. Ambiguity stays unresolved by leaving without applying. See [review record](36-m06c2f-review.md).
+
+Latest authorized boundary: [M06c2e explicit physical registration](35-m06c2e-review.md). Full regression 372 Python/45 Node; synthetic HTTP/restart and isolated browser review passed. Reference/inventory guards run in the import transaction and exact retries recover commit-before-ack failures. Human same-copy review remains uncalibrated; automatic correspondence/capture and real-device accuracy remain pending.
+
+Latest boundary, completed 11 October 2026: [M06c2d browser shelf-region selection](34-m06c2d-review.md). Full suite 359 Python/40 Node passed; browser enrollment, replay worker and completed-result restart passed with zero provider calls. Android/touch, real shelf accuracy and live queue calls remain unmeasured. Physical registration review is proposed next; no automatic progression authorized.
+
+Latest authorized boundary: [M06c2c saved-frame detection queue](33-m06c2c-review.md). 12 new Python checks, one Node check and synthetic HTTP/CLI/restart smoke passed; full suite 356 Python/33 Node. No live provider call or physical count accuracy claimed. Explicit browser region selection is next proposed boundary; automatic registration/capture remain later work.
+
+Latest boundary: [M06c2b browser reading enrollment/review](32-m06c2b-review.md), authorized by “next”. HTTP/CLI/restart/browser smoke passed with zero provider requests; final suite 344 Python/32 Node. An initial voice cleanup race was repaired with explicit storage-thread draining and a regression check. Detection jobs and automatic capture scheduling remain follow-ups; physical accuracy remains unmeasured.
+
+Latest authorized boundary: [M06c2a durable reading queue](31-m06c2a-review.md). 15 new checks and synthetic independent-process smoke passed; full suite 337 Python/27 Node. CLI-only enrollment/worker; HTTP/browser enrollment and detection/automatic camera scheduling remain follow-ups. No live queue/provider or physical reading accuracy claim.
+
+Status as of 10 October 2026: latest "next" authorized M06c1. Reviewed target-only correction execution/acknowledgment passed 22 new Python tests and synthetic HTTP/restart/CLI/browser smoke, including recovery after commit before acknowledgment. Full suite: 322 Python/27 Node tests passed. Recognition scheduling, real microphone/three-minute voice acceptance, physical capture/geometry and camera-profile acquisition preference remain pending. The user-tested reference baseline is accepted without further testing.
 
 ## Confirmed constraints
 
@@ -12,7 +32,7 @@ Status as of 10 October 2026: latest "next" authorized M04a. Gemini 3.1 Flash-Li
 | Assignment requirements/pass bars | Attached brief preserved in docs |
 | Current workspace has no tracked application files | Initial inspection/git listing |
 | Reference automated baseline now runs in isolated Windows environment | M00: 55 Python tests, pip check and startup/HTTP/session/empty-packet smoke passed; actual voice/camera/provider interaction remains pending |
-| Target capture is an Android phone or laptop browser; no LiDAR | User's device clarification; exact first-test device/browser still pending |
+| Target capture is an Android phone or laptop browser; no LiDAR | User selected laptop browser on localhost for the first camera smoke |
 | A reference object may establish metric scale; agent asks during calibration | User explicitly allowed this and specified agent-led intake; actual object and verified dimensions are runtime inputs |
 | Use free-tier provider access only; Gemini or Groq available as options | User offers free-version keys; no paid-tier use authorized |
 | Country/currency must be asked at conversation start | Explicit user clarification; locale remains a per-sweep setting |
@@ -23,10 +43,10 @@ Status as of 10 October 2026: latest "next" authorized M04a. Gemini 3.1 Flash-Li
 | ID | Question | Blocks |
 | --- | --- | --- |
 | D01 | User selected laptop browser on localhost for M02b smoke. In-app browser UI tested; camera response timed out pending permission/device response. Physical camera make/model remains unknown; Android HTTPS remains a later check | Actual camera smoke; future Android route |
-| D02 | No LiDAR; reference object allowed. User says the agent asks for the object during calibration. M03a calculator requires explicit dimensions/uncertainties and provenance, same-plane annotations and an independent check point. No physical inputs supplied yet; conversational integration is M06 | Physical calibration smoke, M03b room feasibility and M06 intake |
+| D02 | No LiDAR; reference object allowed. M06a asks for object/dimensions/tolerances/provenance; M06b proposes spoken answers for explicit review. These declarations do not establish metric readiness. M03a still requires same-plane annotations and an independent check point; no physical inputs supplied yet. Real microphone intake remains unverified | Physical calibration smoke, M03b room feasibility and device acceptance |
 | D21 | M03b2 requires independently verified fixed camera intrinsics; estimated focal length was biased in the previous synthetic run. Asked whether setup should guide calibration or accept a supplied profile. Answer pending; no real profile/calibration workflow exists yet | Actual metric room smoke and calibration setup integration |
 | D03 | Answered behavior: agent asks country/currency at the start of each conversation; no country is hardcoded. Actual demo and second-country test inputs can be supplied when running | M00 locale source coverage smoke, M07 two-locale demonstration |
-| D04 | Free tier only. Latest user answer confirms the existing Gemini key is free tier and authorizes its use, superseding replacement instructions. Groq remains an allowed alternative, not an implemented fallback | M06 provider integration |
+| D04 | Free tier only. User confirms the existing Gemini key is free tier and authorizes use. M06b's optional reviewed Gemini Live model passed a short target smoke; no paid fallback or automatic retry. The application cannot inspect billing tier and requires an explicit configuration flag. Groq remains an allowed alternative, not an implemented fallback | Provider quota coverage and real-device voice acceptance |
 | D05 | Partially answered: user will arrange books. Confirm mandatory room/shelf/non-book counts and independent ground truth when ready | M11 physical evaluation; not a blocker for synthetic contract work |
 | D06 | Latest user says the reference is already tested and no further reference testing is needed. Baseline accepted. Actual submission deadline remains unknown | Calendar schedule; target device checks in future modules |
 | D07 | Gross or net wall area; shelving union interpretation; meaning of shelf run | M01/M03/M09 totals/geometry contracts |

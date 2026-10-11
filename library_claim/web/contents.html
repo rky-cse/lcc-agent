@@ -1,0 +1,21 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Non-book contents review</title><link rel="stylesheet" href="/assets/style.css"></head><body class="valuation-review"><main>
+<h1>Non-book contents review</h1><p><a href="/sweep">Shelf sweep</a> · <a href="/valuation">Book valuation</a></p>
+<p>Review physical objects and their saved views. Similar-looking objects remain separate until a same-object decision is reviewed. Set/component choices control valuation counting. Unknown depth and unreadable model markings remain unknown. Original or unanswered art requires appraisal.</p>
+<label>Sweep ID <input id="sweep-id"></label><button id="load">Load inventory and saved views</button><p id="status" role="status"></p>
+<div id="frames"></div><img id="frame" alt="Selected saved original for object review" draggable="false" hidden>
+<p id="rectangle">Select a saved view, then click two opposite corners of the visible object. No object is saved by clicking.</p>
+<div id="inventory"></div>
+<label>Saved non-book proposal artifact hash <input id="artifact"></label><button id="proposals-load">Review archived detection proposals</button><div id="proposals"></div>
+<button id="art-load">Review saved voice art declarations</button><div id="art-declarations"></div>
+<label>Physical item ID <input id="item-id"></label><label>Operation <select id="operation"><option>observe</option><option>label</option><option>ownership</option><option>art</option><option>measure</option><option>group</option><option>ungroup</option><option>merge</option><option>remove</option></select></label><button id="template">Prepare review request</button>
+<label>Reviewed command <textarea id="command" rows="18" spellcheck="false"></textarea></label><button id="apply">Apply this reviewed command</button><button id="inventory-download" disabled>Download physical inventory</button>
+<details><summary>Label format and source choices</summary><pre>{"field":"category","value":"chair","basis":"visible_appearance","statement":"Visible chair in the selected original"}
+Fields: category, description, material, brand, model. Brand/model require visible_marking and literal reviewed text. Other bases: visible_appearance or claimant_assertion. Omit unreadable fields.
+Art: original / print / unknown plus a literal claimant statement. Optional guidance_revision + declaration_index bind to a saved voice declaration.
+Group: parent classified furniture_set, distinct member IDs and set / components counting_basis.
+Measure: one existing M03 planar face request, item ID as annotation ID, and distinct height_axis / width_axis. Each field stays unknown without its own valid proof.</pre></details>
+<h2>Replacement valuation</h2><button id="price-template">Prepare pricing policy and selection</button><label>Reviewed sources and policy <textarea id="pricing" rows="22" spellcheck="false"></textarea></label><label><input id="consent" type="checkbox">Fetch the selected physical-product sources and any specified dated FX.</label><button id="price">Run item valuation</button>
+<label>Saved run ID <input id="run-id"></label><button id="restore">Load saved valuation</button><button id="price-download" disabled>Download valuation</button><div id="result"></div>
+<details><summary>Source row format</summary><pre>{"item_id":"physical item ID","url":"https://seller.example/product","product_id":"Exact JSON-LD @id, url or sku","offer_index":0,"market_country":"XX","market_statement":"Why this source serves this country","physical_statement":"Reviewed physical replacement, not rental/digital/parts","reviewer":"Your name","match_basis":"exact_model","comparable_statement":"Why this listing matches the reviewed object"}
+Use reviewed_comparable for a range. It requires matched category, material, verified requested size axes, sufficient distinct listings/domains and a declared tolerance. Policy values remain required choices; amounts and tolerances should be decimal strings.</pre></details>
+</main><script type="module" src="/assets/contents.mjs"></script></body></html>

@@ -1,0 +1,17 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Library voice guidance</title><link rel="stylesheet" href="/assets/style.css"></head><body><main>
+<h1>Library voice guidance</h1><p>Speak with the agent, then review its structured answer before saving it. Books stay in place. Unknown details stay unknown.</p>
+<label>Guided session ID <input id="session" maxlength="32" pattern="[a-f0-9]{32}" placeholder="Create or enter an existing ID"></label>
+<div class="controls"><button id="new">New guided session</button><button id="open">Open session</button><button id="connect" disabled>Connect voice</button><button id="disconnect" disabled>Disconnect voice</button><button id="mic" disabled>Start microphone</button><button id="mute" disabled>Stop microphone</button><button id="silence" disabled>Stop playback</button></div>
+<p id="status" role="status" aria-live="polite">Open or create a session. Voice needs an enabled local server.</p>
+<p id="prompt"></p><p id="limits">Reference declarations are not calibration. Review the physical target below before applying a book correction.</p>
+<form id="text-form"><label>Typed answer <input id="text" maxlength="2000"></label><button id="send" disabled>Send answer</button></form>
+<h2>Structured answer for review</h2><pre id="proposal">No proposed answer yet.</pre><button id="confirm" disabled>Confirm this answer</button><button id="reject" disabled>Dismiss proposal</button>
+<p id="saved"></p><a id="capture" hidden>Open camera capture for this session</a><button id="bind" disabled>Bind started capture</button>
+<h2>Book corrections</h2><button id="refresh-guidance" disabled>Refresh guided state</button><div id="corrections"></div>
+<form id="frame-form"><label>Saved original frame ID <input id="frame" maxlength="128"></label><button id="preview" disabled>Send saved-frame preview</button></form>
+<p>Preview is for conversation only. Recognition and calibration are separate. Disconnecting voice does not end the capture.</p>
+<label><input id="watch-sweep" type="checkbox"> Send latest saved camera preview and live progress to voice every five seconds while connected</label>
+<p id="recognition-progress" role="status"></p><p><a id="combined-sweep" href="/sweep">Open combined camera and voice sweep</a> · <a id="reading-review" href="/recognition">Recognition review</a></p>
+<h2>Conversation</h2><ol id="transcript"></ol><p><a href="/">Capture and inventory page</a></p>
+</main><script type="module" src="/assets/voice.mjs"></script></body></html>

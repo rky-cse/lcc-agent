@@ -1,10 +1,14 @@
 # Library Contents Claim Agent
 
-**Status: M04a one-shelf spine proposals/count implemented for review. Live Gemini synthetic smoke passed; real-shelf accuracy remains unverified. M04b has not started.**
+M08 non-book contents is implemented for review: provisional saved-frame detection, reviewed physical objects/sets, evidenced dimensions and literal exact/range/appraisal valuation. Open /contents on the local server. No smoke tests or real-provider/source calls were run. See [M08 group review](docs/42-m08-group-review.md).
+
+M07 book valuation is implemented for review: source-backed physical offers, explicit condition/appraisal policies, dated Decimal FX and independent two-country ten-track results. Open /valuation on the local server. Source coverage and final claim packet integration remain unverified; no smoke tests were run. See [M07 group review](docs/41-m07-group-review.md).
+
+**Status: M08 implementation group complete for review. Combined voice/camera, budgeted automatic recognition, live quality/progress guidance, unresolved association proposals and reviewed shelf/appraisal corrections are implemented. Further smoke testing was skipped at your request; real device and physical acceptance remain unverified.**
 
 This project will guide a policyholder through one continuous voice-and-camera sweep of a home library, build a live inventory, and produce an evidence-backed contents claim packet. The brief requires book counting and identification, metric measurements, local book and non-book valuations, room areas, and an honest evaluation against independently collected ground truth.
 
-Implemented modules provide packet/evidence/export, durable browser capture, annotated planar and calibrated room geometry, plus single-shelf model spine proposals with local validation/review. Live voice, cross-view physical tracking, title/edition identification, full room areas and price adapters remain planned. Physical accuracy is not yet validated.
+Implemented modules provide packet/evidence/export, durable browser capture, annotated geometry, physical tracking and assisted matching, visible-text extraction, reviewed work/edition identity, guided setup/evidence questions, optional live voice and explicit correction execution. A bounded reading queue is available through explicit browser enrollment and an independent CLI worker; saved-frame detection jobs can be explicitly enrolled by browser shelf-region selection or CLI/API. Explicitly enabled, budgeted recognition coordination is implemented; source-backed book valuation is implemented; full room areas and final packet integration remain planned. Physical accuracy is not yet validated.
 
 ## Read the design
 
@@ -31,6 +35,22 @@ Implemented modules provide packet/evidence/export, durable browser capture, ann
 | [M03b1 review record](docs/18-m03b1-review.md) | CPU multiview reconstruction, full selected-view connectivity gates and metric-room limitation |
 | [M03b2 review record](docs/19-m03b2-review.md) | Fixed camera calibration, reference scaling, observed room corners/height and integrity/export checks |
 | [M04a review record](docs/20-m04a-review.md) | Single-shelf polygons/count, live-provider smoke, unknown/review semantics and actual-shelf limitation |
+| [M04b–M05 review records](docs/27-m05b3-review.md) | Latest edition-review boundary; links to prior tracking, reading and identity work |
+| [M06a review record](docs/28-m06a-review.md) | Locale/reference questions, evidence requests, correction proposals and HTTP/restart verification |
+| [M06b review record](docs/29-m06b-review.md) | Optional voice, reviewed spoken answers, interruptions/reconnect, live smoke and device-test limits |
+| [M06c1 review record](docs/30-m06c1-review.md) | Reviewed physical-copy corrections, verified receipts, interruption recovery and portable evidence |
+| [M06c2a review record](docs/31-m06c2a-review.md) | Durable bounded reading queue, independent worker, revision invalidation and restart |
+| [M06c2b review record](docs/32-m06c2b-review.md) | Explicit browser enrollment, queue status/cancellation, artifact review and HTTP/restart smoke |
+| [M06c2c review record](docs/33-m06c2c-review.md) | Saved-frame detection queue, explicit shelf regions, revision guards and independent worker |
+| [M06c2d review record](docs/34-m06c2d-review.md) | Browser shelf-region selection, original-pixel guards and explicit detection enrollment |
+| [M06c2e review record](docs/35-m06c2e-review.md) | Explicit physical-copy registration, atomic dependency guard and verified ledger receipts |
+| [M06c2f review record](docs/36-m06c2f-review.md) | One unresolved physical observation, explicit resolution and verified historical receipts |
+| [M06c2g1 review record](docs/37-m06c2g1-review.md) | Exact-job CLI dispatch, terminal lookup and retained worker slot |
+| [M06c2g2 review record](docs/38-m06c2g2-review.md) | Opt-in HTTP dispatch, managed child lifetime and ownership-checked recovery |
+| [M06c2g3 review record](docs/39-m06c2g3-review.md) | Explicit browser Run, scoped readiness, manual completion refresh and restart smoke |
+| [M06 complete group review](docs/40-m06-group-review.md) | Continuous recognition, combined voice/camera, progress/quality guidance and shelf/appraisal corrections |
+| [M07 complete group review](docs/41-m07-group-review.md) | Retailer evidence, condition/locality/appraisal policies, dated FX and independent ten-track country comparison |
+| [M08 complete group review](docs/42-m08-group-review.md) | Non-book physical ledger, provisional detection, grouping, art/dimensions and exact/range source-backed prices |
 
 ## Current verification
 
@@ -40,7 +60,72 @@ The user confirmed they tested the reference and instructed us to proceed withou
 
 M01 verification: 29 unit/contract/export tests pass. The synthetic CLI produces a partial packet with saved evidence and an HTML report from the same serialized values. No real capture or price quote is claimed by that fixture.
 
-Current full Python suite: 147 tests pass. M04a's live Gemini 3.1 Flash-Lite synthetic smoke detects six spine proposals (four upright/two horizontal), excludes a bookend and matches all six truth polygons at IoU ≥ 0.5. Actual shelves remain untested. Earlier synthetic geometry/backend/capture smokes passed. Real photo/camera/calibration and physical accuracy gates remain open; complete areas are M09 work. The unchanged browser module previously passed nine Node tests.
+Latest automated verification: all 490 Python regressions passed, followed by all 74 expanded M08/M07 focused checks (39 M08 and 35 M07). All 63 Node tests passed. No M08 smoke tests were run. M06 adds budget/inputs/restart/drain, image correspondence, literal art, atomic shelf ownership and unverified appraisal checks. Further smoke tests are disabled by user instruction. M06c1's synthetic HTTP/restart/CLI/browser smoke verifies reviewed target-only mutation and recovery after an inventory commit lost its acknowledgment. Earlier voice/provider, detection, tracking, reading and identity checks passed their documented boundaries. Actual microphone barge-in, three-minute conversation, real photo/camera/calibration and physical accuracy gates remain open; complete areas are M09 work.
+
+## Run the complete M06 group
+
+Start the server with `--voice --recognition --free-tier-confirmed --key-file PATH_TO_LOCAL_ENV`, then open `/sweep`. Complete locale/reference intake, start and bind camera capture, review the shelf region/policy and request budget, then explicitly start recognition. Camera and microphone panels stay on one page. Pause between shelves; End sweep closes camera intake and drains already prepared recognition jobs. Physical/identity review remains explicit. See [complete operation and limitations](docs/40-m06-group-review.md).
+
+## Run M06c2g3
+
+Open `/recognition` with a bound guided session. Inspect configured mode/readiness, then click Run for one saved queued job. Refresh evidence and job status to inspect completion; this clears an unsaved shelf selection. Unknown, disabled or busy status disables Run. See [browser review and smoke](docs/39-m06c2g3-review.md).
+
+## Run M06c2g2
+
+Enable server dispatch explicitly with `--recognition --free-tier-confirmed` and local credentials, or use `--synthetic --recognition-replay PATH` for validated synthetic fixtures. POST only a saved `job_id` to `/api/guidance/{session}/recognition/dispatch`; 202 acknowledges an owned task, not completion. See [worker lifetime and smoke](docs/38-m06c2g2-review.md). Synthetic smoke: `python -B -m scripts.smoke_dispatch_http --output runs/my-http-dispatch`.
+
+## Run M06c2g1
+
+Dispatch exactly one saved recognition job with `python -B -m library_claim.recognition_jobs --store STORE --run-one --job-id ID --response RESPONSE.json`. Kind is inferred; other queued jobs remain untouched. Live mode retains explicit free-tier confirmation and local credentials. See [review and recovery limits](docs/37-m06c2g1-review.md). Synthetic smoke: `python -B -m scripts.smoke_selected_dispatch --output runs/my-selected-dispatch`.
+
+## Run M06c2f
+
+Open an unresolved observation’s Resolve physical observation link from `/recognition`. Compare original evidence, then explicitly choose a new copy or an existing physical copy. Leave without applying when ambiguous. See [review and smoke](docs/36-m06c2f-review.md). Synthetic smoke: `python -B -m scripts.smoke_resolution --output runs/my-resolution-smoke`.
+
+## Run M06c2e
+
+Open a detection’s Review physical registration link from `/recognition`. Compare originals and decide every candidate as new, same physical copy or unresolved with provenance before applying. See [review and smoke](docs/35-m06c2e-review.md). Synthetic smoke: `python -B -m scripts.smoke_registration --output runs/my-registration-smoke`.
+
+## Run M06c2d
+
+Open `/recognition` on the target server and select a saved frame from a bound guided session. Draw or enter the shelf rectangle, provide shelf ID and proposal-review limits, then explicitly queue detection. A separate CLI worker processes it. See [review and browser smoke](docs/34-m06c2d-review.md).
+
+## Run M06c2c
+
+See [detection job contracts and review](docs/33-m06c2c-review.md). Enroll an explicit saved-frame/shelf-region job through CLI/API, then run one worker with `--kind detection`. Synthetic smoke: `python -B -m scripts.smoke_detection_jobs --output runs/my-detection-queue-smoke`. Proposals do not register physical copies automatically.
+
+## Run M06c2b
+
+Start the target server, then open `/recognition`. Use a bound guided session ID to select saved observations and queue readings. The separate CLI worker processes them. See [HTTP contracts and review record](docs/32-m06c2b-review.md). Synthetic smoke: `python -B -m scripts.smoke_recognition_http --output runs/my-browser-reading-smoke`.
+
+## Run M06c2a
+
+See [queue contracts, worker operation and review record](docs/31-m06c2a-review.md). Run the synthetic independent-process smoke with `python -B -m scripts.smoke_recognition_jobs --output runs/my-reading-queue-smoke` in the configured environment. This queues saved observations; it does not start camera inference or accept identity.
+
+## Run M06c1
+
+```powershell
+.\.venv\Scripts\python.exe -B scripts/smoke_corrections.py --output runs/my-correction-smoke
+```
+
+No provider key is needed. The voice page's Book corrections panel reviews exact physical targets, applies through the existing audited stores and displays verified outcomes. [Review and limits](docs/30-m06c1-review.md) · [Portable synthetic report](runs/m06c1-review-final/portable-review/report.html).
+
+## Run M06b
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-voice.txt
+.\.venv\Scripts\python.exe -B -m library_claim.server --store runs/my-live-library --port 4186 --voice --free-tier-confirmed --key-file E:\awesome_llm_apps\awesome-llm-apps\voice_ai_agents\insurance_claim_live_agent_team\.env
+```
+
+Open [voice guidance](http://127.0.0.1:4186/voice). The key stays on the server; no paid fallback is configured. Voice is disabled by default. See [review, smoke artifacts and limitations](docs/29-m06b-review.md). The temporary review server uses a fixture provider, not Gemini; use the command above in your chosen environment for actual voice.
+
+## Run M06a
+
+```powershell
+.\.venv\Scripts\python.exe -B scripts/smoke_guidance.py --output runs/my-guidance-smoke
+```
+
+No provider key is needed. Choose a fresh output directory. See [contracts and limits](docs/28-m06a-review.md), or inspect the existing [synthetic review report](runs/m06a-review/review/report.html) and [HTTP dialogue](runs/m06a-review/dialogue.json). Voice, geometric calibration and correction execution are separate steps.
 
 ## Run M04a
 

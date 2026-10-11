@@ -1,6 +1,6 @@
 # One-page architecture note — proposed design
 
-**Planning version, 10 October 2026.** No target application is implemented. User constraints: Android/laptop browser, reference-object scale without LiDAR, free-tier Gemini/Groq and locale asked at conversation start. Exact geometry, provider access and source adapters await proof. Final submission names actually used components and measured limitations.
+**Implementation update, 11 October 2026.** M01–M06 prototype components are implemented, including combined voice/camera and budgeted recognition. User constraints remain Android/laptop browser, reference-object scale without LiDAR, free-tier provider activation and locale intake. Valuation, complete room areas and final packet integration remain M07–M10. Real physical/device acceptance is unverified; see [M06 group review](40-m06-group-review.md).
 
 ```mermaid
 flowchart LR

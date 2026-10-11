@@ -140,7 +140,13 @@ async function startCamera() {
     if (Math.min(video.videoWidth,video.videoHeight)<720 || Math.max(video.videoWidth,video.videoHeight)<1280) throw new Error(`Camera provides ${video.videoWidth} × ${video.videoHeight}; select a camera supporting at least 1280 × 720.`);
     if (!sweep || sweep.status === 'closed') {
       const country=$('country').value, currency=$('currency').value;
-      if(!startIntent||startIntent.country!==country||startIntent.currency!==currency) startIntent={start_id:crypto.randomUUID().replaceAll('-',''),country,currency};
+      const guidedId=new URL(location.href).searchParams.get('guidance');
+      if(guidedId) {
+        if(!/^[a-f0-9]{32}$/.test(guidedId))throw new Error('Invalid guided session ID');
+        const guided=await api(`/api/guidance/${guidedId}`);
+        if(!guided.capture_start_proposal)throw new Error('Guided setup must be ready before creating capture. Open its voice page to review setup.');
+        startIntent=guided.capture_start_proposal;
+      } else if(!startIntent||startIntent.country!==country||startIntent.currency!==currency) startIntent={start_id:crypto.randomUUID().replaceAll('-',''),country,currency};
       try { localStorage.setItem('library-capture-start-intent',JSON.stringify(startIntent)); } catch { preferencesError=true; }
       sweep = await api('/api/sweeps', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(startIntent)});
       startIntent=null;
@@ -215,3 +221,21 @@ refresh();
 try { const health=await api('/api/health'); $('mode').hidden=!health.synthetic_capture_mode; }
 catch(error) { recoveryFailed=true; status(`Capture server unavailable: ${error.message}`); }
 await restore(); recovering=false; refresh();
+const guidedId=new URL(location.href).searchParams.get('guidance');
+if(guidedId) {
+  try {
+    const guided=await api(`/api/guidance/${guidedId}`);
+    if(!guided.locale)throw new Error('Complete guided locale/reference setup first.');
+    if(sweep&&sweep.id!==guidedId) {
+      if(sweep.status!=='closed'||queue.items.length)throw new Error('Finish the existing saved capture before opening a different guided session on this capture page.');
+      stopCamera();sweep=null;saved=new Map();$('frames').replaceChildren();
+    }
+    $('country').value=guided.locale.country;$('currency').value=guided.locale.currency;
+    $('country').readOnly=true;$('currency').readOnly=true;
+    if(guided.phase==='capture_bound') {
+      sweep=await api(`/api/sweeps/${guidedId}`);sweep.frames.forEach(frame=>recordFrame(frame,sweep.quality?.[frame.id]));
+      nextSequence=Math.max(-1,...sweep.frames.map(f=>f.media_sequence))+1;gaps=sweep.capture_gaps;watchInventory();
+    }
+    status('Guided session loaded. Camera permission is requested only when you start camera.');refresh();
+  }catch(error){status(error.message);$('start').disabled=true;}
+}

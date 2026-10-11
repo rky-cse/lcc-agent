@@ -3,7 +3,7 @@
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Library capture</title><link rel="stylesheet" href="/assets/style.css"></head>
 <body><main>
-<h1>Library capture</h1><p id="mode" hidden>Synthetic test mode: these frames will not be labeled as real capture.</p><p>Move slowly across each shelf, then show the room corners, walls and floor. Saved frames will appear below.</p>
+<h1>Library capture</h1><p><a href="/sweep">Open combined camera and voice sweep</a> · <a href="/voice">Open guided voice setup</a></p><p id="mode" hidden>Synthetic test mode: these frames will not be labeled as real capture.</p><p>Move slowly across each shelf, then show the room corners, walls and floor. Saved frames will appear below.</p>
 <form id="settings">
 <label>Country code <input id="country" required maxlength="2" pattern="[A-Z]{2}" placeholder="Two letters" autocomplete="off"></label>
 <label>Currency code <input id="currency" required maxlength="3" pattern="[A-Z]{3}" placeholder="Three letters" autocomplete="off"></label>
@@ -27,6 +27,7 @@
 <div class="controls"><button id="inventory-prev" disabled>Previous rows</button><button id="inventory-next" disabled>Next rows</button><button id="inventory-retry">Refresh inventory</button></div>
 <p id="inventory-page"></p><a id="inventory-export" hidden>Download provisional inventory JSON</a>
 </section>
+<p><a href="/recognition">Review and queue saved spine readings</a></p>
 <h2>Saved evidence</h2><ol id="frames"></ol>
 <p>Book identification, measurements, valuation and live voice guidance are not connected to this capture page yet.</p>
 </main><script type="module" src="/assets/app.mjs"></script></body></html>

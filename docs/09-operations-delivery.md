@@ -1,6 +1,30 @@
 # Operation, observability and delivery plan
 
-Status: future target operational specification. M00 has created a separate local reference environment and started the existing app; the target application, deployment and submission have not been created.
+M08 operation: `/contents` reviews saved originals, provisional CLI detection artifacts, item/group/art/geometry commands and explicit sourced replacement pricing. CLIs/API/restart and expiry boundaries are documented in [M08 review](42-m08-group-review.md). No source/provider work starts on page load; no smoke tests were run.
+
+Latest operation: review book valuations at `/valuation`, explicitly submit source URLs/policy and fetch consent, then download immutable results and run-scoped source bytes. No network work starts on page load or saved-result read. CLI/API and recovery/expiry boundaries are in [M07 group review](41-m07-group-review.md). No further smoke tests per user instruction.
+
+**Latest review: M06 group.** Start explicitly configured voice/recognition, open /sweep, confirm setup, start/bind camera, then review and start a budgeted shelf plan. Pause between shelves; capture end drains prepared work. No new smoke testing per user instruction. Device/latency checks remain unverified. See [group review](40-m06-group-review.md).
+
+**Latest review: M06c2g1.** Use scripts.smoke_selected_dispatch with fresh output for replay/process smoke. Inspect recognition --list before dispatch. Cancellation revokes publication but may leave worker_active=true; stop the old worker before explicit --interrupt recovery. Keys stay local and live mode still requires --free-tier-confirmed. See [review record](37-m06c2g1-review.md).
+
+**Latest review: M06c2f.** M06c2f operation: open an unresolved observation from /recognition and explicitly review saved geometry before applying new/same. Run scripts.smoke_resolution with a fresh output directory for synthetic HTTP/restart verification. No provider key/call is required; review document 36 records artifact paths and limits. See [review record](36-m06c2f-review.md).
+
+[M06c2e operations](35-m06c2e-review.md): open a detection registration review, inspect numbered original polygons and same-shelf physical targets, enter every decision/reason and explicitly Apply. Same-copy decisions preserve tracks; unresolved remains reviewable. Lost acknowledgment retries use the unchanged review ID; refresh/reload shows historical ledger proof and clears unsaved drafts. No recognition/provider call is triggered.
+
+[M06c2d operations](34-m06c2d-review.md): select a saved original in /recognition, drag a shelf rectangle or enter integer edges, then enter explicit shelf ID and review limits. Queue only after checking the original; refresh clears unsaved drafts. Unsupported EXIF/dimension mismatch disables enrollment. Independent CLI recognition and explicit review remain required.
+
+[M06c2c operations](33-m06c2c-review.md): explicitly enroll shelf-region jobs through CLI/API; invoke --kind detection for the separate worker. Browser queue review shows detection JSON/envelope links, but region enrollment awaits M06c2d. Reading/detection share bounds and one running worker; cancelled/interrupted detection is never automatically retried.
+
+[M06c2b operations](32-m06c2b-review.md): open `/recognition`, choose a bound guided session, inspect saved physical observations, then explicitly queue/cancel readings. Refresh is read-only. Run jobs through the independent CLI worker; no key is needed for browser enrollment. Same displayed inputs reuse a job ID for retries during page lifetime; a fresh page is required to request a new attempt with those pins.
+
+[M06c2a worker operations](31-m06c2a-review.md): enqueue explicitly, invoke one independent CLI worker, inspect results. Stop a crashed/uncertain worker before explicitly marking its running job interrupted; never automatically retry a provider call. New attempts require new reviewed inputs/IDs. Live mode retains the existing explicit free-tier confirmation and local key handling. Capacity is 200 retained/20 pending/one running; retention and supervision remain prototype limitations.
+
+[M06c1 operations](30-m06c1-review.md): reviewed corrections work with voice disabled and require no provider key. Restart preserves prepared requests; GET is read-only and the reviewer explicitly resumes the exact stored request. Applied receipts cite historical events; inspect current inventory for later changes. Receipt/history limits are prototype bounds, with retention policy still pending. Review export reuses portable originals/identity archives and rejects concurrent revision changes; finalization remains M10.
+
+Status: local target capture, inventory, identity review, guided sessions and optional M06b voice transport are implemented. Deployment and submission remain planned; real-device and physical acceptance remain incomplete. [M06b operations/review](29-m06b-review.md) provides the exact optional dependency and startup commands. The user-tested reference baseline remains accepted without further tests.
+
+Voice operational boundary: start with `--voice --free-tier-confirmed`, using a local key file or environment key. Voice is off by default; one provider connection per single-worker target server is allowed. Model/credentials are server-controlled with no paid fallback or automatic retry. Context compression and private in-memory resumption support explicit reconnect; restart restores local guidance/transcript/proposals with a fresh provider context. The journal has prototype bounds and no implemented retention/compaction policy. Raw microphone/provider PCM is not saved; transcripts and declarations remain local evidence-store data. A saved original can be explicitly previewed to Gemini without replacing it. Real microphone/three-minute/Android checks and production deployment policy remain open.
 
 ## Setup and dependency policy
 

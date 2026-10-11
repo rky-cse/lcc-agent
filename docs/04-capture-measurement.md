@@ -1,5 +1,9 @@
 # Capture and metric measurement design
 
+[M06b](29-m06b-review.md) connects spoken/typed reference proposals to explicit browser review of M06a declarations. A guidance-ID camera link uses the confirmed locale and same session ID; the existing camera page still requests permission explicitly. Manually sending a resized saved-frame preview preserves the verified original. No automatic camera scheduling, geometric validation or metric readiness follows from conversation.
+
+[M06a](28-m06a-review.md) implements the typed reference-intake question and explicit measured/unknown/skip declarations. It asks actual centimetre dimensions, tolerances and provenance without assuming standard object sizes. A ready capture declaration is not geometric calibration; metric readiness stays false. Same-plane reference evidence and verified camera intrinsics remain separate geometry requirements. Spoken intake is pending M06b.
+
 Status: laptop localhost selected; Android remains a later check. No LiDAR; agent asks for reference-object dimensions during calibration. M03a planar spine, M03b1 sparse reconstruction and M03b2 calibrated annotated room dimensions are implemented with synthetic checks. Physical accuracy and actual camera calibration remain unproven. Earlier real camera smoke remained pending. See [M02b](16-m02b-review.md), [M03a](17-m03a-review.md), [M03b1](18-m03b1-review.md) and [M03b2](19-m03b2-review.md).
 
 ## One-sweep capture protocol

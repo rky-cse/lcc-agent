@@ -56,7 +56,7 @@ export function renderInventory(document,data) {
     $('inventory-page').textContent=''; return;
   }
   $('inventory-summary').textContent=`Revision ${data.revision} · ${data.assigned_track_count} assigned tracks · ${data.owned_assigned_track_count} owned · ${data.review_count} review entries · total books unknown`;
-  $('inventory-state').textContent=data.detection_import_count ? 'Provisional results from reviewed detection imports. Coverage is unverified.' : 'No detection results imported. Camera recognition is not connected yet.';
+  $('inventory-state').textContent=data.detection_import_count ? 'Provisional imported observations. Physical associations and coverage require review.' : 'No detection results imported yet. Start a configured shelf plan or review a saved detection.';
   $('inventory-export').href=`/api/sweeps/${encodeURIComponent(data.sweep_id)}/inventory/export`;
   for(const row of data.rows) {
     const tr=document.createElement('tr');

@@ -37,7 +37,7 @@ class TrackingCommand(Contract):
     command_id: str = Field(min_length=1, max_length=128)
     sweep_id: str = Field(min_length=1)
     expected_revision: int = Field(ge=0)
-    operation: Literal["import", "resolve", "ownership"]
+    operation: Literal["import", "resolve", "ownership", "shelf_ownership", "appraisal"]
     detection_result_sha256: str | None
     decisions: Annotated[list[Decision], Field(max_length=256)]
     track_id: str | None
@@ -53,9 +53,11 @@ class TrackingCommand(Contract):
                 raise ValueError("invalid result SHA256")
         elif self.detection_result_sha256 is not None:
             raise ValueError("only import has detection evidence")
-        if self.operation == "ownership":
+        if self.operation in ("ownership","shelf_ownership"):
             if not self.track_id or self.owned is None or self.decisions:
                 raise ValueError("ownership requires target, boolean and no decisions")
+        elif self.operation=='appraisal':
+            if not self.track_id or self.owned is not None or self.decisions:raise ValueError('appraisal requires one physical target and no ownership change')
         elif self.track_id is not None or self.owned is not None:
             raise ValueError("identity commands cannot change ownership")
         if self.operation == "resolve" and (not self.decisions or any(d.action == "unresolved" for d in self.decisions)):
@@ -122,7 +124,7 @@ class TrackStore:
         return json.loads(row[0]) if row else dict(schema_version="1.0", sweep_id=sweep_id, revision=0,
                                                  tracks={}, observations={}, imports={}, events=[])
 
-    def apply(self, command, bundle=None):
+    def apply(self, command, bundle=None, *, guard=None):
         command = TrackingCommand.model_validate(command.model_dump())
         evidence = None
         if command.operation == "import":
@@ -143,6 +145,8 @@ class TrackStore:
                     if event["command_sha256"] != fingerprint:
                         raise ValueError("command ID reused with different payload")
                     return self._snapshot(state)  # exact retries do not add revisions
+            if guard is not None:
+                guard(db,state)  # Additional caller dependencies checked under this same writer lock.
             if command.expected_revision != state["revision"]:
                 raise ValueError("stale inventory revision; reload before deciding identity")
             if len(state["events"]) >= 10000 or len(state["observations"]) + len(command.decisions) > 10000:
@@ -168,6 +172,16 @@ class TrackStore:
                 if command.track_id not in state["tracks"]:
                     raise ValueError("unknown ownership target")
                 state["tracks"][command.track_id]["owned"] = command.owned
+            elif command.operation=='shelf_ownership':
+                targets=[t for t in state['tracks'].values() if t['shelf_id']==command.track_id]
+                if not targets and not any(o['shelf_id']==command.track_id for o in state['observations'].values()):raise ValueError('unknown physical shelf')
+                state.setdefault('shelf_ownership',{})[command.track_id]=command.owned
+                for track in targets:track['owned']=command.owned
+            elif command.operation=='appraisal':
+                if command.track_id not in state['tracks']:raise ValueError('unknown appraisal target')
+                claims=state['tracks'][command.track_id].setdefault('appraisal_claims',[])
+                if len(claims)>=20:raise ValueError('appraisal claim limit exceeded')
+                claims.append(dict(command_id=command.command_id,claimant_assertion=command.provenance,authenticated=False))
             else:
                 for decision in command.decisions:
                     obs = state["observations"].get(decision.observation_id)
@@ -177,7 +191,7 @@ class TrackStore:
                         continue
                     if decision.action == "new":
                         tid = "book-" + digest((command.sweep_id + "\0" + obs["id"]).encode())[:24]
-                        state["tracks"][tid] = dict(id=tid, shelf_id=obs["shelf_id"], owned=True, observations=[])
+                        state["tracks"][tid] = dict(id=tid, shelf_id=obs["shelf_id"], owned=state.get('shelf_ownership',{}).get(obs['shelf_id'],True), observations=[])
                     else:
                         tid = decision.track_id
                         if tid not in state["tracks"]:
@@ -235,6 +249,9 @@ class TrackStore:
             identity=track.get("bibliography")
             fields=dict(**identity["values"],status=identity["status"],id_confidence=None,
                         field_evidence=identity["field_evidence"]) if identity else {}
+            if track.get('appraisal_claims'):
+                fields['status']='needs_appraisal'
+                reviews.append(dict(ref_id=track['id'],frame_ref=first['frame_ref'],reason='Claimant special-copy assertion; authentication and appraisal required'))
             books.append(Book(id=track["id"], shelf=track["shelf_id"], position=index, frame_ref=first["frame_ref"],
                               owned=track["owned"],**fields).model_dump(mode="json"))
             if identity:
@@ -248,6 +265,7 @@ class TrackStore:
                     assigned_track_count=len(tracks), owned_assigned_track_count=sum(t["owned"] for t in tracks),
                     total_book_count=None, books=books, tracks=tracks, observations=list(state["observations"].values()),
                     review_queue=reviews, detection_sources=list(state["imports"].values()), events=state["events"],
+                    shelf_ownership=state.get('shelf_ownership',{}),
                     **({"identity_evidence":state["identity_evidence"]} if "identity_evidence" in state else {}))
 
 

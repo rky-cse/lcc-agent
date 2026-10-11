@@ -1,5 +1,27 @@
 # Reference app audit and reuse ledger
 
+**Latest review: M06 group.** Reused capture/quality, voice transport/journal, exact-ID workers, recognition/registration guards, crop reading and ledger receipts. New glue adds bounded coordination, image correspondence proposals and combined UI. NumPy already installed is now declared; no dependency installation or reference retest. See [group review](40-m06-group-review.md).
+
+**Latest review: M06c2g1.** Reused target queue, reading/detection exports, existing Gemini adapter and credential/free-tier guards. No reference changes, reference retest, dependency addition or new provider transport. This part adds exact selection and closes cancellation slot overlap. See [review record](37-m06c2g1-review.md).
+
+**Latest review: M06c2f.** M06c2f reuses target TrackStore resolve, GuidanceStore binding/revisions, archived validated detection evidence, immutable originals and the registration physical-review renderer. No reference/provider code or dependency is added. The user-tested reference is not retested. See [review record](36-m06c2f-review.md).
+
+M06c2e reuses the target TrackStore import/rollback/archive and detector bundle validator, adding a dependency guard and explicit browser review. No reference retest or provider call; no new dependency. See [review](35-m06c2e-review.md).
+
+M06c2d reuses target saved evidence/manifest/HTTP and DetectionJob validation. A small browser rectangle selector supplies explicit original-pixel regions; no reference code retest or new dependency. See [review](34-m06c2d-review.md).
+
+M06c2c reuses target M04a frame validation, detection provider/export and the existing M06c2 queue. No reference app retest, copied avatar code or dependency installation. The old detector bundle schema stays compatible with reviewed tracking imports. See [review](33-m06c2c-review.md).
+
+M06c2b reuses the target queue, capture/ledger observations and HTTP control boundaries. Small browser controls are target-specific; no additional reference test or dependency installation. Voice storage cancellation was repaired after regression exposed a SQLite cleanup race. See [review](32-m06c2b-review.md).
+
+M06c2a reuses target FrameStore/GuidanceStore revision guards and M05a crop/reader/provider/export logic. No additional reference execution or dependency was needed; no new reference UI/avatar code was copied. See [review](31-m06c2a-review.md).
+
+M06c1 reuse update: [correction execution review](30-m06c1-review.md). Reused M06a intent generation, FrameStore integrity, TrackStore/IdentityStore mutation and exact retry, StageResult, target HTTP controls and portable identity evidence export. Added an explicit-review prepared request/receipt protocol and browser target/outcome panel. No new reference code, provider request, policy/ADK execution or recognition scheduler was introduced.
+
+M06b reuse update: [live voice review](29-m06b-review.md). Adapted the reference's PCM resampling/media envelopes/playback and interruption-first handling into optional target modules. Added AudioWorklet, queue/generation bounds, exact WS access checks, durable proposal/transcript journal and provider resumption/context compression. Target questions and reviewed commands replaced insurance/policy/ADK tools; avatar/sketch remain omitted. The target Gemini smoke used the confirmed local key without testing or changing the reference application.
+
+M06a reuse update: [guided session review](28-m06a-review.md). Reused target FrameStore integrity, CaptureSessions lifecycle, TrackStore projection, existing correction schemas, StageResult and HTTP controls. Added a library-specific typed state machine and questions rather than copying reference policy/intake logic. Reference voice transport/playback remains the M06b candidate; no avatar/sketch dependency or provider request was introduced. The user-tested reference baseline remains accepted without further tests.
+
 Inspected on 10 October 2026. Reference root: `E:\awesome_llm_apps\awesome-llm-apps\voice_ai_agents\insurance_claim_live_agent_team`. Parent repository revision: `4bf51ab704fb2c5b3803cd5191b30d7dcdb51dc2`. No reference files were modified or copied into application code. `.env` credentials were not inspected.
 
 ## What the reference actually supplies
