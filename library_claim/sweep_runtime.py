@@ -55,6 +55,53 @@ class SweepRuntime:
         with closing(self.frames._connect()) as db:
             db.execute('INSERT OR REPLACE INTO sweep_runtime VALUES (?,?)',(state['session_id'],json_text(state)));db.commit()
 
+    def outcome_summary(self, jobs):
+        """Project completed queue evidence into safe, explicitly provisional UI counts.
+
+        This is deliberately read-only: counts describe detector/reader proposals, never
+        accepted physical copies, titles, or final claim totals.
+        """
+        summary=dict(jobs=dict(total=len(jobs),queued=0,running=0,completed=0,failed=0,stale=0,cancelled=0),
+            detection=dict(completed=0,book_spine_candidates=0,non_book_proposals=0,ambiguous_or_review=0,
+                           unresolved_regions=0,clear_coverage=0,uncertain_coverage=0,no_visible_books=0),
+            reading=dict(completed=0,readable=0,partial_or_unreadable=0),failures=[])
+        for job in jobs:
+            status=job.get('status','failed')
+            if status in summary['jobs']:summary['jobs'][status]+=1
+            elif status not in ('queued','running','completed','failed','stale','cancelled'):summary['jobs']['failed']+=1
+            kind=job.get('input',{}).get('kind','reading')
+            if status in ('failed','stale','cancelled'):
+                summary['failures'].append(dict(job_id=job.get('input',{}).get('job_id','unknown'),kind=kind,status=status,
+                    reason=job.get('error_code') or ('cancelled_by_user' if status=='cancelled' else 'result_unavailable')))
+            if status!='completed':continue
+            name='detection_result.json' if kind=='detection' else 'reading_result.json'
+            path=self.frames.root/'recognition'/job['input']['job_id']/name
+            try:
+                if name not in job.get('artifacts',{}) or path.is_symlink() or not path.is_file() or digest(path.read_bytes())!=job['artifacts'][name]:
+                    raise ValueError('evidence_unavailable_or_changed')
+                result=json.loads(path.read_text(encoding='utf-8'))
+            except (OSError, ValueError, json.JSONDecodeError):
+                summary['failures'].append(dict(job_id=job['input']['job_id'],kind=kind,status='evidence_error',reason='saved_result_unavailable'))
+                continue
+            if kind=='detection':
+                detail=summary['detection'];detail['completed']+=1
+                for proposal in result.get('proposals',[]):
+                    if proposal.get('kind')=='book_spine' and proposal.get('status')=='candidate':detail['book_spine_candidates']+=1
+                    elif proposal.get('kind')=='non_book':detail['non_book_proposals']+=1
+                    else:detail['ambiguous_or_review']+=1
+                detail['unresolved_regions']+=len(result.get('unresolved_regions',[]))
+                coverage=result.get('coverage_assertion')
+                if coverage=='clear':detail['clear_coverage']+=1
+                elif coverage=='uncertain':detail['uncertain_coverage']+=1
+                elif coverage=='no_visible_books':detail['no_visible_books']+=1
+            else:
+                detail=summary['reading'];detail['completed']+=1
+                legibility=result.get('legibility') or (result.get('response') or {}).get('legibility')
+                if legibility=='readable':detail['readable']+=1
+                else:detail['partial_or_unreadable']+=1
+        summary['failures']=summary['failures'][-20:]
+        return summary
+
     def snapshot(self,session):
         state=self.read(session);jobs=self.queue.list(session)
         active=self.session==session and self.task is not None and not self.task.done() and state['status']=='running'
@@ -62,7 +109,7 @@ class SweepRuntime:
         guide=self.queue.guidance.snapshot(session);capture=self.queue.guidance.capture.snapshot(session) if guide['phase']=='capture_bound' else None
         inventory=self.ledger.snapshot(session)
         read_ids={j['input']['request']['observation_id'] for j in jobs if j['input'].get('kind','reading')=='reading' and j['status']=='completed'}
-        state.update(active=active,dispatcher=self.dispatcher.snapshot(session),
+        state.update(active=active,dispatcher=self.dispatcher.snapshot(session),outcomes=self.outcome_summary(jobs),
             capture_closed=bool(capture and capture['status']=='closed'),
             remaining_attempts=max(0,(state['plan'] or {}).get('max_attempts',0)-state['attempts']),
             pending_job_count=sum(j['status'] in ('queued','running') or j.get('worker_active',False) for j in jobs),

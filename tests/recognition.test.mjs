@@ -25,6 +25,20 @@ test('render uses literal physical evidence and explicit actions without executi
   const row=document.getElementById('observations').children[0];assert.match(row.textContent,/<script>/);assert.equal(row.children[0].href,'/api/frames/frame%2Fa');assert.equal(queued,0);
   row.children[1].onclick();assert.equal(queued,1);
 });
+test('render explains the evidence workflow and next action',()=>{
+  const document=documentFixture();renderReadings(document,{...data,workflow:{saved_frame_count:3,provisional_observation_count:2,readable_spine_count:1,partial_or_unreadable_spine_count:1,unresolved_physical_count:2,next_action:'Review physical observations.'}},{enqueue:()=>assert.fail(),cancel:()=>assert.fail()});
+  assert.match(document.getElementById('workflow-status').textContent,/Saved images: 3/);assert.match(document.getElementById('workflow-status').textContent,/Review physical observations/);
+});
+test('render exposes the provisional inventory summary and JSON link',()=>{
+  const document=documentFixture();renderReadings(document,{...data,inventory_projection:{revision:1,observation_count:2,detection_import_count:1,assigned_track_count:0,unresolved_physical_count:2,review_count:2,coverage_verified:false}},{enqueue:()=>assert.fail(),cancel:()=>assert.fail()});
+  assert.match(document.getElementById('inventory-projection').textContent,/2 provisional detected spine regions/);assert.equal(document.getElementById('inventory-json').href,'/api/sweeps/s/inventory/export');
+});
+test('inventory evidence joins a reading result to its detected spine',()=>{
+  const document=documentFixture(),observation={...obs,track_id:null,orientation:'upright',polygon_px:[[0,0],[1,0],[1,2],[0,2]]};
+  const reading={input:{job_id:'read-1',kind:'reading'},status:'completed',result_status:'success',eligible_for_review:true,artifacts:{'reading_result.json':'x','crop.png':'x'},result_summary:{kind:'reading',observation_id:'o',legibility:'readable',text:[{role:'title',text:'Visible title'}],crop_available:true}};
+  assert.doesNotThrow(()=>renderReadings(document,{...data,observations:[observation],jobs:[reading],inventory_projection:{revision:1,observation_count:1,detection_import_count:1,assigned_track_count:0,unresolved_physical_count:1,review_count:1,coverage_verified:false}},{enqueue:()=>{},cancel:()=>{}}));
+  assert.match(document.getElementById('inventory-evidence').children[0].children.at(-1).children[0].textContent,/Visible title/);
+});
 test('stale evidence stays visibly ineligible and terminal work cannot cancel',()=>{
   const document=documentFixture();renderReadings(document,{...data,jobs:[{input:{job_id:'job/a'},status:'stale',result_status:'partial',eligible_for_review:false,artifacts:{'reading_result.json':'sha'}}]},{enqueue:()=>assert.fail(),cancel:()=>assert.fail()});
   const row=document.getElementById('jobs').children[0];assert.match(row.textContent,/Not eligible/);assert.equal(row.children[0].href,'/api/guidance/s/recognition/job%2Fa/reading_result.json');assert.equal(row.children.some(c=>c.textContent==='Cancel reading'),false);

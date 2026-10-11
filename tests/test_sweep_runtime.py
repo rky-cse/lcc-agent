@@ -43,6 +43,12 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(after['observations']),len(before['observations'])+1)
         self.assertIsNone(after['observations'][-1]['track_id']);self.assertFalse(state['packet_ready'])
         self.assertTrue(state['recognition_drained']);self.assertEqual(state['coverage_missing_shelves'],1)
+        self.assertEqual(state['outcomes']['detection']['book_spine_candidates'],1)
+        self.assertEqual(state['outcomes']['detection']['non_book_proposals'],0)
+        self.assertEqual(state['outcomes']['reading']['partial_or_unreadable'],1)
+        detection=next(job for job in self.fx.queue.list(self.sid) if job['input'].get('kind')=='detection')
+        self.assertEqual(detection['status'],'completed')
+        self.assertEqual(detection['review_state'],'already_imported_as_provisional_observations')
         guide=self.fx.fx.guide.snapshot(self.sid);self.assertTrue(guide['recognition_progress']['capture_hints'])
         self.assertFalse(guide['recognition_progress']['accepted_identity'])
 

@@ -114,13 +114,50 @@ class RecognitionQueue:
                 path = directory / name
                 if path.is_symlink() or not path.is_file() or digest(path.read_bytes()) != sha:
                     raise ValueError('recognition artifact integrity failure')
+            job=parse_job(state['input'])
             try:
-                self._validate_pins(parse_job(state['input']))
+                self._validate_pins(job)
             except ValueError:
-                result['status'] = 'stale'
+                # The sweep coordinator deliberately imports a successful detection as
+                # unresolved observations. That import advances inventory revision, so
+                # this detection is historical/already imported, not a failed or
+                # mysterious stale Gemini request. A later unrelated inventory change
+                # still remains stale and ineligible.
+                if isinstance(job,DetectionJob) and self._detection_was_imported(job,state):
+                    result['review_state']='already_imported_as_provisional_observations'
+                else:
+                    result['status'] = 'stale'
+                    result['review_state']='stale_inputs_or_inventory_changed'
             else:
                 result['eligible_for_review'] = True
+                result['review_state']='ready_for_physical_review'
+            result['result_summary']=self._result_summary(state,job,directory)
         return result
+
+    def _detection_was_imported(self, job, state):
+        evidence=state.get('artifacts',{}).get('detection_result.json')
+        if not evidence:return False
+        with closing(self.store._connect()) as db:
+            ledger=TrackStore._read(db,job.session_id)
+        return any(event.get('command',{}).get('operation')=='import' and event['command'].get('detection_result_sha256')==evidence
+                   for event in ledger.get('events',[]))
+
+    def _result_summary(self, state, job, directory):
+        """Small UI-safe projection of verified evidence; full evidence stays downloadable."""
+        if isinstance(job,DetectionJob):
+            payload=json.loads((directory/'detection_result.json').read_text(encoding='utf-8'))
+            proposals=payload.get('proposals',[])
+            return dict(kind='detection',frame_ref=payload.get('frame_ref'),shelf_id=job.request.shelf_id,
+                coverage=payload.get('coverage_assertion'),book_spine_candidates=sum(p.get('kind')=='book_spine' and p.get('status')=='candidate' for p in proposals),
+                non_book_proposals=sum(p.get('kind')=='non_book' for p in proposals),
+                ambiguous_or_review=sum(not (p.get('kind')=='book_spine' and p.get('status')=='candidate') and p.get('kind')!='non_book' for p in proposals),
+                unresolved_regions=len(payload.get('unresolved_regions',[])),review_findings=len(payload.get('review_queue',[])))
+        payload=json.loads((directory/'reading_result.json').read_text(encoding='utf-8'))
+        response=payload.get('response') or {}
+        return dict(kind='reading',frame_ref=payload.get('crop',{}).get('frame_ref'),observation_id=job.request.observation_id,
+            legibility=response.get('legibility') or payload.get('legibility'),
+            text=[dict(text=str(span.get('text',''))[:500],role=span.get('role','unknown')) for span in response.get('spans',[])[:20]],
+            crop_available='crop.png' in state.get('artifacts',{}))
 
     def get(self, job_id):
         with closing(self.store._connect()) as db:

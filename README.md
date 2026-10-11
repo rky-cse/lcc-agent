@@ -13,10 +13,10 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-voice.txt
 # Optional native reconstruction for room geometry:
 .\.venv\Scripts\python.exe -m pip install --only-binary=:all: -r requirements-reconstruction.txt
-.\.venv\Scripts\python.exe -B -m library_claim.server --store runs/my-library --port 4186 --voice --recognition --free-tier-confirmed --key-file .env
+.\.venv\Scripts\python.exe -B -m library_claim.server --store runs/my-library --port 4186 --voice --recognition --free-tier-confirmed
 ```
 
-Copy `.env.example` to a local `.env` and fill your confirmed free-tier Gemini key before explicit activation. Keys stay on the server; no paid fallback or Groq adapter is implemented. Open `http://127.0.0.1:4186/sweep` on the laptop. Enter country/currency and actual reference dimensions, allow camera/microphone, bind capture and approve the shelf plan/budget. `/recognition` provides physical/identity review, `/contents` non-books, `/valuation` reviewed source candidates and `/areas` qualified geometry. End capture, then `/packet` freezes/exports. Exact inputs/operations are in the M06–M10 guides below.
+Copy `.env.example` to a local `.env` and fill either `GEMINI_API_KEY` or `GOOGLE_API_KEY` with your confirmed free-tier Gemini key before explicit activation. The server automatically reads a local `.env`; use `--key-file PATH` to override it. Keys stay on the server; no paid fallback or Groq adapter is implemented. Open `http://127.0.0.1:4186/sweep` on the laptop. Enter country/currency and actual reference dimensions, allow camera/microphone, bind capture and approve the shelf plan/budget. `/recognition` provides physical/identity review, `/contents` non-books, `/valuation` reviewed source candidates and `/areas` qualified geometry. End capture, then `/packet` freezes/exports. Exact inputs/operations are in the M06–M10 guides below.
 
 This prototype requires explicit review and geometry annotations. Unattended room sweeps and Android HTTPS access are unverified. Geometry needs independently verified intrinsics/reference scale and observed corners; tape evaluation truth cannot replace runtime inputs. Clean installation under 15 minutes has not been rehearsed. Offline evaluation needs no model key/provider call.
 

@@ -3,6 +3,17 @@ export async function mount(document=globalThis.document,environment={}) {
 const window=environment.window||globalThis.window,location=environment.location||globalThis.location,history=environment.history||globalThis.history;
 const $=id=>document.getElementById(id);let session=null,epoch=0,pollVersion=0,timer=null,controller=null,guide=null,state=null,request=null,working=false,cameraPhase=null;
 async function api(path,body,signal){const response=await fetch(path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:undefined,body:body?JSON.stringify(body):undefined,signal});const data=await response.json();if(!response.ok)throw new Error(typeof data.detail==='string'?data.detail:`Request failed (${response.status})`);return data;}
+function renderOutcomes(outcomes){
+  const summary=$('outcomes'),details=$('outcome-details');if(!summary||!details)return;
+  details.replaceChildren();if(!outcomes){summary.textContent='Start a recognition plan to see queued work, results, and failures here.';return;}
+  const jobs=outcomes.jobs||{},detection=outcomes.detection||{},reading=outcomes.reading||{};
+  summary.textContent=`Jobs: ${jobs.total||0} total · ${jobs.queued||0} queued · ${jobs.running||0} running · ${jobs.completed||0} completed · ${jobs.failed||0} failed · ${jobs.stale||0} stale · ${jobs.cancelled||0} cancelled.`;
+  const add=text=>{const p=document.createElement('p');p.textContent=text;details.append(p);};
+  if(detection.completed)add(`Book detection: ${detection.book_spine_candidates||0} provisional book-spine candidates; ${detection.non_book_proposals||0} non-book proposals; ${detection.ambiguous_or_review||0} ambiguous/review proposals; ${detection.unresolved_regions||0} unresolved regions across ${detection.completed} completed detection jobs.`);
+  if(detection.uncertain_coverage||detection.no_visible_books||detection.clear_coverage)add(`Coverage assertions: ${detection.clear_coverage||0} clear · ${detection.uncertain_coverage||0} uncertain · ${detection.no_visible_books||0} no visible books. Coverage is not independently verified.`);
+  if(reading.completed)add(`Spine reading: ${reading.readable||0} readable proposals; ${reading.partial_or_unreadable||0} partial or unreadable proposals. Readable text is not an accepted title or edition.`);
+  for(const failure of outcomes.failures||[])add(`Attention: ${failure.kind||'recognition'} job ${failure.job_id||'unknown'} is ${failure.status||'unavailable'} (${failure.reason||'no result available'}).`);
+}
 function render(){
   $('start-plan').disabled=!guide||guide.capture_status!=='capturing'||working||state?.active;
   $('pause').disabled=!state?.active||working;$('resume').disabled=!state?.plan||state?.active||working||state.remaining_attempts===0||guide?.capture_status!=='capturing';
@@ -10,6 +21,7 @@ function render(){
   if($('recognition')) $('recognition').href=session?`/recognition?session=${session}`:'/recognition';
   $('next-prompt').textContent=guide?.next_prompt||'';
   $('progress').textContent=state?progressSummary(state):'';
+  renderOutcomes(state?.outcomes);
   $('associations').replaceChildren();for(const proposal of state?.association_proposals||[]){const p=document.createElement('p');p.textContent=`Alignment for ${proposal.job_id}: ${proposal.status} · ${proposal.links.length} possible links requiring physical review.`;$('associations').append(p);for(const link of proposal.links){const a=document.createElement('a');a.href=`/resolution?session=${session}&observation=${encodeURIComponent(link.observation_id)}`;a.target='_blank';a.rel='noopener';a.textContent=`Review ${link.observation_id} against ${link.anchor_observation_id}${link.proposed_track_id?` (${link.proposed_track_id})`:''}`;$('associations').append(a,document.createElement('br'));}}
 }
 async function poll(current){

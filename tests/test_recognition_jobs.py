@@ -66,6 +66,11 @@ class RecognitionTests(unittest.TestCase):
         self.assertEqual(self.queue.get(self.job.job_id)['status'], 'stale')
         self.assertFalse(self.queue.get(self.job.job_id)['eligible_for_review'])
 
+    def test_completed_reading_projects_literal_visible_text_for_the_browser(self):
+        self.queue.enqueue(self.job);result=self.queue.run_next(response=self.response)
+        summary=result['result_summary'];self.assertEqual(summary['kind'],'reading')
+        self.assertEqual(summary['legibility'],'readable');self.assertEqual(summary['text'][0]['text'],self.response.spans[0].text)
+
     def test_cancel_during_provider_revokes_publication(self):
         self.queue.enqueue(self.job)
         def execute(*args, **kwargs):

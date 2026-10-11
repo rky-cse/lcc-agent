@@ -382,11 +382,28 @@ def create_app(root: Path, origins: set[str], *, synthetic: bool = False, voice_
         snapshot=inventory.snapshot(session_id)
         observations=snapshot['observations']
         frames=sessions.store.manifest(session_id)['frames']
+        jobs=recognition.list(session_id)
+        queued=sum(job['status']=='queued' for job in jobs)
+        imported=sum(job.get('review_state')=='already_imported_as_provisional_observations' for job in jobs)
+        readable=sum(job.get('result_summary',{}).get('kind')=='reading' and job['result_summary'].get('legibility')=='readable' for job in jobs)
+        partial=sum(job.get('result_summary',{}).get('kind')=='reading' and job['result_summary'].get('legibility') in ('partial','unreadable') for job in jobs)
+        unresolved=sum(row.get('track_id') is None for row in observations)
+        if queued:next_action='Queued recognition work remains. Run a selected queued job, then refresh this page for its verified result.'
+        elif imported and unresolved:next_action='Detection proposals are now provisional observations. Review each physical observation before accepting a new or same physical copy.'
+        elif readable:next_action='Literal spine text is available. Review the crop/original, then continue with physical and identity review; text alone does not identify an edition.'
+        elif partial:next_action='Some spine text is partial or unreadable. Review the crop/original and recapture a steadier, closer shelf view if needed.'
+        else:next_action='Select a saved frame for detection or an observation for a spine reading.'
         return dict(session_id=session_id,inventory_revision=snapshot['revision'],reference_revision=state['reference_revision'],
             observations=observations[offset:offset+limit],total_observations=len(observations),offset=offset,limit=limit,
             frames=[{key:frame[key] for key in ('id','sha256','width','height','exif_orientation','synthetic')} for frame in frames[frame_offset:frame_offset+frame_limit]],
             total_frames=len(frames),frame_offset=frame_offset,frame_limit=frame_limit,
-            jobs=recognition.list(session_id),worker_mode='explicit_server' if dispatcher.config else 'explicit_cli',inventory_mutated=False)
+            jobs=jobs,worker_mode='explicit_server' if dispatcher.config else 'explicit_cli',inventory_mutated=False,
+            workflow=dict(saved_frame_count=len(frames),provisional_observation_count=len(observations),unresolved_physical_count=unresolved,
+                imported_detection_count=imported,readable_spine_count=readable,partial_or_unreadable_spine_count=partial,next_action=next_action),
+            inventory_projection=dict(revision=snapshot['revision'],provisional=snapshot['provisional'],coverage_verified=snapshot['coverage_verified'],
+                total_book_count=snapshot['total_book_count'],assigned_track_count=snapshot['assigned_track_count'],
+                observation_count=len(observations),unresolved_physical_count=unresolved,review_count=len(snapshot['review_queue']),
+                detection_import_count=len(snapshot['detection_sources'])))
 
     @app.get('/api/guidance/{session_id}/recognition/dispatch')
     async def recognition_dispatch_state(session_id: str):
@@ -622,9 +639,13 @@ def main():
         parser.error('recognition requires --free-tier-confirmed; no paid fallback')
     if args.recognition_replay and not args.synthetic:
         parser.error('recognition replay requires --synthetic')
+    # A local .env is the conventional development credential location.  Keep
+    # --key-file as an explicit override, and never return this path/key from
+    # an HTTP response or browser payload.
+    key_file=args.key_file if args.key_file is not None else (Path('.env') if Path('.env').is_file() else None)
     if args.recognition:
         from .vision_provider import read_key
-        recognition_config=DispatchConfig(key=read_key(args.key_file),free_tier_confirmed=True,model=args.recognition_model)
+        recognition_config=DispatchConfig(key=read_key(key_file),free_tier_confirmed=True,model=args.recognition_model)
     elif args.recognition_replay:
         if args.recognition_replay.stat().st_size>2*1024*1024:parser.error('recognition replay exceeds 2 MiB')
         recognition_config=DispatchConfig(replay=json.loads(args.recognition_replay.read_text(encoding='utf-8')))
@@ -632,7 +653,7 @@ def main():
         if not args.free_tier_confirmed: parser.error('voice requires --free-tier-confirmed; no paid fallback')
         from .live_voice import GeminiLive
         from .vision_provider import read_key
-        provider=GeminiLive(read_key(args.key_file))
+        provider=GeminiLive(read_key(key_file))
     uvicorn.run(create_app(args.store, origins, synthetic=args.synthetic,voice_provider=provider,recognition_config=recognition_config), host=args.host, port=args.port)
 
 
