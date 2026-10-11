@@ -9,7 +9,8 @@ const preview = new LatestPreview();
 let stream = null, timer = null, generation = 0, starting = false, encoding = null, finishing = false;
 let sweep = null, nextSequence = 0, gaps = 0, saved = new Map(), recovery = [], endId = null;
 let recovering=true, recoveryFailed=false, encodingRef=null, startIntent=null;
-const storageKey = 'library-capture-v1';
+const guidedId = new URL(location.href).searchParams.get('guidance');
+const storageKey = guidedId ? `library-capture-v1-${guidedId}` : 'library-capture-v1';
 const inventory = new InventoryPoller({
   fetchSnapshot: async (id,offset,signal) => {
     const response=await fetch(`/api/sweeps/${encodeURIComponent(id)}/inventory?offset=${offset}`,{signal});
@@ -22,7 +23,8 @@ const inventory = new InventoryPoller({
 function watchInventory() { if(!document.hidden) inventory.watch(sweep?.id || null); }
 let preferencesError = false;
 try {
-  const prior = JSON.parse(localStorage.getItem(storageKey) || 'null');
+  let prior = JSON.parse(localStorage.getItem(storageKey) || 'null');
+  if (guidedId && prior && prior.id !== guidedId) prior = null;
   if (prior) { sweep = {id: prior.id}; nextSequence = prior.nextSequence; gaps = prior.gaps; recovery = prior.pending || []; endId = prior.endId; }
   startIntent=JSON.parse(localStorage.getItem('library-capture-start-intent') || 'null');
   if(startIntent&&!sweep) { $('country').value=startIntent.country; $('currency').value=startIntent.currency; }
@@ -79,6 +81,10 @@ const queue = new EvidenceQueue(async item => {
 
 async function restore() {
   if (!sweep) return;
+  if (guidedId && sweep.id !== guidedId) {
+    sweep = null; saved = new Map(); $('frames').replaceChildren(); nextSequence = 0; gaps = 0; endId = null;
+    return;
+  }
   try {
     sweep = await api(`/api/sweeps/${sweep.id}`);
     watchInventory();
@@ -140,9 +146,8 @@ async function startCamera() {
     video.srcObject = acquired; await video.play();
     if(epoch !== generation) { acquired.getTracks().forEach(t=>t.stop()); return; }
     if (Math.min(video.videoWidth,video.videoHeight)<720 || Math.max(video.videoWidth,video.videoHeight)<1280) throw new Error(`Camera provides ${video.videoWidth} × ${video.videoHeight}; select a camera supporting at least 1280 × 720.`);
-    if (!sweep || sweep.status === 'closed') {
+    if (!sweep || sweep.status === 'closed' || (guidedId && sweep.id !== guidedId)) {
       const country=$('country').value, currency=$('currency').value;
-      const guidedId=new URL(location.href).searchParams.get('guidance');
       if(guidedId) {
         if(!/^[a-f0-9]{32}$/.test(guidedId))throw new Error('Invalid guided session ID');
         const guided=await api(`/api/guidance/${guidedId}`);
@@ -223,20 +228,27 @@ refresh();
 try { const health=await api('/api/health'); $('mode').hidden=!health.synthetic_capture_mode; }
 catch(error) { recoveryFailed=true; status(`Capture server unavailable: ${error.message}`); }
 await restore(); recovering=false; refresh();
-const guidedId=new URL(location.href).searchParams.get('guidance');
 if(guidedId) {
   try {
-    const guided=await api(`/api/guidance/${guidedId}`);
-    if(!guided.locale)throw new Error('Complete guided locale/reference setup first.');
     if(sweep&&sweep.id!==guidedId) {
-      if(sweep.status!=='closed'||queue.items.length)throw new Error('Finish the existing saved capture before opening a different guided session on this capture page.');
-      stopCamera();sweep=null;saved=new Map();$('frames').replaceChildren();
+      stopCamera();sweep=null;saved=new Map();$('frames').replaceChildren();nextSequence=0;gaps=0;endId=null;
+    }
+    const guided=await api(`/api/guidance/${guidedId}`);
+    if(!guided.locale) {
+      status('Complete guided locale/reference setup first.');
+      $('start').disabled=true;
+      refresh();
+      return;
     }
     $('country').value=guided.locale.country;$('currency').value=guided.locale.currency;
     $('country').readOnly=true;$('currency').readOnly=true;
     if(guided.phase==='capture_bound') {
-      sweep=await api(`/api/sweeps/${guidedId}`);sweep.frames.forEach(frame=>recordFrame(frame,sweep.quality?.[frame.id]));
+      sweep=await api(`/api/sweeps/${guidedId}`);
+      saved=new Map();$('frames').replaceChildren();
+      sweep.frames.forEach(frame=>recordFrame(frame,sweep.quality?.[frame.id]));
       nextSequence=Math.max(-1,...sweep.frames.map(f=>f.media_sequence))+1;gaps=sweep.capture_gaps;watchInventory();
+    } else if(!sweep) {
+      saved=new Map();$('frames').replaceChildren();
     }
     status('Guided session loaded. Camera permission is requested only when you start camera.');refresh();
   }catch(error){status(error.message);$('start').disabled=true;}

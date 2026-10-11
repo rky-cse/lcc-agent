@@ -46,7 +46,7 @@ async function captureReady(state){
 }
 function onState(state){
   if(!state)return;
-  if(selected!==state.id){selected=state.id;history.replaceState(null,'',`/?session=${selected}`);try{localStorage.setItem('library-workspace-session',selected);}catch{}plan?.control.open(selected);++reviewVersion;for(const host of [...$('review-host').children]){components.get(host)?.dispose();}activePanel=null;}
+  if(selected!==state.id){selected=state.id;cameraSession=null;history.replaceState(null,'',`/?session=${selected}`);try{localStorage.setItem('library-workspace-session',selected);}catch{}plan?.control.open(selected);++reviewVersion;for(const host of [...$('review-host').children]){components.get(host)?.dispose();}activePanel=null;}
   if(['ready_to_capture','capture_bound'].includes(state.phase))void captureReady(state);
 }
 async function review(name,url){

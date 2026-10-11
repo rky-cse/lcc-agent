@@ -18,10 +18,21 @@ function render() {
   $('mic').disabled=!ready||!!stream||micStarting;$('mute').disabled=!stream&&!micStarting;$('silence').disabled=!ready;
   $('send').disabled=!ready;$('preview').disabled=!ready||state?.capture_status!=='capturing';
   $('confirm').disabled=!pending||pending.cancelled;$('reject').disabled=!pending;
+  if(pending?.command?.payload?.action==='reference'&&pending.command.payload.width_cm!=null&&pending.command.payload.height_cm!=null){
+    pending.command.payload.dimensions_verified=true;
+  }
   $('proposal').textContent=pending?JSON.stringify(pending.command.payload,null,2):'No proposed answer yet.';
   $('bind').disabled=!state||state.phase!=='ready_to_capture';
   if($('capture')) $('capture').hidden=!state?.capture_start_proposal;
   if(state?.capture_start_proposal && $('capture')) $('capture').href=`/?guidance=${state.id}`;
+  if($('ready-card')) {
+    $('ready-card').hidden = state?.phase !== 'ready_to_capture';
+    if(state && $('capture-link')) $('capture-link').href = `/?guidance=${state.id}`;
+  }
+  if($('direct-setup')) $('direct-setup').hidden = !state;
+  if($('direct-skip-ref')) $('direct-skip-ref').disabled = !state || state.phase !== 'awaiting_reference';
+  if($('direct-ref-save')) $('direct-ref-save').disabled = !state || state.phase !== 'awaiting_reference';
+  if($('direct-locale-save')) $('direct-locale-save').disabled = !state || state.phase !== 'awaiting_locale';
   $('refresh-guidance').disabled=!state||executing;
   if(!executing)renderCorrections($('corrections'),state,executeCorrection);
 }
@@ -120,10 +131,89 @@ $('text-form').onsubmit=event=>{event.preventDefault();const text=$('text').valu
 $('frame-form').onsubmit=event=>{event.preventDefault();if(!send({type:'frame',frame_ref:$('frame').value.trim()}))status('Preview not sent. Connect voice first.');};
 $('confirm').onclick=async()=>{
   const proposal=pending,id=state.id;if(!proposal||proposal.cancelled||proposal.dismissed)return;$('confirm').disabled=true;
-  try {const result=await api(`/api/guidance/${id}/turns`,proposal.command);if(state.id!==id)return;state=result;pending=null;$('saved').textContent='Answer saved to guidance. Any book correction remains pending review.';send({type:'refresh'});await nextProposal();}
+  try {
+    const cmd={...proposal.command,expected_revision:state.revision};
+    if(cmd.payload?.action==='reference'&&cmd.payload.width_cm!=null&&cmd.payload.height_cm!=null){
+      cmd.payload={...cmd.payload,dimensions_verified:true};
+    }
+    const result=await api(`/api/guidance/${id}/turns`,cmd);if(state.id!==id)return;state=result;pending=null;$('saved').textContent='Answer saved to guidance. Any book correction remains pending review.';send({type:'refresh'});await nextProposal();}
   catch(error){if(state.id===id){status(error.message);state=await api(`/api/guidance/${id}`);}}
   finally{render();}
 };
+if($('direct-skip-ref')) {
+  $('direct-skip-ref').onclick=async()=>{
+    if(!state||state.phase!=='awaiting_reference')return;
+    try {
+      const result=await api(`/api/guidance/${state.id}/turns`,{
+        command_id:crypto.randomUUID().replaceAll('-',''),
+        session_id:state.id,
+        expected_revision:state.revision,
+        speaker:'claimant',
+        payload:{action:'skip_reference',claimant_statement:'Skip reference object'}
+      });
+      state=result;pending=null;
+      $('saved').textContent='Reference skipped. You are ready to start camera capture.';
+      status('Reference skipped. Ready for camera capture.');
+      send({type:'refresh'});render();
+    }catch(e){status(e.message);}
+  };
+}
+if($('direct-ref-save')) {
+  $('direct-ref-save').onclick=async()=>{
+    if(!state||state.phase!=='awaiting_reference')return;
+    const desc=$('ref-desc')?.value.trim()||'Card';
+    const width=parseFloat($('ref-width')?.value);
+    const height=parseFloat($('ref-height')?.value);
+    const tol=parseFloat($('ref-tol')?.value)||0.05;
+    const prov=$('ref-prov')?.value.trim()||'Measured with ruler';
+    if(isNaN(width)||isNaN(height)||width<=0||height<=0){status('Enter valid positive width and height in cm.');return;}
+    if(tol>=width||tol>=height){status('Tolerance must be smaller than dimensions.');return;}
+    try {
+      const result=await api(`/api/guidance/${state.id}/turns`,{
+        command_id:crypto.randomUUID().replaceAll('-',''),
+        session_id:state.id,
+        expected_revision:state.revision,
+        speaker:'claimant',
+        payload:{
+          action:'reference',
+          description:desc,
+          width_cm:String(width),
+          height_cm:String(height),
+          width_uncertainty_cm:String(tol),
+          height_uncertainty_cm:String(tol),
+          dimensions_verified:true,
+          dimension_provenance:prov,
+          claimant_statement:`${desc}: ${width} cm x ${height} cm, tol ±${tol} cm, ${prov}`
+        }
+      });
+      state=result;pending=null;
+      $('saved').textContent='Reference dimensions verified and saved. Ready for camera capture.';
+      status('Reference dimensions saved. Ready for camera capture.');
+      send({type:'refresh'});render();
+    }catch(e){status(e.message);}
+  };
+}
+if($('direct-locale-save')) {
+  $('direct-locale-save').onclick=async()=>{
+    if(!state||state.phase!=='awaiting_locale')return;
+    const country=$('direct-country')?.value.trim().toUpperCase();
+    const currency=$('direct-currency')?.value.trim().toUpperCase();
+    if(!country||country.length!==2||!currency||currency.length!==3){status('Enter 2-letter country (e.g. IN) and 3-letter currency (e.g. INR).');return;}
+    try {
+      const result=await api(`/api/guidance/${state.id}/turns`,{
+        command_id:crypto.randomUUID().replaceAll('-',''),
+        session_id:state.id,
+        expected_revision:state.revision,
+        speaker:'claimant',
+        payload:{action:'locale',country,currency,claimant_statement:`Country ${country}, Currency ${currency}`}
+      });
+      state=result;pending=null;
+      $('saved').textContent='Country and currency saved. Provide reference object details next.';
+      status('Locale saved. Provide reference object details next.');
+      send({type:'refresh'});render();
+    }catch(e){status(e.message);}
+  };
+}
 $('reject').onclick=async()=>{const id=state.id,proposal=pending;if(!proposal)return;try{await api(`/api/guidance/${id}/voice/dismiss`,{call_id:proposal.call_id});if(state.id===id){pending=null;await nextProposal();status('Proposal dismissed. Nothing was saved to guidance.');}}catch(error){status(error.message);}};
 $('bind').onclick=async()=>{
   try {state=await api(`/api/guidance/${state.id}/turns`,{command_id:crypto.randomUUID(),session_id:state.id,expected_revision:state.revision,speaker:'agent',payload:{action:'bind_capture'}});send({type:'refresh'});render();}

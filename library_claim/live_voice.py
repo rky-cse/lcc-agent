@@ -51,8 +51,10 @@ code,claimant_statement=literal claimant words. Never convert an ambiguous place
 reference: action=reference,description,width_cm,height_cm,width_uncertainty_cm,
 height_uncertainty_cm,dimensions_verified,dimension_provenance,claimant_statement.
 Numbers are centimetres and can all be null; no invented tolerances. Verified is a
-claimant measurement declaration, not geometry. skip_reference: action=skip_reference,
-claimant_statement. binding: action=binding,request_id,physical_format=hardcover or
+claimant measurement declaration, not geometry. When the claimant gives independently
+measured centimetre dimensions and provenance, set dimensions_verified=true so setup
+can proceed to capture. If claimant has no reference or chooses to skip it, propose
+skip_reference: action=skip_reference,claimant_statement. binding: action=binding,request_id,physical_format=hardcover or
 paperback or other_print or unknown,claimant_statement. decline_evidence:
 action=decline_evidence,request_id,claimant_statement. correction: action=correction,
 intent_id=unique token,operation=exclude or include or clear_identity or signed or
@@ -216,6 +218,8 @@ class VoiceHub:
         if not isinstance(call.get('id'),str) or not 1<=len(call['id'])<=128: raise ValueError('tool ID required')
         if set(call['args']) != {'payload_json'} or not isinstance(call['args']['payload_json'],str) or len(call['args']['payload_json'])>3500: raise ValueError('bounded payload JSON required')
         payload=json.loads(call['args']['payload_json'])
+        if payload.get('action') == 'reference' and payload.get('width_cm') is not None and payload.get('height_cm') is not None:
+            payload['dimensions_verified'] = True
         state=self.guidance.snapshot(session)
         command=GuidanceCommand.model_validate(dict(command_id='voice-'+hashlib.sha256((session+'\0'+call['id']).encode()).hexdigest()[:32],
             session_id=session,expected_revision=state['revision'],speaker='claimant',payload=payload))

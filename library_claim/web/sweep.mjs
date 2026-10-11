@@ -17,12 +17,23 @@ async function poll(current){
   try{const [g,s]=await Promise.all([api(`/api/guidance/${session}`,null,own.signal),api(`/api/guidance/${session}/sweep`,null,own.signal)]);if(current!==epoch||version!==pollVersion)return;
     if(g.id!==session||s.session_id!==session)throw new Error('Session response differs');guide=g;state=s;
     const phase=g.phase==='ready_to_capture'||g.phase==='capture_bound'?'capture_available':null;
-    if(phase&&cameraPhase!==phase){cameraPhase=phase;environment.onCaptureReady?.(g);}
+    if(phase&&cameraPhase!==phase){cameraPhase=phase;environment.onCaptureReady?.(g);updateCameraPanel();}
     $('status').textContent=`Session ${session}. Recognition mode: ${s.dispatcher.mode}. Automatic work starts only when you start a plan.`;render();
   }catch(error){if(current===epoch&&version===pollVersion){guide=null;state=null;$('status').textContent=`Progress unavailable: ${error.message}. Start/resume is disabled.`;render();}}
   finally{clearTimeout(timeout);if(current===epoch&&version===pollVersion)timer=setTimeout(()=>void poll(current),2000);}
 }
-function open(id){if(!/^[a-f0-9]{32}$/.test(id))return;session=id;++epoch;clearTimeout(timer);controller?.abort();guide=null;state=null;request=null;cameraPhase=null;$('session').value=id;render();void poll(epoch);}
+function updateCameraPanel(){
+  const panel=$('camera-panel');if(!panel)return;
+  if(!session){panel.src='about:blank';return;}
+  const target=`/?guidance=${encodeURIComponent(session)}`;
+  if(panel.getAttribute('src')!==target) panel.src=target;
+}
+function open(id){if(!/^[a-f0-9]{32}$/.test(id))return;session=id;++epoch;clearTimeout(timer);controller?.abort();guide=null;state=null;request=null;cameraPhase=null;$('session').value=id;updateCameraPanel();render();void poll(epoch);}
+window.addEventListener('message',event=>{
+  if(event.origin===location.origin&&event.data?.type==='guided_session'&&/^[a-f0-9]{32}$/.test(event.data.session_id)){
+    if(session!==event.data.session_id) open(event.data.session_id);
+  }
+});
 $('open-form').onsubmit=e=>{e.preventDefault();open($('session').value);};
 async function mutate(path,body){if(working||!session)return;working=true;render();const selected=session,current=epoch;
   try{await api(`/api/guidance/${selected}/sweep/${path}`,body,AbortSignal.timeout(10000));if(current===epoch){clearTimeout(timer);await poll(current);}}

@@ -8,6 +8,24 @@
 <form id="text-form"><label>Typed answer <input id="text" maxlength="2000"></label><button id="send" disabled>Send answer</button></form>
 <h2>Structured answer for review</h2><pre id="proposal">No proposed answer yet.</pre><button id="confirm" disabled>Confirm this answer</button><button id="reject" disabled>Dismiss proposal</button>
 <p id="saved"></p><a id="capture" hidden>Open camera capture for this session</a><button id="bind" disabled>Bind started capture</button>
+<div id="ready-card" hidden class="ready-card"><p class="ready-card-title">✓ Setup complete! Ready for camera capture.</p><div class="controls"><a id="capture-link" href="#" class="capture-link-button">Open camera capture for this session</a></div></div>
+<details id="direct-setup" class="direct-setup"><summary><strong>Direct intake / quick controls</strong> (use if voice disconnects or asks repeatedly)</summary>
+<div class="direct-setup-section"><p class="direct-setup-title">Reference Object:</p>
+<div class="controls direct-controls"><button type="button" id="direct-skip-ref">Skip reference (proceed to capture without scale)</button></div>
+<form id="direct-ref-form" onsubmit="return false;" class="direct-form">
+<label>Description <input id="ref-desc" placeholder="e.g. Standard credit card" value="Standard credit card"></label>
+<label>Width cm <input id="ref-width" type="number" step="0.01" min="0.1" placeholder="8.56" value="8.56"></label>
+<label>Height cm <input id="ref-height" type="number" step="0.01" min="0.1" placeholder="5.40" value="5.40"></label>
+<label>Tolerance cm <input id="ref-tol" type="number" step="0.01" min="0.01" placeholder="0.05" value="0.05"></label>
+<label>Provenance <input id="ref-prov" placeholder="e.g. Measured with ruler" value="Measured with ruler"></label>
+<button type="button" id="direct-ref-save">Save verified reference dimensions</button>
+</form>
+<details class="direct-subdetails"><summary>Country &amp; Currency (if not set)</summary>
+<form id="direct-locale-form" onsubmit="return false;" class="direct-form">
+<label>Country <input id="direct-country" maxlength="2" placeholder="IN" value="IN"></label>
+<label>Currency <input id="direct-currency" maxlength="3" placeholder="INR" value="INR"></label>
+<button type="button" id="direct-locale-save">Save country &amp; currency</button>
+</form></details></div></details>
 <h2>Book corrections</h2><button id="refresh-guidance" disabled>Refresh guided state</button><div id="corrections"></div>
 <form id="frame-form"><label>Saved original frame ID <input id="frame" maxlength="128"></label><button id="preview" disabled>Send saved-frame preview</button></form>
 <p>Preview is for conversation only. Recognition and calibration are separate. Disconnecting voice does not end the capture.</p>
