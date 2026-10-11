@@ -443,6 +443,8 @@ class ValuationStore:
             selected = {b['id']: b for b in snapshot['books'] if b['id'] in request.track_ids}
             if len(selected) != len(request.track_ids):
                 raise ValueError('selected track is absent from inventory')
+            if not any(book['owned'] and book['status']=='identified' for book in selected.values()):
+                raise ValueError('no reviewed, owned, identified physical books are selected; complete physical and identity review before requesting prices')
             if len(request.markets) == 2 and any(b['status'] != 'identified' for b in selected.values()):
                 raise ValueError('second-country comparison requires ten identified physical books')
             if request.policy.fx_date > self.clock().date():
