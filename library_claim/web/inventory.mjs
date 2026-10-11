@@ -57,7 +57,7 @@ export function renderInventory(document,data) {
   }
   $('inventory-summary').textContent=`Revision ${data.revision} · ${data.assigned_track_count} assigned tracks · ${data.owned_assigned_track_count} owned · ${data.review_count} review entries · total books unknown`;
   $('inventory-state').textContent=data.detection_import_count ? 'Provisional imported observations. Physical associations and coverage require review.' : 'No detection results imported yet. Start a configured shelf plan or review a saved detection.';
-  $('inventory-export').href=`/api/sweeps/${encodeURIComponent(data.sweep_id)}/inventory/export`;
+  if($('inventory-export')) $('inventory-export').href=`/api/sweeps/${encodeURIComponent(data.sweep_id)}/inventory/export`;
   for(const row of data.rows) {
     const tr=document.createElement('tr');
     const values=[row.kind==='book' ? (row.title || 'Unidentified book') : 'Needs review',row.shelf || 'Unknown shelf',

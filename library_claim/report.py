@@ -13,6 +13,7 @@ def render_report(packet: dict) -> str:
             "<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>" for row in rows) + "</tbody></table>"
 
     frame_paths = {x["id"]: x["path"] for x in packet["evidence_manifest"]}
+    final_quotes={q['id']:q.get('quote',{}) for q in packet['quote_manifest']}
 
     def frame(ref):
         return f'<a href="{quote(frame_paths[ref], safe="/")}">{escape(ref)}</a>'
@@ -22,7 +23,8 @@ def render_report(packet: dict) -> str:
             return "Unpriced"
         return (text(p[key]) + f' <a href="{escape(p["url"], quote=True)}" rel="noopener noreferrer">'
                 + text(p["source"]) + "</a><br>" + text(p["retrieved_at"])
-                + "<br>Condition: " + text(p["condition_assumed"]))
+                + "<br>Condition: " + text(p["condition_assumed"])
+                + ("<br>Converted using archived dated FX" if p.get('converted') or any(final_quotes.get(ref,{}).get('converted') for ref in p.get('quote_refs',[])) else ""))
 
     banner = "<p class='banner'>SYNTHETIC FIXTURE — not a real capture, quote or claim.</p>" if packet["synthetic"] else ""
     books = table(["ID / status", "Book", "Height / thickness cm", "Replacement", "Used", "Frame"], [
@@ -63,4 +65,6 @@ def render_report(packet: dict) -> str:
             + "<h2>Room</h2>" + facts(packet["room"]) + "<h2>Review queue</h2>" + review
             + "<h2>Declared measurement evidence</h2><p>M01 validates record references, not physical measurement accuracy.</p>" + measurements
             + "<h2>Ownership exclusions</h2>" + exclusions
-            + "<h2>Saved evidence</h2>" + evidence + "<p><a href='claim_packet.json'>Full JSON packet</a></p></body></html>")
+            + "<h2>Saved evidence</h2>" + evidence
+            + ("<p>Immutable final archive. <a href='artifact-manifest.json'>Full artifact manifest</a> · <a href='frozen-inputs.json'>Frozen stage inputs</a> · <a href='spoken-summary.txt'>Spoken summary</a>. Physical coverage and accuracy are unverified.</p>" if packet.get('finalization') else "")
+            + "<p><a href='claim_packet.json'>Full JSON packet</a></p></body></html>")

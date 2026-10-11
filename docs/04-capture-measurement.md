@@ -80,3 +80,7 @@ Multiview reconstruction needs overlap, translation and texture. A stationary pa
 ## M03 feasibility acceptance
 
 Before investing in broader recognition, demonstrate on the actual device: reopen saved readable shelf evidence; recover a scale anchor with provenance; measure held-out spine height/thickness against independent tape/caliper values; obtain a connected room footprint and height from the same sweep; quantify errors and latency. Test another shelf/room configuration rather than calibrating output to one space. If room geometry is not feasible, present that measured limitation and a concrete device/path change for user review. Do not quietly replace measured area with a model estimate.
+
+## M09 implementation update
+
+M09 now implements observed simple planar footprints, floor-normal wall profiles, per-wall projected shelving union, opening union subtraction, m²/ft² and explored pixel/reference sensitivity. Explicit per-run choices handle gross/net area, first-edge-aligned extents versus unknown dimensions, and constant-only versus unknown height. Unobserved boundaries stay unknown; physical coverage and camera/pose uncertainty remain unverified. This path requires reviewer annotations rather than automatic room corners. See [M09 geometry and limitations](43-m09-group-review.md).

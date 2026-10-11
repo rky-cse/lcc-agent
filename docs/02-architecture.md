@@ -150,3 +150,15 @@ M03b2 adds `room_geometry.py` and `room_measurement.py`, plus optional fixed-int
 Later modules add live voice, detection, identification, connected room measurement, valuation and evaluation when authorized. Keep provider calls behind adapters and arithmetic deterministic. Selected reused reference code receives attribution and a change notice. See [M02a](15-m02a-review.md) for file/transaction ordering and recovery boundaries.
 
 M04a adds `spine_detection.py` and `vision_provider.py`: one saved shelf region → bounded Gemini structured proposals → local convex/area/ROI/overlap checks → unidentified observation rows/provisional counts and HTML/SVG review. It uses a fixed-domain REST adapter with a local key, explicit free-tier assertion and no retries/paid fallback. Same-frame observations have stable geometry-based IDs; physical tracks/live publication are M04b. Real detector quality is unmeasured; see [M04a](20-m04a-review.md).
+
+## M09 implementation update
+
+M09 adds a reviewed geometry path from M03's verified native model and fixed camera views through observed surface polygons, reference scaling, clipped unions and sensitivity to immutable SQLite area runs. M08 physical shelving IDs and the complete contents hash pin each run. The /areas review page schedules computation only on explicit request; model directories must resolve inside the frame store. See [M09 group review](43-m09-group-review.md).
+
+## M10 implementation update
+
+M10 adds a closed-capture drain/deadline barrier, SQLite writer-reserved snapshot, immutable archived content and resumable atomic publication. The unpriced M01 structural packet is enriched only by reparsed saved M07/M08 quotes and independently computed Decimal totals/FX; M09 and M08 geometry proofs remain bound to frozen physical identities. JSON, HTML and spoken text share one serialization, and a hash manifest covers portable originals/sources/model proofs. See [M10 review](44-m10-group-review.md).
+
+## M11 implementation update
+
+Independent truth/config freeze and full-denominator evaluation are offline consumers of M10 archives, isolated from capture, recognition and pricing imports. Saved quotes and FX are independently reparsed; output consists of exact JSON, comparison CSVs, readable HTML and manifests. Local delivery checks preserve explicit unmeasured states for missing physical/demo/setup/repair evidence. [Implemented one-page architecture](11-architecture-note.md) and [M11 review](45-m11-group-review.md) supersede historical proposed sections.

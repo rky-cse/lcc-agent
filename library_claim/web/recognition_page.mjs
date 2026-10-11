@@ -1,5 +1,7 @@
 import {ReadingView,enrollment,renderReadings,dispatchRequest} from './recognition.mjs';
 import {ShelfSelector} from './shelf_selector.mjs';
+export async function mount(document=globalThis.document, environment={}) {
+const window=environment.window||globalThis.window, location=environment.location||globalThis.location, history=environment.history||globalThis.history;
 const $=id=>document.getElementById(id);let current=null;const attempts=new Map();
 const selector=new ShelfSelector(document,enqueueDetection);
 const mutations=new Set();
@@ -46,3 +48,7 @@ $('frame-prev').onclick=()=>open(view.session,view.offset,Math.max(0,view.frameO
 $('frame-next').onclick=()=>open(view.session,view.offset,view.frameOffset+50);
 window.addEventListener('pagehide',()=>{view.stop();for(const c of mutations)c.abort();selector.clear();current=null;});
 const session=new URL(location.href).searchParams.get('session');if(session&&/^[a-f0-9]{32}$/.test(session)){$('session-id').value=session;open(session);}
+
+return {refresh:()=>open(view.session,view.offset,view.frameOffset)};
+}
+if(globalThis.document?.querySelector('script[src="/assets/recognition_page.mjs"]')) await mount();

@@ -1,5 +1,7 @@
 # Reference app audit and reuse ledger
 
+**Latest review: M11.** Reuses target Decimal serialization, typed boundaries, saved retailer/FX audit, immutable packet and report/summary logic. Adds offline comparison/delivery tools; no reference code, dependency or provider transport was copied and the reference was not retested. M07–M10 valuation/geometry/finalization are target-specific. [M11 review](45-m11-group-review.md).
+
 **Latest review: M06 group.** Reused capture/quality, voice transport/journal, exact-ID workers, recognition/registration guards, crop reading and ledger receipts. New glue adds bounded coordination, image correspondence proposals and combined UI. NumPy already installed is now declared; no dependency installation or reference retest. See [group review](40-m06-group-review.md).
 
 **Latest review: M06c2g1.** Reused target queue, reading/detection exports, existing Gemini adapter and credential/free-tier guards. No reference changes, reference retest, dependency addition or new provider transport. This part adds exact selection and closes cancellation slot overlap. See [review record](37-m06c2g1-review.md).

@@ -1,6 +1,6 @@
 # Decision register and risks
 
-Latest review: M08 whole implementation group. Unknown ordinary price status, comparable-count/host/size policy, set/component counting, ownership and art assertions remain explicit reviewed inputs. No consumer/source coverage or real physical acceptance is assumed. M09 areas and M10 final packet remain pending. See [M08 group review](42-m08-group-review.md).
+Latest review: M10 whole implementation group. Finalization deadlines, saved run selection, aggregation and archive budget are explicit inputs. Completed archives stay immutable; corrections need a new run. Global geometry conventions, real coverage/accuracy and timing remain unverified. M11 evaluation remains pending. See [M10 group review](44-m10-group-review.md).
 
 Latest review: M07 implementation group. Whole-module delivery and no-smoke workflow supersede the earlier per-subpart/smoke instructions below. Required per-run inputs resolve locale, used-price basis/condition, source review, appraisal thresholds, precision, rounding, fees and FX freshness without global assumptions. Strict metadata/source coverage and real valuation acceptance remain unverified. See [M07 group review](41-m07-group-review.md).
 
@@ -99,3 +99,7 @@ Authentication platform, insurer databases, hosted deployment, polished visual d
 ## Decision update format
 
 Record ID, exact user answer/approved choice, date, rationale, affected documents/contracts/modules and whether it supersedes an earlier decision. Record measured preflight outcomes independently of user preferences. A failed capability test can invalidate a proposed path even if that path was initially preferred.
+
+## M11 evaluation decisions and remaining evidence
+
+M11 supports explicit conservative all-comparison spine scoring and all-available-comparison price scoring, with incomplete/unavailable truth unable to produce a full pass. A supplied policy must choose the confidence threshold and primary wrong-confidence denominator; both denominators are reported. This is a supported implementation convention, not an assertion that the user approved a particular threshold/denominator. No actual evaluation policy was frozen in this group. Physical truth/archive availability remains unresolved. Full-room accuracy, demo, measured repair/held-out run, production cost/timing and clean setup are not measured. See [M11 review](45-m11-group-review.md).

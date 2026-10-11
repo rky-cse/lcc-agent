@@ -85,3 +85,15 @@ Record a single actual continuous pass with the agent audible, inventory arrivin
 - Same ten books repriced for the second locale, with source/date/currency/FX disclosures.
 
 Repository sharing, video upload and email submission are later user-authorized external actions. This documentation step neither creates a private GitHub repository nor claims those deliverables exist.
+
+## M09 implementation update
+
+M09 local review is available at /areas. Place a qualified same-sweep M03 reconstruction beneath the configured frame store, enter its exact result SHA-256 and relative directory, load current contents and supply reviewed point/surface observations and explicit policies. GET /api/areas/schema documents all fields. CLI: python -B -m library_claim.area_store --store <store> --input <reviewed-request.json> --output <fresh-result.json>. Reads recheck originals/native artifacts; stale contents require a new run. No provider or network source is needed. Smoke checks remain skipped. See [M09 operating guide](43-m09-group-review.md).
+
+## M10 implementation update
+
+Restart the existing server and open /packet after explicitly ending capture. Load both current revisions, select saved runs, enter the deadline/aggregation/byte limit and explicitly freeze. Retry the exact request after drain/deadline; corrections require a new run ID. Download the ZIP, extract it and open report.html with relative evidence links. The saved spoken-summary.txt matches the JSON; explicit browser speech playback is optional and untested. CLI: python -B -m library_claim.finalization --store <store> --input <reviewed-finalization.json> --output <fresh-packet.zip>. No provider/network call is scheduled by finalization. See [M10 operating guide](44-m10-group-review.md).
+
+## M11 implementation update
+
+Run the offline freeze/evaluation/delivery CLIs in [M11 guide](45-m11-group-review.md), starting from [blank JSON/Schemas](evaluation-templates/). Record actual complete-room truth, timing/cost and demonstration evidence separately from automated regression outcomes. Native room geometry and physical/identity/price acceptance remain explicit prototype reviews. Under-15-minute clean setup, unedited demo and measured held-out repair are unmeasured until real evidence is supplied. All further smoke testing remains skipped at the user's request; repository/video/email sharing requires a separate instruction.

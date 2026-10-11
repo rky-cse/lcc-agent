@@ -1,3 +1,5 @@
+export async function mount(document=globalThis.document, environment={}) {
+const window=environment.window||globalThis.window, location=environment.location||globalThis.location, history=environment.history||globalThis.history;
 const $=id=>document.getElementById(id);
 let saved=null,busy=false;
 function status(message){$('status').textContent=message;}
@@ -17,3 +19,7 @@ $('run').onclick=()=>act(async()=>{if(!$('consent').checked)throw new Error('Con
 $('restore').onclick=()=>act(async()=>{const id=sweep(),run=$('run-id').value.trim();render(await json(`/api/sweeps/${id}/valuations/${encodeURIComponent(run)}`));status('Saved result and evidence hashes checked.');});
 $('download').onclick=()=>{if(!saved)return;const url=URL.createObjectURL(new Blob([JSON.stringify(saved,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='valuation.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
 $('sweep-id').value=new URLSearchParams(location.search).get('sweep_id')||'';
+
+
+}
+if(globalThis.document?.querySelector('script[src="/assets/valuation.mjs"]')) await mount();

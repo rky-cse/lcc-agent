@@ -1,14 +1,44 @@
 # Library Contents Claim Agent
 
+M11 evaluation and delivery tooling is implemented: frozen independent truth/config, full-denominator scoring, source-audited archive checks, comparison tables and local demo/setup/failure/repair checks. Real-room accuracy, demo, timing/cost and clean setup remain unmeasured. [M11 guide](docs/45-m11-group-review.md) · [Blank inputs](docs/evaluation-templates/) · [Implemented architecture](docs/11-architecture-note.md).
+
+The original plan ends at M11. No planned module is unstarted, but physical acceptance and two documented geometry acquisition gaps remain. [Completion status and remaining work](docs/46-project-completion-status.md).
+
+## Current local setup
+
+Python 3.12+ is required; workspace checks use Python 3.13. Node is needed only for browser regression tests. From the repository root:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-voice.txt
+# Optional native reconstruction for room geometry:
+.\.venv\Scripts\python.exe -m pip install --only-binary=:all: -r requirements-reconstruction.txt
+.\.venv\Scripts\python.exe -B -m library_claim.server --store runs/my-library --port 4186 --voice --recognition --free-tier-confirmed --key-file .env
+```
+
+Copy `.env.example` to a local `.env` and fill your confirmed free-tier Gemini key before explicit activation. Keys stay on the server; no paid fallback or Groq adapter is implemented. Open `http://127.0.0.1:4186/sweep` on the laptop. Enter country/currency and actual reference dimensions, allow camera/microphone, bind capture and approve the shelf plan/budget. `/recognition` provides physical/identity review, `/contents` non-books, `/valuation` reviewed source candidates and `/areas` qualified geometry. End capture, then `/packet` freezes/exports. Exact inputs/operations are in the M06–M10 guides below.
+
+This prototype requires explicit review and geometry annotations. Unattended room sweeps and Android HTTPS access are unverified. Geometry needs independently verified intrinsics/reference scale and observed corners; tape evaluation truth cannot replace runtime inputs. Clean installation under 15 minutes has not been rehearsed. Offline evaluation needs no model key/provider call.
+
+## Models, sources and tools
+
+Configured code: `gemini-3.8-live` for voice; default `gemini-3.1-flash-lite` for saved-frame detection/reading/non-book proposals, with an explicit vision allowlist. These names describe implementation, not guaranteed account availability/quota. Groq is not integrated. Open Library/Google Books supply bibliographic candidates; reviewed retailer JSON-LD offers and saved dated FX supply money. Python/FastAPI/Pydantic/Pillow/NumPy, optional PyCOLMAP and Google GenAI SDK are pinned in requirements. No model was trained/fine-tuned. Codex assisted design, code and automated tests. [Reference kept/changed/removed](docs/06-reference-audit.md).
+
+Older module notes below preserve review history. Current status is M11 software ready for review; required physical evaluation and delivery evidence remain pending.
+
+M10 final packet integration is implemented for review: closed-capture drain/deadline barrier, immutable snapshots, saved-source/FX/total audit and portable JSON/report/evidence/summary ZIP. Open /packet on the local server after restarting it. Packets remain partial because physical coverage and accuracy are unverified. See [M10 group review](docs/44-m10-group-review.md).
+
+M09 room and shelving areas is implemented for review: observed irregular footprints, sloped wall profiles, explicit gross/net interpretation, clipped shelving unions, m²/ft², sensitivity and durable evidence. Open /areas on the local server. Physical accuracy remains unverified; smoke tests were skipped. See [M09 group review](docs/43-m09-group-review.md).
+
 M08 non-book contents is implemented for review: provisional saved-frame detection, reviewed physical objects/sets, evidenced dimensions and literal exact/range/appraisal valuation. Open /contents on the local server. No smoke tests or real-provider/source calls were run. See [M08 group review](docs/42-m08-group-review.md).
 
 M07 book valuation is implemented for review: source-backed physical offers, explicit condition/appraisal policies, dated Decimal FX and independent two-country ten-track results. Open /valuation on the local server. Source coverage and final claim packet integration remain unverified; no smoke tests were run. See [M07 group review](docs/41-m07-group-review.md).
 
-**Status: M08 implementation group complete for review. Combined voice/camera, budgeted automatic recognition, live quality/progress guidance, unresolved association proposals and reviewed shelf/appraisal corrections are implemented. Further smoke testing was skipped at your request; real device and physical acceptance remain unverified.**
+**Status: M11 software group complete for review. Voice/camera, reviewed inventory/valuation/areas, immutable packet and offline evaluation/delivery tools are implemented. Physical evaluation, demo and measured repair remain pending. Smoke tests remain skipped at your request.**
 
 This project will guide a policyholder through one continuous voice-and-camera sweep of a home library, build a live inventory, and produce an evidence-backed contents claim packet. The brief requires book counting and identification, metric measurements, local book and non-book valuations, room areas, and an honest evaluation against independently collected ground truth.
 
-Implemented modules provide packet/evidence/export, durable browser capture, annotated geometry, physical tracking and assisted matching, visible-text extraction, reviewed work/edition identity, guided setup/evidence questions, optional live voice and explicit correction execution. A bounded reading queue is available through explicit browser enrollment and an independent CLI worker; saved-frame detection jobs can be explicitly enrolled by browser shelf-region selection or CLI/API. Explicitly enabled, budgeted recognition coordination is implemented; source-backed book valuation is implemented; full room areas and final packet integration remain planned. Physical accuracy is not yet validated.
+Implemented modules provide packet/evidence/export, durable browser capture, annotated geometry, physical tracking and assisted matching, visible-text extraction, reviewed work/edition identity, guided setup/evidence questions, optional live voice and explicit correction execution. A bounded reading queue is available through explicit browser enrollment and an independent CLI worker; saved-frame detection jobs can be explicitly enrolled by browser shelf-region selection or CLI/API. Explicitly enabled, budgeted recognition coordination is implemented; source-backed book valuation is implemented; reviewed full room areas are implemented; immutable final packet integration is implemented; physical evaluation remains pending. Physical accuracy is not yet validated.
 
 ## Read the design
 
@@ -51,6 +81,8 @@ Implemented modules provide packet/evidence/export, durable browser capture, ann
 | [M06 complete group review](docs/40-m06-group-review.md) | Continuous recognition, combined voice/camera, progress/quality guidance and shelf/appraisal corrections |
 | [M07 complete group review](docs/41-m07-group-review.md) | Retailer evidence, condition/locality/appraisal policies, dated FX and independent ten-track country comparison |
 | [M08 complete group review](docs/42-m08-group-review.md) | Non-book physical ledger, provisional detection, grouping, art/dimensions and exact/range source-backed prices |
+| [M09 complete group review](docs/43-m09-group-review.md) | Observed room/wall/shelving polygons, explicit interpretations, m²/ft², uncertainty and durable review |
+| [M10 complete group review](docs/44-m10-group-review.md) | Consistent freeze, independent price/FX/totals audit, immutable packet/report/summary and portable ZIP |
 
 ## Current verification
 
@@ -60,7 +92,7 @@ The user confirmed they tested the reference and instructed us to proceed withou
 
 M01 verification: 29 unit/contract/export tests pass. The synthetic CLI produces a partial packet with saved evidence and an HTML report from the same serialized values. No real capture or price quote is claimed by that fixture.
 
-Latest automated verification: all 490 Python regressions passed, followed by all 74 expanded M08/M07 focused checks (39 M08 and 35 M07). All 63 Node tests passed. No M08 smoke tests were run. M06 adds budget/inputs/restart/drain, image correspondence, literal art, atomic shelf ownership and unverified appraisal checks. Further smoke tests are disabled by user instruction. M06c1's synthetic HTTP/restart/CLI/browser smoke verifies reviewed target-only mutation and recovery after an inventory commit lost its acknowledgment. Earlier voice/provider, detection, tracking, reading and identity checks passed their documented boundaries. Actual microphone barge-in, three-minute conversation, real photo/camera/calibration and physical accuracy gates remain open; complete areas are M09 work.
+Latest automated verification: all 577 Python regressions passed, followed by all 28 expanded M11 focused checks after final repair/size refinements. All 68 Node tests passed. No M11 smoke tests or live provider/source calls were run. M06 adds budget/inputs/restart/drain, image correspondence, literal art, atomic shelf ownership and unverified appraisal checks. Further smoke tests are disabled by user instruction. M06c1's synthetic HTTP/restart/CLI/browser smoke verifies reviewed target-only mutation and recovery after an inventory commit lost its acknowledgment. Earlier voice/provider, detection, tracking, reading and identity checks passed their documented boundaries. Actual microphone barge-in, three-minute conversation, real photo/camera/calibration and physical accuracy gates remain open; reviewed areas are implemented in M09; physical room acceptance remains unverified.
 
 ## Run the complete M06 group
 
@@ -209,7 +241,7 @@ For a real original JPEG/PNG, use the import CLI with your file, sweep/upload ID
 
 The path and timestamp above are placeholders to replace, not a statement about an actual photo. Reuse an upload ID only for an exact retry; a new physical capture gets a new upload ID. Original bytes remain under `frames/`; SQLite is the authoritative manifest, and per-sweep JSON snapshots are available for inspection. Default acceptance limits and crash boundaries are in the M02a record.
 
-## Review workflow
+## Historical review workflow
 
 Current step ready for review: [M05b3 owned-copy edition review](docs/27-m05b3-review.md). Bounded edition lookup checks reviewed visible ISBN, work/title, explicit binding and supplied metadata; acceptance/rejection/clear commands persist with provenance. Full suite: 257 Python tests passed. Synthetic CLI/HTTP restart/clear smoke passed. One live record lacked physical format and remained unaccepted; cached replay made zero requests. Run `python -m scripts.smoke_edition --output runs/my-edition-smoke`. Review `runs/m05b3-review-final/accepted-evidence/report.html` and `runs/m05b3-review/edition-final-cache/report.html`. Guided session setup is next; real shelf accuracy and live recognition remain pending. Implementation stops here for review.
 

@@ -1,5 +1,7 @@
 import {resolutionRequest,resolutionView} from './resolution.mjs';
 import {renderRegistration} from './registration.mjs';
+export async function mount(document=globalThis.document, environment={}) {
+const window=environment.window||globalThis.window, location=environment.location||globalThis.location, history=environment.history||globalThis.history;
 const $=id=>document.getElementById(id),params=new URL(location.href).searchParams,session=params.get('session'),observation=params.get('observation');
 let data=null,epoch=0,pending=null;const controllers=new Set();
 const url=`/api/guidance/${encodeURIComponent(session)}/resolution/${encodeURIComponent(observation)}`;
@@ -19,3 +21,7 @@ $('registration-form').onsubmit=async event=>{event.preventDefault();if(!data)re
  }catch(error){if(generation===epoch){$('registration-status').textContent=`Request not confirmed: ${error.message}. Retry unchanged inputs or refresh to inspect the saved ledger.`;$('registration-apply').disabled=false;}}};
 window.addEventListener('pagehide',()=>{++epoch;data=null;for(const c of controllers)c.abort();});
 if(/^[a-f0-9]{32}$/.test(session||'')&&/^[A-Za-z0-9_-]{1,128}$/.test(observation||''))void load();else $('registration-status').textContent='Open an unresolved observation from the recognition queue.';
+
+
+}
+if(globalThis.document?.querySelector('script[src="/assets/resolution_page.mjs"]')) await mount();

@@ -130,3 +130,17 @@ M03a now produces `MeasurementEvidence` for accepted annotated spine dimensions 
 Keep backend endpoints small: create/read sweep, upload saved evidence, read state/events, finish capture, obtain packet/report/evidence bundle and explicitly delete local run data. A WebSocket carries audio, conversational preview, turns, validated tool requests and ordered UI events. Evidence bytes should use a separate bounded upload path so they cannot starve audio. These are interface intents; concrete routes and payload schemas are implemented only in their authorized module.
 
 Important planned contract cases: all-unknown packet, partially priced book, identified work with unknown edition, unreadable spine with valid dimensions, signed-book correction, art unanswered/print/original, ordinary unpriced item, mixed currency, missing FX, repeated shelf observation, duplicate callback, stale revision, missing frame, incomplete geometry and stage deadline. Fixtures are explicitly synthetic and never presented as ground-truth results.
+
+## M09 implementation update
+
+M09's AreaRequest makes floor/wall/opening/shelf observations, completeness and gross/net/dimension/height interpretations explicit. GET /api/areas/schema exposes its generated input schema. Results retain the M01 Room and MeasurementEvidence contracts and add area_units, partial subtotals, sensitivity, reconstruction provenance, contents hash, stale flags and packet_ready=false. Exact run retries are immutable; changed inputs require a fresh run ID. See [M09 contract and review](43-m09-group-review.md).
+
+## M10 implementation update
+
+FinalizationRequest pins both inventory revisions, absolute timezone-aware deadline, saved valuation/area run selections, optional M03 book measurements, explicit aggregation and an uncompressed byte budget. GET /api/finalization/schema exposes the full contract. waiting_for_drain -> frozen -> published is resumable/idempotent; a changed payload needs a new run ID. packet_ready means an archived artifact exists, while packet_status remains partial and physical coverage/accuracy remain unverified. Quote manifests retain source literal amounts and separate dated FX. See [M10 contracts](44-m10-group-review.md).
+
+## M11 implementation update
+
+Offline evaluation uses strict Truth, FrozenTruth, EvaluationPolicy, Assessment and telemetry contracts. Truth/config must predate capture; explicit one-to-one physical matching and independent title/price-basis judgments preserve full denominators. Confidence threshold and primary denominator have no default. Only conservative all-comparison spine/price aggregation is supported. ZIP files are read without extraction, with size/path/manifest checks and independent saved-source/FX/totals audits. Truth is never a runtime catalogue.
+
+Delivery specifications bind local assets, demo/setup assertions and observed error IDs. Measured-repair evidence must include before/after/held-out result directories and after/held-out packet archives; metrics and eligibility are recomputed. File hashes cannot attest human truth, video content, root causes or private repository permissions. No external submission occurs. See [M11 contracts and operations](45-m11-group-review.md).

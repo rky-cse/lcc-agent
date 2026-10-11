@@ -1,10 +1,10 @@
 # Modular implementation and review plan
 
-M08a–M08b implementation group is complete for review, with automated evidence/identity/grouping/geometry/range/art checks. Smoke tests remain skipped by user instruction. M09 is the next whole-module boundary; actual room/item pass bars remain unverified. See [M08 group review](42-m08-group-review.md).
+M11 software group is ready for review: frozen truth/config, full-denominator scoring, archive/source audit, second locale and local delivery/failure/repair checks. Physical truth, demo, actual timing/cost, held-out repair and clean setup remain pending. Smoke tests remain skipped. See [M11 guide](45-m11-group-review.md). Earlier module entries preserve their historical review boundaries.
 
 Latest workflow: finish all subparts of the authorized top-level module, then stop for review. Do not run smoke tests from M06 group onward; keep automated verification. M07a–M07c implementation is now covered in [M07 group review](41-m07-group-review.md). Real-source/physical acceptance remains unverified.
 
-**Current review boundary: complete M06 implementation group.** Continuous budgeted recognition, saved quality/progress voice updates, combined camera/voice UI, unresolved registration acquisition and reviewed shelf/appraisal corrections are implemented. Smoke testing was disabled by the user during this group. Real device/physical/latency acceptance remains unverified. See [group review](40-m06-group-review.md).
+**Current review boundary: M11 tooling.** No module after M11 is defined. There are zero unstarted planned modules, while M11 physical acceptance/delivery and the documented M03/M09 calibration/boundary acquisition gaps remain open. See [completion status and next-step choices](46-project-completion-status.md). Smoke tests remain disabled.
 
 ## Working agreement
 
@@ -117,17 +117,19 @@ Tests: repeated view dedup, furniture sets/components, hidden depth, unreadable 
 
 ### M09 — Room and shelving areas
 
-Build full footprint/wall/shelf union calculations using M03's proven inputs. Rectangles, nonrectangles and varying heights have explicit interpretations. Add m²/ft² and uncertainty/coverage.
+Implemented as the complete M09 group; see [review and operating guide](43-m09-group-review.md). Reuses M03 calibration, triangulation and native model integrity plus M08 physical shelving identities. Build full footprint/wall/shelf union calculations using M03's proven inputs. Rectangles, nonrectangles and varying heights have explicit interpretations. Add m²/ft² and uncertainty/coverage.
 
 Tests: rectangle, closed polygon, sloped/variable wall treatment, invalid polygon/missing corner, overlap-clipped shelving union, deterministic square-foot conversion and gross/net convention. Smoke: taped real room comparison from the same inventory sweep, plus a changed/held-out geometry case. All inputs trace to frames/calibrations; missing geometry stays unknown.
 
 ### M10 — Final packet integration
 
-Add deadline/drain barrier, freeze consistent revision, independent deterministic audit, complete review queue, portable evidence/quote manifest, report and spoken summary from the same JSON. Late jobs cannot mutate completed artifacts.
+Implemented as the complete M10 group; see [review and operating guide](44-m10-group-review.md). Add deadline/drain barrier, freeze consistent revision, independent deterministic audit, complete review queue, portable evidence/quote manifest, report and spoken summary from the same JSON. Late jobs cannot mutate completed artifacts.
 
 Tests: correction invalidates pending valuation, export during pending work, deadline partial packet, restart/open references, lost provider, duplicate callback, invalid line excluded, exact JSON/report/summary agreement. Smoke: continuous sweep to exported packet; open every `frame_ref` and check each monetary source. Measure sweep-end→validated JSON/report-ready time; do not declare pass if a partial/invalid file merely appeared.
 
 ### M11 — Honest evaluation and delivery
+
+Implemented tooling as the full M11 group. [M11 commands and physical evidence gate](45-m11-group-review.md). The physical experiment and deliverables below remain pending user-arranged evidence. The historical smoke checklist is skipped under the current instruction.
 
 Freeze configuration and truth; run the full actual room. Produce the comparison sheet, individual sample errors, coverage, actual cost/latency, three worst errors and one measured repair. Re-run a fresh held-out sweep after repair. Record an unedited ≤6-minute demo from capture start through the packet. Rehearse setup under 15 minutes; update README/reuse note/model disclosure.
 

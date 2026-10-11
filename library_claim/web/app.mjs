@@ -1,6 +1,8 @@
 import {EvidenceQueue, LatestPreview, acquireCamera} from './queue.mjs';
 import {InventoryPoller, renderInventory} from './inventory.mjs';
 
+export async function mount(document=globalThis.document, environment={}) {
+const window=environment.window||globalThis.window, location=environment.location||globalThis.location, history=environment.history||globalThis.history;
 const $ = id => document.getElementById(id);
 const video = $('video'), nativeCanvas = document.createElement('canvas'), previewCanvas = document.createElement('canvas');
 const preview = new LatestPreview();
@@ -85,7 +87,7 @@ async function restore() {
     const acknowledged = new Set(sweep.frames.map(x=>x.upload_id));
     const lost = recovery.filter(id=>!acknowledged.has(id)).length;
     gaps += lost; recovery = [];
-    $('manifest').href = `/api/sweeps/${sweep.id}/manifest`; $('manifest').hidden = false;
+    if($('manifest')) { $('manifest').href = `/api/sweeps/${sweep.id}/manifest`; $('manifest').hidden = false; }
     status(lost ? `${lost} unsaved frames were lost when the page closed. These are recorded as capture gaps.` :
       sweep.status === 'closed' ? 'Previous sweep closed. You can start a new sweep.' : 'Previous sweep recovered. Resume the camera or end the sweep.');
     refresh();
@@ -163,7 +165,7 @@ async function startCamera() {
     $('camera').replaceChildren(new Option('Default camera',''));
     devices.filter(d=>d.kind==='videoinput').forEach(d=>$('camera').append(new Option(d.label||'Camera',d.deviceId)));
     $('resolution').textContent = `Evidence ${video.videoWidth} × ${video.videoHeight} · preview 320 px · keyframe every 1.5 s`;
-    $('manifest').href = `/api/sweeps/${sweep.id}/manifest`; $('manifest').hidden = false;
+    if($('manifest')) { $('manifest').href = `/api/sweeps/${sweep.id}/manifest`; $('manifest').hidden = false; }
     preview.begin(); status('Camera running. Move slowly and keep each shelf in view.');
     timer = setInterval(()=>void sample(epoch),1500); void sample(epoch);
   } catch(error) {
@@ -206,7 +208,7 @@ $('saved-sweep-form').onsubmit=async event=>{
     gaps=restored.capture_gaps; saved=new Map(); $('frames').replaceChildren();
     restored.frames.forEach(frame=>recordFrame(frame,restored.quality?.[frame.id]));
     $('country').value=restored.country; $('currency').value=restored.currency;
-    $('manifest').href=`/api/sweeps/${encodeURIComponent(restored.id)}/manifest`; $('manifest').hidden=false;
+    if($('manifest')) { $('manifest').href=`/api/sweeps/${encodeURIComponent(restored.id)}/manifest`; $('manifest').hidden=false; }
     watchInventory(); status(restored.status==='closed' ? 'Saved sweep opened for review.' : 'Saved sweep opened. Resume capture or review its evidence.');
   } catch(error) { status(`Cannot open saved sweep: ${error.message}`); }
   finally { recovering=false; refresh(); }
@@ -239,3 +241,7 @@ if(guidedId) {
     status('Guided session loaded. Camera permission is requested only when you start camera.');refresh();
   }catch(error){status(error.message);$('start').disabled=true;}
 }
+
+return {startCamera,endSweep,stopCamera,getState:()=>({sweep,active:!!stream||starting||finishing||!!encoding||queue.items.length>0})};
+}
+if(globalThis.document?.querySelector('script[src="/assets/app.mjs"]')) await mount();

@@ -1,35 +1,33 @@
-# One-page architecture note — proposed design
+# Architecture note — implemented prototype
 
-**Implementation update, 11 October 2026.** M01–M06 prototype components are implemented, including combined voice/camera and budgeted recognition. User constraints remain Android/laptop browser, reference-object scale without LiDAR, free-tier provider activation and locale intake. Valuation, complete room areas and final packet integration remain M07–M10. Real physical/device acceptance is unverified; see [M06 group review](40-m06-group-review.md).
+M01–M10 implement a local pipeline with explicit physical/evidence review; M11 evaluates exports offline. Android/laptop RGB capture uses no LiDAR. Actual room accuracy, device acceptance, clean setup time and the demo remain unmeasured.
 
 ```mermaid
 flowchart LR
-    A[Phone voice + camera] --> B[Live adapter / capture coach]
-    A --> C[Saved RGB frames + calibration / depth / poses]
-    C --> D[Physical spine / item tracks]
-    D --> E[OCR + catalogue match]
-    C --> F[Metric geometry]
-    E --> G[Local quote retrieval + valuation]
-    D --> G
-    E --> H[Revisioned inventory]
-    F --> H
-    G --> H
-    B --> H
-    D --> H
-    H --> I[Deterministic review + totals]
-    I --> J[JSON + readable report + evidence]
-    H --> K[Live inventory]
+    A[Browser camera + PCM voice] --> B[FastAPI / Gemini Live coach]
+    A --> C[Original frames + hash manifest]
+    C --> D[Budgeted detection / OCR jobs]
+    D --> E[Reviewed physical copies + identity]
+    E --> F[Catalogue candidates]
+    F --> E
+    C --> G[Reference geometry / PyCOLMAP]
+    E --> H[Reviewed retailer offers / FX]
+    G --> I[Observed room + shelving areas]
+    E --> J[Revision barrier / immutable freeze]
+    H --> J
+    I --> J
+    J --> K[Audited JSON / HTML / evidence ZIP]
+    K --> L[Offline independent truth evaluation]
 ```
 
-| Role | Proposed implementation / evidence boundary |
+| Responsibility | Actual implementation / evidence boundary |
 | --- | --- |
-| Live coach | Reuse reference voice/camera WebSocket and interruption logic; Gemini Live candidate pending actual account/device test. Gives capture guidance and extracts explicit corrections; never authors prices/totals/dimensions. |
-| Detection / OCR | Selected pretrained detector/OCR/vision adapter after shelf test. Stable physical tracks first, visible text second; unreadable books stay counted/unidentified. Duplicate copies remain distinct. |
-| Bibliographic match | Open Library / Google Books candidate metadata. Accept supported work; edition/ISBN only with matching evidence. |
-| Metric scale | Known reference-object shelf homography for spines; browser multiview reconstruction is the early room-feasibility experiment. No LiDAR. Room needs connected metric footprint and height from the same sweep; result unproven. |
-| Valuation | Local physical new/used sources selected after countries/access confirmed; foreign quote only with dated FX and converted label. No model-memory prices; rare/signed/art gates stop auto-pricing. |
-| Packet | Typed results, saved frame/quote/calibration manifest, deterministic Decimal totals, review queue and report rendered from frozen JSON. |
+| Capture and voice | Plain browser JavaScript, camera upload, AudioWorklet PCM and interruption handling; FastAPI/WebSocket and durable journal. `live_voice.py` configures `gemini-3.8-live`. Country/currency and actual reference dimensions come from explicit intake answers. Account/model access and actual devices still need acceptance evidence. |
+| Detection / OCR | Gemini structured outputs on saved originals/crops; configured default `gemini-3.1-flash-lite`, with an explicit adapter allowlist. Bounded jobs have revision/worker guards. Models propose visible objects/text; physical registration and identity acceptance remain explicit review. Duplicate titles never define copy identity. |
+| Work / edition | Evidence-bound Open Library / Google Books candidates, literal contradiction gates and separate reviewed work/edition decisions. Unreadable books remain unidentified; numeric confidence is not automatically calibrated. |
+| Metric scale | Independently measured reference object and coplanar homography for spines/item faces. Optional CPU PyCOLMAP sparse reconstruction needs verified fixed intrinsics, connected views and declared reference scale. Observed corner/surface annotations produce floor, wall profiles and clipped shelving unions. Automatic room-boundary acquisition is not implemented. Missing scale/axes/boundaries stay null. |
+| Prices | Reviewed HTTPS retailer JSON-LD physical offers with exact/equivalent eligibility, country/condition/fees and saved raw evidence. Dated saved FX supports disclosed conversion. Item comparables produce deterministic ranges. Rare/signed books and original/unconfirmed art require appraisal. Models never supply amounts. |
+| Persistence / packet | Local SQLite ledgers and immutable originals/artifacts. Explicit capture end, drain/deadline and consistent revision freeze precede Decimal source/FX/totals audit. JSON, HTML and spoken summary share one snapshot; the portable ZIP carries evidence hashes. Packets remain partial while physical coverage is unverified. |
+| Evaluation | Separate CLI consumes exported evidence, frozen independent truth/config and reviewed one-to-one physical mapping. Full denominators, individual errors and cost/timing/delivery provenance stay outside production recognition/lookup. Synthetic regression passes are not assignment accuracy. |
 
-Runtime recommendation: FastAPI/plain browser JavaScript, bounded asynchronous workers, local transactional state and immutable evidence files. Keep the reference's lifecycle/generation guards and frozen-frame pattern; remove insurer policy rules, sketches, avatars and claim-specific notebook. Persist authoritative state independently of conversation or WebSocket lifetime.
-
-Each number links to a saved frame/calibration or dated quotation. Missing evidence yields unknown, review and excluded valuation components. Areas derive from measured geometry, not an LLM. Evaluate the complete independently annotated room against every pass bar; record actual per-stage latency/cost and the worst errors. Scope, preflight results and review gates are in the full design documents.
+Adapted reference logic: PCM/media envelopes, interruption-first playback, lifecycle/generation guards, frozen-frame and asynchronous tool patterns. Removed: insurer policy rules, ADK policy graph, narrative notebook, avatars and sketches. Physical ledgers, measurement, retailer/FX valuation, frozen audit and evaluation are target-specific. [Reuse ledger](06-reference-audit.md) · [Detailed architecture](02-architecture.md).

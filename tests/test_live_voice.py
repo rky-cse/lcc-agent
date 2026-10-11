@@ -116,6 +116,19 @@ class VoiceTest(unittest.TestCase):
         call=dict(id='reference',args=dict(payload_json=json.dumps(payload)))
         first=self.app.state.voice.proposal(SESSION,call)
         self.assertEqual(first,self.app.state.voice.proposal(SESSION,call))
+    def test_reference_proposal_delivered_without_disconnecting_voice(self):
+        payload=dict(action='reference',description='Measured card',width_cm=12.5,height_cm=8.2,width_uncertainty_cm=.1,height_uncertainty_cm=.1,
+                     dimensions_verified=True,dimension_provenance='Independent ruler',claimant_statement='12.5 by 8.2 cm')
+        self.provider.initial=[dict(type='tool',id='reference-live',name='propose_guidance',args=dict(payload_json=json.dumps(payload)))]
+        with self.connect() as ws:
+            self.assertEqual(ws.receive_json()['type'],'ready')
+            proposal=ws.receive_json();self.assertEqual(proposal['type'],'proposal')
+            self.assertEqual(float(proposal['proposal']['command']['payload']['width_cm']),12.5)
+            # A second user turn proves the socket/provider tasks survive delivery.
+            ws.send_json(dict(type='text',text='Keep talking'))
+            while ws.receive_json()['type']!='turn_complete':pass
+            ws.send_json(dict(type='close'))
+        self.assertTrue(self.provider.sessions[0].responses)
     def test_unknown_tool_returns_failure(self):
         self.provider.initial=[dict(type='tool',id='bad',name='apply_ownership',args={})]
         with self.connect() as ws:

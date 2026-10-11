@@ -1,0 +1,471 @@
+{
+  "$defs": {
+    "PriceTruth": {
+      "additionalProperties": false,
+      "properties": {
+        "component": {
+          "enum": [
+            "replacement_cost",
+            "used_value"
+          ],
+          "title": "Component",
+          "type": "string"
+        },
+        "availability": {
+          "enum": [
+            "available",
+            "unavailable"
+          ],
+          "title": "Availability",
+          "type": "string"
+        },
+        "amount": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Amount"
+        },
+        "source_type": {
+          "anyOf": [
+            {
+              "enum": [
+                "new_physical",
+                "used_asking",
+                "used_sold"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Source Type"
+        },
+        "condition": {
+          "title": "Condition",
+          "type": "string"
+        },
+        "country": {
+          "title": "Country",
+          "type": "string"
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "fees": {
+          "const": "item_price_only",
+          "title": "Fees",
+          "type": "string"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "retrieved_at": {
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "edition_basis": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Edition Basis",
+          "type": "string"
+        },
+        "evidence": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "component",
+        "availability",
+        "amount",
+        "source_type",
+        "condition",
+        "country",
+        "currency",
+        "fees",
+        "url",
+        "retrieved_at",
+        "edition_basis",
+        "evidence"
+      ],
+      "title": "PriceTruth",
+      "type": "object"
+    },
+    "RoomTruth": {
+      "additionalProperties": false,
+      "properties": {
+        "floor_area_m2": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Floor Area M2"
+        },
+        "wall_area_m2": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Wall Area M2"
+        },
+        "wall_basis": {
+          "enum": [
+            "gross",
+            "net"
+          ],
+          "title": "Wall Basis",
+          "type": "string"
+        },
+        "method": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Method",
+          "type": "string"
+        },
+        "uncertainty": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Uncertainty",
+          "type": "string"
+        },
+        "evidence": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Evidence",
+          "type": "string"
+        },
+        "length_m": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Length M"
+        },
+        "width_m": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Width M"
+        },
+        "height_m": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Height M"
+        }
+      },
+      "required": [
+        "floor_area_m2",
+        "wall_area_m2",
+        "wall_basis",
+        "method",
+        "uncertainty",
+        "evidence"
+      ],
+      "title": "RoomTruth",
+      "type": "object"
+    },
+    "TruthBook": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "location": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Location",
+          "type": "string"
+        },
+        "owned": {
+          "title": "Owned",
+          "type": "boolean"
+        },
+        "legible": {
+          "title": "Legible",
+          "type": "boolean"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "author": {
+          "default": "",
+          "title": "Author",
+          "type": "string"
+        },
+        "publisher": {
+          "default": "",
+          "title": "Publisher",
+          "type": "string"
+        },
+        "edition_evidence": {
+          "default": "",
+          "title": "Edition Evidence",
+          "type": "string"
+        },
+        "orientation": {
+          "default": "unknown",
+          "enum": [
+            "upright",
+            "horizontal",
+            "stacked",
+            "unknown"
+          ],
+          "title": "Orientation",
+          "type": "string"
+        },
+        "measurement_uncertainty": {
+          "default": "",
+          "title": "Measurement Uncertainty",
+          "type": "string"
+        },
+        "legibility_basis": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Legibility Basis",
+          "type": "string"
+        },
+        "spine_sample": {
+          "title": "Spine Sample",
+          "type": "boolean"
+        },
+        "height_cm": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Height Cm"
+        },
+        "thickness_cm": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Thickness Cm"
+        },
+        "measurement_evidence": {
+          "title": "Measurement Evidence",
+          "type": "string"
+        },
+        "price_sample": {
+          "title": "Price Sample",
+          "type": "boolean"
+        },
+        "prices": {
+          "items": {
+            "$ref": "#/$defs/PriceTruth"
+          },
+          "title": "Prices",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "location",
+        "owned",
+        "legible",
+        "title",
+        "legibility_basis",
+        "spine_sample",
+        "height_cm",
+        "thickness_cm",
+        "measurement_evidence",
+        "price_sample",
+        "prices"
+      ],
+      "title": "TruthBook",
+      "type": "object"
+    },
+    "TruthItem": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "location": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Location",
+          "type": "string"
+        },
+        "owned": {
+          "title": "Owned",
+          "type": "boolean"
+        },
+        "category": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Category",
+          "type": "string"
+        },
+        "evidence": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "location",
+        "owned",
+        "category",
+        "evidence"
+      ],
+      "title": "TruthItem",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "dataset_id": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "annotator": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Annotator",
+      "type": "string"
+    },
+    "annotated_at": {
+      "format": "date-time",
+      "title": "Annotated At",
+      "type": "string"
+    },
+    "independence_statement": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Independence Statement",
+      "type": "string"
+    },
+    "country": {
+      "title": "Country",
+      "type": "string"
+    },
+    "currency": {
+      "title": "Currency",
+      "type": "string"
+    },
+    "enclosed_room": {
+      "title": "Enclosed Room",
+      "type": "boolean"
+    },
+    "shelving_units": {
+      "minimum": 0,
+      "title": "Shelving Units",
+      "type": "integer"
+    },
+    "books": {
+      "items": {
+        "$ref": "#/$defs/TruthBook"
+      },
+      "title": "Books",
+      "type": "array"
+    },
+    "items": {
+      "items": {
+        "$ref": "#/$defs/TruthItem"
+      },
+      "title": "Items",
+      "type": "array"
+    },
+    "room": {
+      "$ref": "#/$defs/RoomTruth"
+    }
+  },
+  "required": [
+    "dataset_id",
+    "annotator",
+    "annotated_at",
+    "independence_statement",
+    "country",
+    "currency",
+    "enclosed_room",
+    "shelving_units",
+    "books",
+    "items",
+    "room"
+  ],
+  "title": "Truth",
+  "type": "object"
+}

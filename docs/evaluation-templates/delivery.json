@@ -1,0 +1,15 @@
+{
+  "archive": "",
+  "second_archive": null,
+  "results": "",
+  "architecture": {
+    "path": "",
+    "sha256": ""
+  },
+  "demo": null,
+  "setup": null,
+  "failures": [],
+  "repair": null,
+  "repo_url": "",
+  "private_repo_asserted": false
+}

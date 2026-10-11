@@ -150,6 +150,8 @@ class GeminiSession:
     async def audio_end(self): await self.session.send_realtime_input(audio_stream_end=True)
     async def tool_response(self, call, response):
         from google.genai import types
+        # SDK tool dictionaries must contain JSON values, not Decimal objects.
+        response=json.loads(json_text(response))
         await self.session.send_tool_response(function_responses=[types.FunctionResponse(id=call['id'], name=call['name'], response=response)])
     async def events(self):
         while True:
@@ -237,7 +239,8 @@ class VoiceHub:
             send_lock=asyncio.Lock()
             async def send(event):
                 async with send_lock:
-                    async with asyncio.timeout(10): await socket.send_json({**event,'epoch':epoch})
+                    # Support exact numeric events as well as JSON-mode proposals.
+                    async with asyncio.timeout(10): await socket.send_text(json_text({**event,'epoch':epoch}))
             entry=self.handles.get(session);handle=entry[0] if entry and time.monotonic()-entry[1]<7000 else None
             async with asyncio.timeout(25):
                 manager=self.provider.connect(handle);live=await manager.__aenter__()
@@ -293,20 +296,31 @@ class VoiceHub:
                             await storage_call(self.journal.update,session,kind,{k:v for k,v in event.items() if k!='type'})
                         await send(event)
                 async def progress_updates():
-                    last_frame=None;last_state=None
+                    last_frame=None;last_state=None;last_prompt=state['next_prompt'];last_spoken=time.monotonic()
                     while True:
                         await asyncio.sleep(5)
                         if not watching:continue
-                        current=await storage_call(self.guidance.snapshot,session)
+                        try:
+                            current=await storage_call(self.guidance.snapshot,session)
+                        except (ValueError,KeyError,OSError):
+                            await send(dict(type='input_error',message='Sweep progress is temporarily unavailable. Voice remains connected.'))
+                            continue
                         compact={k:current[k] for k in ('id','revision','inventory_revision','capture_status','next_prompt','recognition_progress','latest_quality')}
                         fingerprint=json_text(compact)
                         if fingerprint!=last_state:
                             await send(dict(type='state',state=current))
-                            await live.text('Updated authoritative sweep progress: '+fingerprint+'\nSpeak briefly only when the prompt changes or useful progress is available. Proposal counts are not accepted identities.')
+                            # Initial watch/polls must not start a duplicate model
+                            # turn while the reference question is still playing.
                             last_state=fingerprint
+                        announce=current['next_prompt']!=last_prompt or (current['capture_status']=='capturing' and time.monotonic()-last_spoken>=30)
+                        if announce and time.monotonic()-last_spoken>=10:
+                            await live.text('Updated authoritative sweep progress: '+fingerprint+'\nSpeak one short sentence. Proposal counts are not accepted identities.')
+                            last_prompt=current['next_prompt'];last_spoken=time.monotonic()
                         ref=current.get('latest_frame_ref')
                         if ref and ref!=last_frame and current['capture_status']=='capturing':
-                            data=await storage_call(self.preview,session,ref);await live.video(data);last_frame=ref
+                            try:data=await storage_call(self.preview,session,ref)
+                            except (ValueError,KeyError,OSError):continue
+                            await live.video(data);last_frame=ref
                             await send(dict(type='preview_sent',frame_ref=ref,evidence_original_preserved=True))
                 tasks=[asyncio.create_task(incoming()),asyncio.create_task(outgoing()),asyncio.create_task(progress_updates())]
                 done,_=await asyncio.wait(tasks,timeout=20*60,return_when=asyncio.FIRST_COMPLETED)
@@ -318,11 +332,13 @@ class VoiceHub:
                 with suppress(Exception):
                     async with asyncio.timeout(10): await manager.__aexit__(None,None,None)
         except WebSocketDisconnect: pass
-        except Exception:
+        except Exception as error:
             # SDK errors can include credentials/handles; never forward or log their text.
             self.handles.pop(session,None)
             if accepted:
-                with suppress(Exception): await socket.send_json(dict(type='error',message='Voice connection ended. Reconnect explicitly; saved guidance remains available.'))
+                with suppress(Exception):
+                    await storage_call(self.journal.update,session,'connection_error',dict(category=type(error).__name__))
+                with suppress(Exception): await socket.send_json(dict(type='error',message='Voice connection ended. Saved guidance remains available for reconnection.'))
         finally:
             if accepted:
                 with suppress(Exception): await storage_call(self.journal.update,session,'disconnected',dict(pending_turns_preserved=True))

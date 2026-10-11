@@ -29,7 +29,14 @@ from .vision_provider import ALLOWED_MODELS
 from .sweep_runtime import SweepRuntime,SweepPlan
 from .valuation import ValuationStore,ValuationRequest
 from .contents import ContentsStore,ContentsCommand
+from .contents_detection import ContentsDetectionInput,detect as detect_contents
 from .contents_pricing import ContentsPricing,ItemValuationRequest
+from .area_store import AreaStore
+from .areas import AreaRequest
+from .finalization import Finalizer,FinalizationRequest
+from .packet import json_text
+from .browser_stages import (BrowserStages,CatalogueLookup,EditionLookup,IdentityReview,
+    EditionReview,MeasurementRun,ReconstructionRun)
 
 
 class StartInput(Contract):
@@ -65,6 +72,9 @@ def create_app(root: Path, origins: set[str], *, synthetic: bool = False, voice_
     valuations = ValuationStore(sessions.store)
     contents = ContentsStore(sessions.store)
     contents_prices = ContentsPricing(sessions.store)
+    areas = AreaStore(sessions.store)
+    finalizer = Finalizer(sessions.store)
+    browser_stages=BrowserStages(sessions.store)
     valuation_slot = asyncio.Semaphore(1)
     guidance = GuidanceStore(sessions.store)
     recognition=RecognitionQueue(sessions.store)
@@ -81,6 +91,9 @@ def create_app(root: Path, origins: set[str], *, synthetic: bool = False, voice_
     app.state.valuations = valuations
     app.state.contents = contents
     app.state.contents_prices = contents_prices
+    app.state.areas = areas
+    app.state.finalizer = finalizer
+    app.state.browser_stages=browser_stages
     app.state.guidance = guidance
     voice = VoiceHub(guidance,voice_provider)
     app.state.voice = voice
@@ -134,11 +147,24 @@ def create_app(root: Path, origins: set[str], *, synthetic: bool = False, voice_
     @app.exception_handler(OSError)
     @app.exception_handler(sqlite3.Error)
     async def storage_failure(request, error):
+        if '/finalizations' in request.url.path:
+            return JSONResponse({'detail':'Final packet storage failed; retry the same final run ID after storage recovers.'},status_code=503)
         return JSONResponse({"detail": "Storage failed; frame was not acknowledged. Retry the same upload ID."}, status_code=503)
 
     @app.get("/")
     def index():
-        return FileResponse(web / "index.html")
+        return FileResponse(web / "workspace.html")
+
+    @app.get('/capture')
+    def capture_page():return FileResponse(web/'index.html')
+
+    @app.get('/api/ui/{name}')
+    def component_template(name: str):
+        templates={'voice':'voice','capture':'index','sweep':'sweep','recognition':'recognition',
+            'registration':'registration','resolution':'resolution','valuation':'valuation',
+            'contents':'contents','areas':'areas','packet':'packet','identity':'identity','geometry':'geometry'}
+        if name not in templates:raise HTTPException(404,'Unknown workspace component')
+        return FileResponse(web/(templates[name]+'.html'))
 
     @app.get('/voice')
     def voice_page():
@@ -149,10 +175,109 @@ def create_app(root: Path, origins: set[str], *, synthetic: bool = False, voice_
         return FileResponse(web / 'recognition.html')
 
     @app.get('/sweep')
-    def sweep_page():return FileResponse(web/'sweep.html')
+    def sweep_page():return FileResponse(web/'workspace.html')
 
     @app.get('/valuation')
     def valuation_page():return FileResponse(web/'valuation.html')
+
+    @app.get('/packet')
+    def packet_page():return FileResponse(web/'packet.html')
+
+    @app.get('/api/finalization/schema')
+    def finalization_schema():return FinalizationRequest.model_json_schema()
+
+    @app.get('/api/sweeps/{sweep_id}/stages')
+    def stage_list(sweep_id: str):
+        sessions.snapshot(sweep_id)
+        return browser_stages.list(sweep_id)
+
+    @app.get('/api/sweeps/{sweep_id}/runs')
+    def sweep_runs(sweep_id: str):
+        sessions.snapshot(sweep_id)
+        tables={'books':'valuation_runs','items':'contents_price_runs','areas':'area_runs','packets':'final_runs'}
+        groups={}
+        from contextlib import closing
+        with closing(sessions.store._connect()) as db:
+            for kind,table in tables.items():
+                rows=[]
+                for row in db.execute(f'SELECT id,request FROM {table} ORDER BY rowid'):
+                    body=json.loads(row[1])
+                    if body['sweep_id']==sweep_id:rows.append(dict(run_id=row[0],request=body))
+                groups[kind]=rows[-100:]
+        return groups
+
+    @app.get('/api/sweeps/{sweep_id}/finalizations/{run_id}/document/{name}')
+    def final_document(sweep_id: str,run_id: str,name: str):
+        if name not in {'claim_packet.json','report.html'}:raise HTTPException(404,'Unknown packet document')
+        result=finalizer.get(run_id,sweep_id)
+        if not result['packet_ready']:raise HTTPException(409,'Packet not yet published')
+        raw=next(content for path,content,digest in finalizer.files(run_id) if path==name)
+        return Response(raw,media_type='text/html' if name.endswith('.html') else 'application/json')
+
+    @app.get('/api/sweeps/{sweep_id}/stages/{run_id}')
+    def stage_result(sweep_id: str,run_id: str):return browser_stages.get(sweep_id,run_id)
+
+    @app.post('/api/sweeps/{sweep_id}/stages/{kind}')
+    async def stage_run(sweep_id: str,kind: str,request: Request):
+        models={'catalogue':CatalogueLookup,'edition':EditionLookup,'measurement':MeasurementRun,'reconstruction':ReconstructionRun}
+        if kind not in models:raise HTTPException(404,'Unknown stage')
+        body=await control_body(request,models[kind],max_bytes=128*1024)
+        await run_in_threadpool(sessions.snapshot,sweep_id)
+        if valuation_slot.locked():raise HTTPException(409,'A reviewed computation is active; retry after completion')
+        async with valuation_slot:return await run_in_threadpool(browser_stages.execute,sweep_id,kind,body)
+
+    @app.post('/api/sweeps/{sweep_id}/identity')
+    async def identity_review(sweep_id: str,request: Request):
+        body=await control_body(request,IdentityReview,max_bytes=64*1024)
+        return await run_in_threadpool(browser_stages.identity,sweep_id,body)
+
+    @app.post('/api/sweeps/{sweep_id}/edition')
+    async def edition_review(sweep_id: str,request: Request):
+        body=await control_body(request,EditionReview,max_bytes=64*1024)
+        return await run_in_threadpool(browser_stages.edition,sweep_id,body)
+
+    @app.post('/api/sweeps/{sweep_id}/finalizations')
+    async def finalize_packet(sweep_id: str,request: Request):
+        body=await control_body(request,FinalizationRequest,max_bytes=128*1024)
+        if body.sweep_id!=sweep_id:raise HTTPException(422,'Final packet sweep differs from URL')
+        await run_in_threadpool(sessions.snapshot,sweep_id)
+        if valuation_slot.locked():raise HTTPException(409,'A reviewed computation is active; retry after completion')
+        async with valuation_slot:
+            result=await run_in_threadpool(finalizer.run,body)
+            return Response(json_text(result),media_type='application/json')
+
+    @app.get('/api/sweeps/{sweep_id}/finalizations/{run_id}')
+    def finalized_packet(sweep_id: str,run_id: str):return Response(json_text(finalizer.get(run_id,sweep_id)),media_type='application/json')
+
+    @app.get('/api/sweeps/{sweep_id}/finalizations/{run_id}/archive')
+    def final_archive(sweep_id: str,run_id: str):
+        return Response(finalizer.archive(run_id,sweep_id),media_type='application/zip',headers={'Content-Disposition':'attachment; filename="claim-packet.zip"'})
+
+    @app.get('/api/sweeps/{sweep_id}/finalizations/{run_id}/summary')
+    def final_summary(sweep_id: str,run_id: str):
+        result=finalizer.get(run_id,sweep_id)
+        if not result['packet_ready']:raise HTTPException(409,'Packet is not yet published')
+        raw=next(content for path,content,digest in finalizer.files(run_id) if path=='spoken-summary.txt')
+        return Response(raw,media_type='text/plain')
+
+    @app.get('/areas')
+    def areas_page():return FileResponse(web/'areas.html')
+
+    @app.get('/api/areas/schema')
+    def area_schema():return AreaRequest.model_json_schema()
+
+    @app.post('/api/sweeps/{sweep_id}/areas')
+    async def area_run(sweep_id: str,request: Request):
+        body=await control_body(request,AreaRequest,max_bytes=128*1024)
+        if body.sweep_id!=sweep_id:raise HTTPException(422,'Area sweep differs from URL')
+        await run_in_threadpool(sessions.snapshot,sweep_id)
+        if valuation_slot.locked():raise HTTPException(409,'A reviewed computation is active; retry after completion')
+        async with valuation_slot:return await run_in_threadpool(areas.run,body)
+
+    @app.get('/api/sweeps/{sweep_id}/areas/{run_id}')
+    def area_result(sweep_id: str,run_id: str):
+        sessions.snapshot(sweep_id)
+        return areas.get(run_id,sweep_id)
 
     @app.get('/contents')
     def contents_page():return FileResponse(web/'contents.html')
@@ -168,6 +293,14 @@ def create_app(root: Path, origins: set[str], *, synthetic: bool = False, voice_
         if body.sweep_id!=sweep_id:raise HTTPException(422,'Contents sweep differs from URL')
         await run_in_threadpool(sessions.snapshot,sweep_id)
         return await run_in_threadpool(contents.apply,body)
+
+    @app.post('/api/sweeps/{sweep_id}/contents/detect')
+    async def nonbook_detection(sweep_id: str,request: Request):
+        body=await control_body(request,ContentsDetectionInput)
+        if body.sweep_id!=sweep_id:raise HTTPException(422,'Contents sweep differs from URL')
+        if not recognition_config or not recognition_config.key:raise HTTPException(409,'Enable free-tier recognition on this server first')
+        if valuation_slot.locked():raise HTTPException(409,'A computation is active; retry after completion')
+        async with valuation_slot:return await run_in_threadpool(detect_contents,sessions.store,body,key=recognition_config.key,model=recognition_config.model)
 
     @app.get('/api/sweeps/{sweep_id}/contents/artifacts/{digest}')
     def contents_artifact(sweep_id: str,digest: str):
@@ -367,13 +500,15 @@ def create_app(root: Path, origins: set[str], *, synthetic: bool = False, voice_
 
     @app.get("/assets/{name}")
     def asset(name: str):
-        if name not in {"app.mjs", "queue.mjs", "inventory.mjs", "style.css", "voice.mjs", "voice_core.mjs", "pcm-worklet.mjs", "corrections.mjs", "recognition.mjs", "recognition_page.mjs", "shelf_selector.mjs", "registration.mjs", "registration_page.mjs", "resolution.mjs", "resolution_page.mjs", "valuation.mjs", "contents.mjs", "contents_core.mjs"}:
+        if name in {'workspace.mjs','workspace_core.mjs','workspace.css','sweep.mjs','sweep_core.mjs','identity.mjs','geometry.mjs'}:
+            return FileResponse(web/name)
+        if name not in {"app.mjs", "queue.mjs", "inventory.mjs", "style.css", "voice.mjs", "voice_core.mjs", "pcm-worklet.mjs", "corrections.mjs", "recognition.mjs", "recognition_page.mjs", "shelf_selector.mjs", "registration.mjs", "registration_page.mjs", "resolution.mjs", "resolution_page.mjs", "valuation.mjs", "contents.mjs", "contents_core.mjs", "areas.mjs", "areas_core.mjs", "packet.mjs", "packet_core.mjs"}:
             raise HTTPException(404)
         return FileResponse(web / name, media_type="text/javascript" if name.endswith(".mjs") else "text/css")
 
     @app.get("/api/health")
     def health():
-        return {"module": "M08", "contents": "reviewed_physical_ledger", "valuation": "explicit_source_review", "recognition_worker": "explicit_server" if dispatcher.config else "explicit_cli", "provider_calls": voice_provider is not None or bool(dispatcher.config and dispatcher.config.key), "voice_enabled": voice_provider is not None, "synthetic_capture_mode": synthetic, "limits": sessions.store.limits.model_dump()}
+        return {"module": "M10", "finalization": "immutable_partial_packet", "areas": "reviewed_observed_surfaces", "contents": "reviewed_physical_ledger", "valuation": "explicit_source_review", "recognition_worker": "explicit_server" if dispatcher.config else "explicit_cli", "provider_calls": voice_provider is not None or bool(dispatcher.config and dispatcher.config.key), "voice_enabled": voice_provider is not None, "synthetic_capture_mode": synthetic, "limits": sessions.store.limits.model_dump()}
 
     @app.get('/registration')
     def registration_page():
